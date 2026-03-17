@@ -1,0 +1,35 @@
+[
+  {
+    "id": "item-001",
+    "restaurant_id": "rest-001",
+    "name": "Hamburguesa Clásica",
+    "description": "Carne, lechuga, tomate, cheddar",
+    "price": 150000,
+    "category": "Principales",
+    "is_available": true,
+    "sort_order": 1,
+    "created_at": 1700000000000
+  },
+  {
+    "id": "item-002",
+    "restaurant_id": "rest-001",
+    "name": "Papas Fritas",
+    "description": "Porción grande",
+    "price": 80000,
+    "category": "Acompañamientos",
+    "is_available": true,
+    "sort_order": 2,
+    "created_at": 1700000001000
+  },
+  {
+    "id": "item-003",
+    "restaurant_id": "rest-001",
+    "name": "Coca Cola",
+    "description": "500ml",
+    "price": 50000,
+    "category": "Bebidas",
+    "is_available": false,
+    "sort_order": 3,
+    "created_at": 1700000002000
+  }
+]

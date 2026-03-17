@@ -1,0 +1,9 @@
+{
+  "id": "usr-restaurant-001",
+  "email": "owner@laburguesa.com",
+  "name": "Carlos Pérez",
+  "role": "restaurant_owner",
+  "restaurant_id": "rest-001",
+  "store_name": "La Burguesa",
+  "phone": "+54 9 11 1234-5678"
+}

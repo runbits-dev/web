@@ -1,0 +1,10 @@
+[
+  {
+    "id": "rider-001",
+    "name": "Diego Fernández",
+    "email": "diego@runbits.dev",
+    "status": "active",
+    "tier": "silver",
+    "score": 78
+  }
+]

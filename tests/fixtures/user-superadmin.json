@@ -1,0 +1,9 @@
+{
+  "id": "usr-superadmin-001",
+  "email": "admin@runbits.dev",
+  "name": "Admin Runbits",
+  "role": "superadmin",
+  "restaurant_id": null,
+  "store_name": null,
+  "phone": null
+}

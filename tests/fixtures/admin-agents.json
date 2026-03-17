@@ -1,0 +1,21 @@
+{
+  "data": [
+    {
+      "id": "agent-001",
+      "name": "Martín López",
+      "email": "martin@runbits.dev",
+      "status": "active",
+      "tier": "gold",
+      "score": 92
+    },
+    {
+      "id": "agent-002",
+      "name": "Laura García",
+      "email": "laura@runbits.dev",
+      "status": "pending",
+      "tier": "bronze",
+      "score": 0
+    }
+  ],
+  "total": 2
+}

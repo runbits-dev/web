@@ -1,0 +1,18 @@
+{
+  "restaurant_id": "rest-001",
+  "restaurant_name": "La Burguesa",
+  "is_open": true,
+  "onboarding_status": "live",
+  "menu": {
+    "total_items": 3,
+    "available_items": 2
+  },
+  "orders": {
+    "today": 12,
+    "this_week": 58,
+    "this_month": 210,
+    "revenue_today": 312000000,
+    "revenue_month": 5460000000,
+    "avg_ticket_today": 26000000
+  }
+}

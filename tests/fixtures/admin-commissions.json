@@ -1,0 +1,21 @@
+{
+  "data": [
+    {
+      "id": "comm-001",
+      "agent_id": "agent-001",
+      "agent_name": "Martín López",
+      "amount": 5000000,
+      "status": "pending",
+      "created_at": 1700000000000
+    },
+    {
+      "id": "comm-002",
+      "agent_id": "agent-001",
+      "agent_name": "Martín López",
+      "amount": 3500000,
+      "status": "approved",
+      "created_at": 1699900000000
+    }
+  ],
+  "total": 2
+}
