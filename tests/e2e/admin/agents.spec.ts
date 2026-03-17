@@ -1,15 +1,14 @@
-import { test, expect } from '@playwright/test'
-import { setAuthToken } from '../../helpers/auth'
+import { test, expect, loginAsSuperadmin } from '../../fixtures/base'
 
 test.describe('Admin — Agentes', () => {
   test.beforeEach(async ({ page }) => {
-    await setAuthToken(page, 'mock-token-superadmin')
+    await loginAsSuperadmin(page)
     await page.goto('/dashboard/admin/agents')
     await page.waitForLoadState('networkidle')
   })
 
   test('lista los agentes', async ({ page }) => {
-    await expect(page.getByText('Agentes')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Agentes' })).toBeVisible()
     await expect(page.getByText('Martín López')).toBeVisible()
     await expect(page.getByText('Laura García')).toBeVisible()
   })
@@ -28,7 +27,6 @@ test.describe('Admin — Agentes', () => {
     const lauraRow = page.locator('.bg-white.rounded-2xl').filter({ hasText: 'Laura García' })
     await lauraRow.getByRole('button', { name: 'Aprobar' }).click()
     await page.waitForLoadState('networkidle')
-    // Después de aprobar, el estado cambia a approved (y aparece botón Activar)
     await expect(lauraRow.getByRole('button', { name: 'Activar' })).toBeVisible()
   })
 

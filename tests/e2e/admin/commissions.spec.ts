@@ -1,24 +1,23 @@
-import { test, expect } from '@playwright/test'
-import { setAuthToken } from '../../helpers/auth'
+import { test, expect, loginAsSuperadmin } from '../../fixtures/base'
 
 test.describe('Admin — Comisiones', () => {
   test.beforeEach(async ({ page }) => {
-    await setAuthToken(page, 'mock-token-superadmin')
+    await loginAsSuperadmin(page)
     await page.goto('/dashboard/admin/commissions')
     await page.waitForLoadState('networkidle')
   })
 
   test('muestra el resumen de comisiones', async ({ page }) => {
-    await expect(page.getByText('Comisiones')).toBeVisible()
-    // summary: total $85000, pending $50000, paid $35000
-    await expect(page.getByText('$850.00')).toBeVisible()   // total
-    await expect(page.getByText('$500.00')).toBeVisible()   // pending
-    await expect(page.getByText('$350.00')).toBeVisible()   // paid
+    await expect(page.getByRole('heading', { name: 'Comisiones' })).toBeVisible()
+    // total_amount: 85000 centavos = $850.00
+    await expect(page.getByText('$850.00')).toBeVisible()
+    await expect(page.getByText('$500.00').first()).toBeVisible()
+    await expect(page.getByText('$350.00').first()).toBeVisible()
   })
 
   test('lista las comisiones con agente y monto', async ({ page }) => {
     await expect(page.getByText('Martín López').first()).toBeVisible()
-    await expect(page.getByText('$500.00').first()).toBeVisible()
+    await expect(page.getByRole('cell', { name: '$500.00' })).toBeVisible()
   })
 
   test('muestra botones Aprobar/Rechazar para comisión pending', async ({ page }) => {

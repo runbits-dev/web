@@ -21,11 +21,13 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers })
 
   if (res.status === 401) {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
       localStorage.removeItem('token')
       window.location.href = '/login'
+      throw new Error('No autorizado')
     }
-    throw new Error('No autorizado')
+    const errBody = await res.json().catch(() => ({ error: 'No autorizado' }))
+    throw new Error(errBody.error || 'No autorizado')
   }
 
   if (!res.ok) {

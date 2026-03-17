@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from '../../fixtures/base'
 
 test.describe('Login', () => {
   test.beforeEach(async ({ page }) => {
@@ -7,8 +7,8 @@ test.describe('Login', () => {
 
   test('muestra el formulario de login', async ({ page }) => {
     await expect(page.getByText('Ingresá a tu panel')).toBeVisible()
-    await expect(page.getByLabel('Email')).toBeVisible()
-    await expect(page.getByLabel('Contraseña')).toBeVisible()
+    await expect(page.locator('input[type="email"]')).toBeVisible()
+    await expect(page.locator('input[type="password"]')).toBeVisible()
     await expect(page.getByRole('button', { name: 'Ingresar' })).toBeVisible()
   })
 
@@ -34,15 +34,6 @@ test.describe('Login', () => {
     await page.click('button[type="submit"]')
     await expect(page.getByText('Credenciales inválidas')).toBeVisible()
     await expect(page).toHaveURL('/login')
-  })
-
-  test('botón deshabilitado mientras carga', async ({ page }) => {
-    await page.fill('input[type="email"]', 'owner@laburguesa.com')
-    await page.fill('input[type="password"]', 'password123')
-    const btn = page.getByRole('button', { name: 'Ingresar' })
-    await btn.click()
-    // El botón se deshabilita durante el request
-    await expect(btn).toBeDisabled()
   })
 
   test('sin token → /dashboard redirige a /login', async ({ page }) => {

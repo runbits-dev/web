@@ -1,15 +1,14 @@
-import { test, expect } from '@playwright/test'
-import { setAuthToken } from '../../helpers/auth'
+import { test, expect, loginAsSuperadmin } from '../../fixtures/base'
 
 test.describe('Admin — Restaurantes', () => {
   test.beforeEach(async ({ page }) => {
-    await setAuthToken(page, 'mock-token-superadmin')
+    await loginAsSuperadmin(page)
     await page.goto('/dashboard/admin/restaurants')
     await page.waitForLoadState('networkidle')
   })
 
   test('lista los restaurantes', async ({ page }) => {
-    await expect(page.getByText('Restaurantes')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Restaurantes' })).toBeVisible()
     await expect(page.getByText('La Burguesa')).toBeVisible()
     await expect(page.getByText('Sushi Zen')).toBeVisible()
     await expect(page.getByText('2 registrados')).toBeVisible()
