@@ -4,9 +4,10 @@ export type User = {
   id: string
   email: string
   name: string
-  role: 'superadmin' | 'store_owner' | 'rider' | 'customer'
+  role: 'superadmin' | 'restaurant_owner' | 'rider' | 'customer'
   restaurant_id?: string
   store_name?: string
+  phone?: string
 }
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
@@ -41,6 +42,8 @@ export const api = {
       method: 'POST', body: JSON.stringify({ email, password }),
     }),
   me: () => request<User>('/api/auth/me'),
+  updateProfile: (data: { name?: string; phone?: string }) =>
+    request<User>('/api/auth/profile', { method: 'PATCH', body: JSON.stringify(data) }),
 
   // Store — pedidos del propio comercio
   getMyOrders: () => request<any[]>('/api/orders/mine'),
@@ -62,6 +65,10 @@ export const api = {
     request<any[]>(`/api/restaurants/${restaurantId}/menu?available=false`),
   createMenuItem: (restaurantId: string, data: any) =>
     request<any>(`/api/restaurants/${restaurantId}/menu`, { method: 'POST', body: JSON.stringify(data) }),
+  updateMenuItem: (restaurantId: string, itemId: string, data: any) =>
+    request<any>(`/api/restaurants/${restaurantId}/menu/${itemId}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteMenuItem: (restaurantId: string, itemId: string) =>
+    request<void>(`/api/restaurants/${restaurantId}/menu/${itemId}`, { method: 'DELETE' }),
 
   // Riders
   getRiders: (zoneId?: string) =>
