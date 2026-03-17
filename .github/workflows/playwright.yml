@@ -26,15 +26,17 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Build Next.js app
+      - name: Build Next.js app (server mode for tests)
         run: npm run build
         env:
-          NEXT_PUBLIC_API_URL: https://api.runbits.dev
+          NEXT_PUBLIC_MSW: 'true'
+          # NEXT_STATIC_EXPORT no seteado → modo server (necesario para next start)
 
       - name: Run Playwright tests
         run: npm run test:e2e
         env:
-          CI: true
+          CI: 'true'
+          NEXT_PUBLIC_MSW: 'true'
 
       - name: Upload test report
         uses: actions/upload-artifact@v4

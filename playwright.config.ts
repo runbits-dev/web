@@ -19,9 +19,14 @@ export default defineConfig({
     },
   ],
   webServer: {
+    // Build sin static export (necesitamos next start para Playwright)
     command: 'npm run build && npm run start',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    env: {
+      NEXT_PUBLIC_MSW: 'true',
+      // NO seteamos NEXT_STATIC_EXPORT → next.config.ts usa modo server
+    },
   },
 })

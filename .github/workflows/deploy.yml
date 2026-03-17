@@ -1,52 +1,35 @@
-name: Deploy
+name: Deploy to Cloudflare Pages
 
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
-
-permissions:
-  contents: read
-  deployments: write
 
 jobs:
   deploy:
+    name: Deploy
     runs-on: ubuntu-latest
-    name: Deploy to Cloudflare Pages
+    timeout-minutes: 15
+
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20
+          cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Build
+      - name: Build (static export for CF Pages)
         run: npm run build
         env:
-          NEXT_PUBLIC_API_URL: https://api.runbits.dev
+          NEXT_STATIC_EXPORT: 'true'
+          NEXT_PUBLIC_API_URL: 'https://api.runbits.dev'
 
-      - name: Deploy to staging
-        if: github.event_name == 'pull_request'
-        uses: cloudflare/pages-action@v1
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: e26bfe18bfa6df2cb533f24129d433ba
-          projectName: runbits-web
-          directory: out
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.head_ref }}
-
-      - name: Deploy to production
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        uses: cloudflare/pages-action@v1
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: e26bfe18bfa6df2cb533f24129d433ba
-          projectName: runbits-web
-          directory: out
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          command: pages deploy out --project-name=runbits-web
