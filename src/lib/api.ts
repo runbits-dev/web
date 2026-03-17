@@ -13,7 +13,7 @@ export type User = {
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
+     'Content-Type': 'application/json',
     ...(options?.headers as Record<string, string>),
   }
   if (token) headers['Authorization'] = `Bearer ${token}`
@@ -59,14 +59,32 @@ export const api = {
   getRestaurant: (id: string) => request<any>(`/api/restaurants/${id}`),
   updateRestaurant: (id: string, data: any) =>
     request<any>(`/api/restaurants/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  getRestaurantStats: (id: string) => request<any>(`/api/restaurants/${id}/stats`),
 
   // Menu
   getMenu: (restaurantId: string) =>
     request<any[]>(`/api/restaurants/${restaurantId}/menu?available=false`),
-  createMenuItem: (restaurantId: string, data: any) =>
-    request<any>(`/api/restaurants/${restaurantId}/menu`, { method: 'POST', body: JSON.stringify(data) }),
-  updateMenuItem: (restaurantId: string, itemId: string, data: any) =>
-    request<any>(`/api/restaurants/${restaurantId}/menu/${itemId}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  createMenuItem: (restaurantId: string, data: { name: string; description?: string; price: number; category?: string; is_available?: boolean }) =>
+    request<any>(`/api/restaurants/${restaurantId}/menu`, {
+      method: 'POST',
+      body: JSON.stringify({
+        name: data.name,
+        description: data.description,
+        price: data.price,
+        category: data.category,
+        isAvailable: data.is_available,
+      }),
+    }),
+  updateMenuItem: (restaurantId: string, itemId: string, data: { name?: string; description?: string; price?: number; category?: string; is_available?: boolean }) =>
+    request<any>(`/api/restaurants/${restaurantId}/menu/${itemId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        ...(data.name !== undefined && { name: data.name }),
+        ...(data.description !== undefined && { description: data.description }),
+        ...(data.price !== undefined && { price: data.price }),
+        ...(data.is_available !== undefined && { isAvailable: data.is_available }),
+      }),
+    }),
   deleteMenuItem: (restaurantId: string, itemId: string) =>
     request<void>(`/api/restaurants/${restaurantId}/menu/${itemId}`, { method: 'DELETE' }),
 
