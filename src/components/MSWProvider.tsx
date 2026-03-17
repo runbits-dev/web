@@ -10,9 +10,9 @@ import { useEffect } from 'react'
 export function MSWProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (process.env.NEXT_PUBLIC_MSW !== 'true') return
-    import('../tests/mocks/browser').then(({ worker }) => {
+    import('@/mocks/browser').then(({ worker }) => {
       worker.start({
-        onUnhandledRequest: 'bypass', // deja pasar requests no mockeados
+        onUnhandledRequest: 'bypass',
         serviceWorker: { url: '/mockServiceWorker.js' },
       })
     })
