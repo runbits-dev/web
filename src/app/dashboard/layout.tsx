@@ -22,6 +22,7 @@ const adminNav = [
   { href: '/dashboard/admin/agents', label: 'Agentes', icon: '👥' },
   { href: '/dashboard/admin/commissions', label: 'Comisiones', icon: '💰' },
   { href: '/dashboard/admin/payouts', label: 'Pagos', icon: '💸' },
+  { href: '/dashboard/admin/subscriptions', label: 'Subscripciones', icon: '🧾' },
 ]
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
