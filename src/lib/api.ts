@@ -8,6 +8,7 @@ export type User = {
   restaurant_id?: string
   store_name?: string
   phone?: string
+  picture?: string
 }
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
@@ -43,6 +44,17 @@ export const api = {
     request<{ token: string; user: User }>('/api/auth/login', {
       method: 'POST', body: JSON.stringify({ email, password }),
     }),
+
+  loginGoogle: (idToken: string) =>
+    request<{ token: string; account: User; roles: any[] }>('/api/auth/google', {
+      method: 'POST', body: JSON.stringify({ id_token: idToken }),
+    }),
+
+  register: (data: { email: string; phone: string; name: string; password: string; role?: string }) =>
+    request<{ token: string; account: User; roles: any[] }>('/api/auth/register', {
+      method: 'POST', body: JSON.stringify(data),
+    }),
+
   me: () => request<User>('/api/auth/me'),
   updateProfile: (data: { name?: string; phone?: string }) =>
     request<User>('/api/auth/profile', { method: 'PATCH', body: JSON.stringify(data) }),
