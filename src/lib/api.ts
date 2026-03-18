@@ -14,7 +14,7 @@ export type User = {
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
   const headers: Record<string, string> = {
-     'Content-Type': 'application/json',
+    'Content-Type': 'application/json',
     ...(options?.headers as Record<string, string>),
   }
   if (token) headers['Authorization'] = `Bearer ${token}`
@@ -39,35 +39,68 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   return res.json()
 }
 
+// Normaliza la respuesta de auth-service { account, roles, activeRole } → User
+function normalizeAuthResponse(raw: any): { token: string; user: User } {
+  const account = raw.account ?? raw.user ?? raw
+  const roles: Array<{ role: string }> = raw.roles ?? []
+  const activeRole = raw.activeRole ?? roles[0]?.role ?? 'customer'
+
+  const user: User = {
+    id: account.id,
+    email: account.email,
+    name: account.name,
+    phone: account.phone,
+    picture: account.picture,
+    role: activeRole as User['role'],
+  }
+  return { token: raw.token, user }
+}
+
 export const api = {
-  login: (email: string, password: string) =>
-    request<{ token: string; user: User }>('/api/auth/login', {
+  login: async (email: string, password: string): Promise<{ token: string; user: User }> => {
+    const raw = await request<any>('/api/auth/login', {
       method: 'POST', body: JSON.stringify({ email, password }),
-    }),
+    })
+    return normalizeAuthResponse(raw)
+  },
 
-  loginGoogle: (idToken: string) =>
-    request<{ token: string; account: User; roles: any[] }>('/api/auth/google', {
+  loginGoogle: async (idToken: string): Promise<{ token: string; user: User }> => {
+    const raw = await request<any>('/api/auth/google', {
       method: 'POST', body: JSON.stringify({ id_token: idToken }),
-    }),
+    })
+    return normalizeAuthResponse(raw)
+  },
 
-  register: (data: { email: string; phone: string; name: string; password: string; role?: string }) =>
-    request<{ token: string; account: User; roles: any[] }>('/api/auth/register', {
+  register: async (data: { email: string; phone: string; name: string; password: string; role?: string }): Promise<{ token: string; user: User }> => {
+    const raw = await request<any>('/api/auth/register', {
       method: 'POST', body: JSON.stringify(data),
-    }),
+    })
+    return normalizeAuthResponse(raw)
+  },
 
-  me: () => request<User>('/api/auth/me'),
+  me: async (): Promise<User> => {
+    const raw = await request<any>('/api/auth/me')
+    // auth-service devuelve { account: {...}, roles: [...], activeRole }
+    const account = raw.account ?? raw
+    const activeRole = raw.activeRole ?? 'customer'
+    return {
+      id: account.id,
+      email: account.email,
+      name: account.name,
+      phone: account.phone,
+      role: activeRole as User['role'],
+    }
+  },
+
   updateProfile: (data: { name?: string; phone?: string }) =>
     request<User>('/api/auth/profile', { method: 'PATCH', body: JSON.stringify(data) }),
 
-  // Store — pedidos del propio comercio
   getMyOrders: () => request<any[]>('/api/orders/mine'),
 
-  // Zones
   getZones: () => request<any[]>('/api/zones'),
   createZone: (name: string) =>
     request<any>('/api/zones', { method: 'POST', body: JSON.stringify({ name }) }),
 
-  // Restaurants
   getRestaurants: (zoneId?: string) =>
     request<any[]>(`/api/restaurants${zoneId ? `?zoneId=${zoneId}` : ''}`),
   getRestaurant: (id: string) => request<any>(`/api/restaurants/${id}`),
@@ -75,18 +108,14 @@ export const api = {
     request<any>(`/api/restaurants/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   getRestaurantStats: (id: string) => request<any>(`/api/restaurants/${id}/stats`),
 
-  // Menu
   getMenu: (restaurantId: string) =>
     request<any[]>(`/api/restaurants/${restaurantId}/menu?available=false`),
   createMenuItem: (restaurantId: string, data: { name: string; description?: string; price: number; category?: string; is_available?: boolean }) =>
     request<any>(`/api/restaurants/${restaurantId}/menu`, {
       method: 'POST',
       body: JSON.stringify({
-        name: data.name,
-        description: data.description,
-        price: data.price,
-        category: data.category,
-        isAvailable: data.is_available,
+        name: data.name, description: data.description,
+        price: data.price, category: data.category, isAvailable: data.is_available,
       }),
     }),
   updateMenuItem: (restaurantId: string, itemId: string, data: { name?: string; description?: string; price?: number; category?: string; is_available?: boolean }) =>
@@ -102,18 +131,15 @@ export const api = {
   deleteMenuItem: (restaurantId: string, itemId: string) =>
     request<void>(`/api/restaurants/${restaurantId}/menu/${itemId}`, { method: 'DELETE' }),
 
-  // Riders
   getRiders: (zoneId?: string) =>
     request<any[]>(`/api/riders${zoneId ? `?zoneId=${zoneId}` : ''}`),
 
-  // Orders (admin — todos)
   getOrders: (params?: Record<string, string>) => {
     const qs = params ? '?' + new URLSearchParams(params).toString() : ''
     return request<any[]>(`/api/orders${qs}`)
   },
   getOrder: (id: string) => request<any>(`/api/orders/${id}`),
 
-  // Admin — Restaurants
   getAdminRestaurants: (params?: Record<string, string>) => {
     const qs = params ? '?' + new URLSearchParams(params).toString() : ''
     return request<{ data: any[]; total: number }>(`/api/admin/restaurants${qs}`)
@@ -124,7 +150,6 @@ export const api = {
       method: 'PATCH', body: JSON.stringify({ onboarding_status }),
     }),
 
-  // Admin — Agents
   getAgents: (params?: Record<string, string>) => {
     const qs = params ? '?' + new URLSearchParams(params).toString() : ''
     return request<{ data: any[]; total: number }>(`/api/admin/agents${qs}`)
@@ -141,7 +166,6 @@ export const api = {
   promoteAgent: (id: string) =>
     request<any>(`/api/admin/agents/${id}/promote`, { method: 'POST' }),
 
-  // Admin — Commissions
   getCommissions: (params?: Record<string, string>) => {
     const qs = params ? '?' + new URLSearchParams(params).toString() : ''
     return request<{ data: any[]; total: number }>(`/api/admin/commissions${qs}`)
@@ -152,13 +176,11 @@ export const api = {
   rejectCommission: (id: string) =>
     request<any>(`/api/admin/commissions/${id}/reject`, { method: 'POST' }),
 
-  // Admin — Payouts
   getPendingPayouts: () => request<any[]>('/api/admin/payouts/pending'),
   processPayouts: (agentId: string, commissionIds: string[]) =>
     request<any>('/api/admin/payouts/process', {
       method: 'POST', body: JSON.stringify({ agentId, commissionIds }),
     }),
 
-  // Subscriptions
   getSubscriptions: () => request<any[]>('/api/admin/subscriptions'),
 }
