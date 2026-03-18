@@ -53,9 +53,9 @@ export default function RegisterPage() {
     setGoogleLoading(true)
     setError('')
     try {
-      const { token, account } = await api.loginGoogle(response.credential)
+      const { token, user } = await api.loginGoogle(response.credential)
       localStorage.setItem('token', token)
-      localStorage.setItem('user', JSON.stringify(account))
+      localStorage.setItem('user', JSON.stringify(user))
       router.push('/dashboard')
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Error al registrarse con Google')
@@ -69,9 +69,9 @@ export default function RegisterPage() {
     setError('')
     setLoading(true)
     try {
-      const { token, account } = await api.register({ name, email, phone, password })
+      const { token, user } = await api.register({ name, email, phone, password })
       localStorage.setItem('token', token)
-      localStorage.setItem('user', JSON.stringify(account))
+      localStorage.setItem('user', JSON.stringify(user))
       router.push('/dashboard')
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Error al registrarse')
