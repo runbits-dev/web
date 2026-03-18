@@ -34,5 +34,5 @@ jobs:
       - name: Deploy to Cloudflare Pages
         run: wrangler pages deploy out --project-name=runbits-web
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
