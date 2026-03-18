@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { api } from '@/lib/api'
 
+// NEXT_PUBLIC_GOOGLE_CLIENT_ID se inyecta en build time desde CF Pages env vars
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''
 
 export default function LoginPage() {
