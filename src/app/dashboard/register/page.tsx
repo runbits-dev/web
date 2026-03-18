@@ -4,19 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { api } from '@/lib/api'
-
-declare global {
-  interface Window {
-    google?: {
-      accounts: {
-        id: {
-          initialize: (config: any) => void
-          renderButton: (el: HTMLElement, config: any) => void
-        }
-      }
-    }
-  }
-}
+import '@/lib/google.d.ts'
 
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''
 
@@ -104,13 +92,11 @@ export default function RegisterPage() {
 
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
 
-          {/* Google Sign-Up */}
           {GOOGLE_CLIENT_ID && (
             <>
               <div className={`transition-opacity ${googleLoading ? 'opacity-50 pointer-events-none' : ''}`}>
                 <div id="google-btn-register" className="w-full flex justify-center" />
               </div>
-
               <div className="flex items-center gap-3 my-5">
                 <div className="flex-1 h-px bg-slate-200" />
                 <span className="text-xs text-slate-400 font-medium">o registrate con email</span>
@@ -119,7 +105,6 @@ export default function RegisterPage() {
             </>
           )}
 
-          {/* Formulario local */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Nombre completo</label>
