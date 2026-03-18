@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { api } from '@/lib/api'
 
-// NEXT_PUBLIC_GOOGLE_CLIENT_ID se inyecta en build time desde CF Pages env vars
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''
 
 export default function LoginPage() {
@@ -52,9 +51,9 @@ export default function LoginPage() {
     setGoogleLoading(true)
     setError('')
     try {
-      const { token, account } = await api.loginGoogle(response.credential)
+      const { token, user } = await api.loginGoogle(response.credential)
       localStorage.setItem('token', token)
-      localStorage.setItem('user', JSON.stringify(account))
+      localStorage.setItem('user', JSON.stringify(user))
       router.push('/dashboard')
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Error al iniciar sesión con Google')
