@@ -241,6 +241,23 @@ function Pricing() {
 
   const plans = [
     {
+      name: 'Free Trial',
+      description: 'Probá Runbits sin compromiso',
+      billing: '30 días gratis — sin tarjeta de crédito',
+      price: '0',
+      popular: false,
+      highlighted: false,
+      trial: true,
+      features: [
+        'Perfil de comercio en la app',
+        'Gestión de menú y pedidos',
+        'Soporte por email',
+        'Hasta 50 pedidos en el período',
+        'Acceso completo por 30 días',
+      ],
+      cta: 'Probar gratis',
+    },
+    {
       name: 'Starter',
       description: 'Para negocios que recién arrancan',
       billing: 'Facturación hasta USD 5.000/mes',
@@ -324,19 +341,26 @@ function Pricing() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`relative rounded-2xl p-8 flex flex-col ${
+              className={`relative rounded-2xl p-7 flex flex-col ${
                 plan.highlighted
                   ? 'bg-brand-600 text-white shadow-xl shadow-brand-600/20 ring-2 ring-brand-600'
-                  : 'bg-gray-50 border border-gray-100'
+                  : (plan as any).trial
+                    ? 'bg-blue-50 border-2 border-blue-200 border-dashed'
+                    : 'bg-gray-50 border border-gray-100'
               }`}
             >
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-400 text-amber-900 text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap">
                   Más elegido
+                </div>
+              )}
+              {(plan as any).trial && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap">
+                  Gratis 30 días
                 </div>
               )}
               <div>
@@ -348,7 +372,7 @@ function Pricing() {
                 </p>
               </div>
               <div className="mt-6">
-                {plan.price ? (
+                {plan.price && plan.price !== '0' ? (
                   <>
                     <div className="flex items-baseline gap-1">
                       <span className={`text-4xl font-bold ${plan.highlighted ? 'text-white' : 'text-gray-900'}`}>
@@ -357,6 +381,15 @@ function Pricing() {
                       <span className={`text-sm ${plan.highlighted ? 'text-brand-200' : 'text-gray-500'}`}>/mes</span>
                     </div>
                     <p className={`mt-1 text-xs ${plan.highlighted ? 'text-brand-200' : 'text-gray-400'}`}>
+                      {plan.billing}
+                    </p>
+                  </>
+                ) : plan.price === '0' ? (
+                  <>
+                    <span className="text-4xl font-bold text-blue-600">
+                      Gratis
+                    </span>
+                    <p className="mt-1 text-xs text-blue-500">
                       {plan.billing}
                     </p>
                   </>
@@ -391,7 +424,9 @@ function Pricing() {
                 className={`mt-8 block w-full text-center py-3 px-6 rounded-xl font-semibold transition-colors ${
                   plan.highlighted
                     ? 'bg-white text-brand-700 hover:bg-brand-50'
-                    : 'border-2 border-brand-600 text-brand-700 hover:bg-brand-50'
+                    : (plan as any).trial
+                      ? 'bg-blue-600 text-white hover:bg-blue-700'
+                      : 'border-2 border-brand-600 text-brand-700 hover:bg-brand-50'
                 }`}
               >
                 {plan.cta}
