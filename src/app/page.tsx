@@ -233,93 +233,180 @@ function HowItWorks() {
 }
 
 function Pricing() {
+  const checkIcon = (
+    <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+    </svg>
+  )
+
+  const plans = [
+    {
+      name: 'Starter',
+      description: 'Para negocios que recién arrancan',
+      billing: 'Facturación hasta USD 5.000/mes',
+      price: '49',
+      popular: false,
+      highlighted: false,
+      features: [
+        'Perfil de comercio en la app',
+        'Gestión de menú y pedidos',
+        'Soporte por email',
+        'Estadísticas básicas',
+        'Hasta 200 pedidos/mes',
+      ],
+      cta: 'Empezar ahora',
+    },
+    {
+      name: 'Growth',
+      description: 'Para negocios en crecimiento',
+      billing: 'Facturación hasta USD 25.000/mes',
+      price: '149',
+      popular: true,
+      highlighted: true,
+      features: [
+        'Todo del plan Starter',
+        'Comisión reducida por pedido',
+        'Posicionamiento destacado en la app',
+        'Analytics avanzados',
+        'Soporte prioritario',
+        'Promociones y cupones',
+        'Pedidos ilimitados',
+      ],
+      cta: 'Elegir Growth',
+    },
+    {
+      name: 'Pro',
+      description: 'Para negocios con alto volumen',
+      billing: 'Facturación hasta USD 100.000/mes',
+      price: '499',
+      popular: false,
+      highlighted: false,
+      features: [
+        'Todo del plan Growth',
+        'Comisión mínima por pedido',
+        'Múltiples sucursales',
+        'API de integración',
+        'Account manager dedicado',
+        'Reportes personalizados',
+        'Soporte 24/7',
+      ],
+      cta: 'Elegir Pro',
+    },
+    {
+      name: 'Enterprise',
+      description: 'Para cadenas y grandes operaciones',
+      billing: 'Facturación superior a USD 100.000/mes',
+      price: null,
+      popular: false,
+      highlighted: false,
+      features: [
+        'Todo del plan Pro',
+        'Precios y comisiones a medida',
+        'Integraciones custom (POS, ERP)',
+        'SLA garantizado',
+        'Onboarding personalizado',
+        'Infraestructura dedicada',
+        'Soporte enterprise 24/7',
+      ],
+      cta: 'Contactar ventas',
+    },
+  ]
+
   return (
     <section id="pricing" className="py-20 sm:py-28 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
-            Planes flexibles para tu negocio
+            Planes que se adaptan a tu facturación
           </h2>
           <p className="mt-4 text-lg text-gray-600">
-            Elegí el plan que mejor se adapte al tamaño y necesidades de tu comercio.
+            Elegí el plan según el tamaño de tu negocio. Todos incluyen acceso completo a la plataforma.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* Basic Plan */}
-          <div className="bg-gray-50 rounded-2xl p-8 border border-gray-100">
-            <h3 className="text-lg font-semibold text-gray-900">Plan Básico</h3>
-            <p className="mt-2 text-sm text-gray-600">Ideal para empezar sin costo fijo</p>
-            <div className="mt-6">
-              <span className="text-4xl font-bold text-gray-900">Comisión</span>
-              <span className="text-gray-500 ml-2">por pedido</span>
-            </div>
-            <ul className="mt-8 space-y-3">
-              {[
-                'Perfil de comercio en la app',
-                'Gestión de menú y pedidos',
-                'Soporte por email',
-                'Estadísticas básicas',
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-3 text-sm text-gray-700">
-                  <svg className="w-5 h-5 text-brand-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                  </svg>
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <Link
-              href="/dashboard/register"
-              className="mt-8 block w-full text-center py-3 px-6 rounded-xl border-2 border-brand-600 text-brand-700 font-semibold hover:bg-brand-50 transition-colors"
+        <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
+          {plans.map((plan) => (
+            <div
+              key={plan.name}
+              className={`relative rounded-2xl p-8 flex flex-col ${
+                plan.highlighted
+                  ? 'bg-brand-600 text-white shadow-xl shadow-brand-600/20 ring-2 ring-brand-600'
+                  : 'bg-gray-50 border border-gray-100'
+              }`}
             >
-              Empezar gratis
-            </Link>
-          </div>
-
-          {/* Premium Plan */}
-          <div className="relative bg-brand-600 rounded-2xl p-8 text-white shadow-xl shadow-brand-600/20">
-            <div className="absolute -top-3 right-6 bg-amber-400 text-amber-900 text-xs font-bold px-3 py-1 rounded-full">
-              Popular
+              {plan.popular && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-400 text-amber-900 text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap">
+                  Más elegido
+                </div>
+              )}
+              <div>
+                <h3 className={`text-lg font-semibold ${plan.highlighted ? 'text-white' : 'text-gray-900'}`}>
+                  {plan.name}
+                </h3>
+                <p className={`mt-1 text-sm ${plan.highlighted ? 'text-brand-100' : 'text-gray-500'}`}>
+                  {plan.description}
+                </p>
+              </div>
+              <div className="mt-6">
+                {plan.price ? (
+                  <>
+                    <div className="flex items-baseline gap-1">
+                      <span className={`text-4xl font-bold ${plan.highlighted ? 'text-white' : 'text-gray-900'}`}>
+                        USD ${plan.price}
+                      </span>
+                      <span className={`text-sm ${plan.highlighted ? 'text-brand-200' : 'text-gray-500'}`}>/mes</span>
+                    </div>
+                    <p className={`mt-1 text-xs ${plan.highlighted ? 'text-brand-200' : 'text-gray-400'}`}>
+                      {plan.billing}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <span className={`text-3xl font-bold ${plan.highlighted ? 'text-white' : 'text-gray-900'}`}>
+                      A medida
+                    </span>
+                    <p className={`mt-1 text-xs ${plan.highlighted ? 'text-brand-200' : 'text-gray-400'}`}>
+                      {plan.billing}
+                    </p>
+                  </>
+                )}
+              </div>
+              <ul className="mt-8 space-y-3 flex-1">
+                {plan.features.map((item) => (
+                  <li
+                    key={item}
+                    className={`flex items-start gap-3 text-sm ${
+                      plan.highlighted ? 'text-brand-50' : 'text-gray-700'
+                    }`}
+                  >
+                    <span className={plan.highlighted ? 'text-brand-300' : 'text-brand-500'}>
+                      {checkIcon}
+                    </span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href={plan.price ? '/dashboard/register' : 'mailto:sales@runbits.io'}
+                className={`mt-8 block w-full text-center py-3 px-6 rounded-xl font-semibold transition-colors ${
+                  plan.highlighted
+                    ? 'bg-white text-brand-700 hover:bg-brand-50'
+                    : 'border-2 border-brand-600 text-brand-700 hover:bg-brand-50'
+                }`}
+              >
+                {plan.cta}
+              </Link>
             </div>
-            <h3 className="text-lg font-semibold">Plan Premium</h3>
-            <p className="mt-2 text-sm text-brand-100">Para comercios que quieren crecer más rápido</p>
-            <div className="mt-6">
-              <span className="text-4xl font-bold">Suscripción</span>
-              <span className="text-brand-200 ml-2">mensual</span>
-            </div>
-            <ul className="mt-8 space-y-3">
-              {[
-                'Todo del Plan Básico',
-                'Comisión reducida por pedido',
-                'Posicionamiento destacado',
-                'Analytics avanzados',
-                'Soporte prioritario',
-                'Promociones y cupones',
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-3 text-sm text-brand-50">
-                  <svg className="w-5 h-5 text-brand-300 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                  </svg>
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <Link
-              href="/dashboard/register"
-              className="mt-8 block w-full text-center py-3 px-6 rounded-xl bg-white text-brand-700 font-semibold hover:bg-brand-50 transition-colors"
-            >
-              Elegir Premium
-            </Link>
-          </div>
+          ))}
         </div>
 
-        <p className="mt-8 text-center text-sm text-gray-500">
-          ¿Tenés un caso especial?{' '}
-          <a href="mailto:support@runbits.io" className="text-brand-600 hover:underline">
-            Contactanos
-          </a>{' '}
-          para un plan personalizado.
+        <p className="mt-10 text-center text-sm text-gray-500">
+          Todos los planes incluyen 14 días de prueba gratis. Sin tarjeta de crédito requerida.
+          <br />
+          ¿Necesitás algo diferente?{' '}
+          <a href="mailto:sales@runbits.io" className="text-brand-600 hover:underline font-medium">
+            Hablemos
+          </a>
         </p>
       </div>
     </section>
