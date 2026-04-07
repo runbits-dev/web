@@ -88,7 +88,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
 
         <div className="text-center mb-8">
-          <h1 className="logo-runbits text-3xl mb-2">runbits</h1>
+          <h1 className="logo-runbits logo-runbits-dark text-3xl mb-2">RunBits</h1>
           <p className="text-slate-500 text-sm">Ingresá a tu panel</p>
         </div>
 

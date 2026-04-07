@@ -5,8 +5,8 @@ function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <Link href="/" className="logo-runbits text-2xl text-brand-700">
-            runbits
+          <Link href="/" className="logo-runbits logo-runbits-dark text-2xl">
+            RunBits
           </Link>
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm text-gray-600 hover:text-brand-700 transition-colors">
@@ -509,7 +509,7 @@ function Footer() {
         <div className="grid md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-1">
-            <span className="logo-runbits text-2xl !text-white">RunBits</span>
+            <span className="logo-runbits logo-runbits-light text-2xl">RunBits</span>
             <p className="mt-3 text-sm leading-relaxed">
               La plataforma de delivery que conecta comercios con clientes a través de entregas rápidas y confiables.
             </p>
