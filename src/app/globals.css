@@ -16,4 +16,12 @@
     display: inline-block;
     -webkit-text-stroke: 1px currentColor;
   }
+  .logo-runbits-dark {
+    color: #000000;
+    -webkit-text-stroke: 1px #000000;
+  }
+  .logo-runbits-light {
+    color: #ffffff;
+    -webkit-text-stroke: 1px #ffffff;
+  }
 }
