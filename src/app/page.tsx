@@ -509,7 +509,7 @@ function Footer() {
         <div className="grid md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-1">
-            <span className="logo-runbits text-2xl !text-white">runbits</span>
+            <span className="logo-runbits text-2xl !text-white">RunBits</span>
             <p className="mt-3 text-sm leading-relaxed">
               La plataforma de delivery que conecta comercios con clientes a través de entregas rápidas y confiables.
             </p>

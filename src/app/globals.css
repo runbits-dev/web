@@ -3,11 +3,17 @@
 @tailwind utilities;
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,800&display=swap');
 
 @layer components {
   .logo-runbits {
-    @apply font-bold tracking-tight text-slate-900;
-    font-family: 'Inter', sans-serif;
-    letter-spacing: -0.04em;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: -2px;
+    line-height: 1;
+    display: inline-block;
+    -webkit-text-stroke: 1px currentColor;
   }
 }
