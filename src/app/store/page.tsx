@@ -10,6 +10,7 @@ type Restaurant = {
   id: string; name: string; slug: string; description: string; category: string
   is_open: boolean; address: string; phone: string; logo_key: string | null
   avg_delivery_time_min: number; min_order_amount: number
+  brand_color: string | null; brand_bg: string | null
 }
 
 type MenuItem = {
@@ -61,10 +62,12 @@ function StoreContent() {
   const cartTotal = cart.reduce((s, c) => s + c.price * c.qty, 0)
   const cartCount = cart.reduce((s, c) => s + c.qty, 0)
   const categories = [...new Set(menu.map(i => i.category).filter(Boolean))]
+  const brandColor = restaurant?.brand_color || '#059669'
+  const brandBg = restaurant?.brand_bg || '#f9fafb'
 
   if (loading) return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600" />
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2" />
     </div>
   )
 
@@ -73,13 +76,13 @@ function StoreContent() {
       <div className="text-center">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Restaurante no encontrado</h1>
         <p className="text-gray-500 mb-4">El link puede estar incorrecto.</p>
-        <Link href="/" className="text-emerald-600 font-medium hover:underline">Volver al inicio</Link>
+        <Link href="/" className="text-[var(--brand)] font-medium hover:underline">Volver al inicio</Link>
       </div>
     </div>
   )
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ background: brandBg, ['--brand' as string]: brandColor }}>
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-3xl mx-auto px-4 py-6">
@@ -87,12 +90,12 @@ function StoreContent() {
             {restaurant.logo_key ? (
               <img src={`https://runbit-storage.r2.dev/${restaurant.logo_key}`} alt={restaurant.name} className="w-16 h-16 rounded-2xl object-cover" />
             ) : (
-              <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center text-2xl">🍽️</div>
+              <div className="w-16 h-16 bg-[var(--brand)]/15 rounded-2xl flex items-center justify-center text-2xl">🍽️</div>
             )}
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <h1 className="text-xl font-bold text-gray-900">{restaurant.name}</h1>
-                <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${restaurant.is_open ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${restaurant.is_open ? 'bg-[var(--brand)]/15 text-[var(--brand)]' : 'bg-red-100 text-red-700'}`}>
                   {restaurant.is_open ? 'Abierto' : 'Cerrado'}
                 </span>
               </div>
@@ -130,10 +133,10 @@ function StoreContent() {
                           <>
                             <button onClick={() => removeFromCart(item.id)} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold">−</button>
                             <span className="text-sm font-semibold w-5 text-center">{inCart.qty}</span>
-                            <button onClick={() => addToCart(item)} className="w-8 h-8 flex items-center justify-center rounded-full bg-emerald-600 text-white hover:bg-emerald-700 text-lg font-bold">+</button>
+                            <button onClick={() => addToCart(item)} className="w-8 h-8 flex items-center justify-center rounded-full bg-[var(--brand)] text-white hover:opacity-90 text-lg font-bold">+</button>
                           </>
                         ) : (
-                          <button onClick={() => addToCart(item)} className="px-4 py-2 bg-emerald-600 text-white text-sm font-semibold rounded-xl hover:bg-emerald-700 transition-colors">
+                          <button onClick={() => addToCart(item)} className="px-4 py-2 bg-[var(--brand)] text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-colors">
                             Agregar
                           </button>
                         )}
@@ -160,10 +163,10 @@ function StoreContent() {
                       <>
                         <button onClick={() => removeFromCart(item.id)} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 text-lg font-bold">−</button>
                         <span className="text-sm font-semibold w-5 text-center">{inCart.qty}</span>
-                        <button onClick={() => addToCart(item)} className="w-8 h-8 flex items-center justify-center rounded-full bg-emerald-600 text-white hover:bg-emerald-700 text-lg font-bold">+</button>
+                        <button onClick={() => addToCart(item)} className="w-8 h-8 flex items-center justify-center rounded-full bg-[var(--brand)] text-white hover:opacity-90 text-lg font-bold">+</button>
                       </>
                     ) : (
-                      <button onClick={() => addToCart(item)} className="px-4 py-2 bg-emerald-600 text-white text-sm font-semibold rounded-xl hover:bg-emerald-700 transition-colors">
+                      <button onClick={() => addToCart(item)} className="px-4 py-2 bg-[var(--brand)] text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-colors">
                         Agregar
                       </button>
                     )}
@@ -185,7 +188,7 @@ function StoreContent() {
       {cartCount > 0 && (
         <div className="fixed bottom-0 inset-x-0 p-4 bg-white border-t border-gray-200 shadow-xl">
           <div className="max-w-3xl mx-auto">
-            <button className="w-full bg-emerald-600 text-white py-3.5 rounded-xl font-semibold text-base flex items-center justify-between px-6 hover:bg-emerald-700 transition-colors">
+            <button className="w-full bg-[var(--brand)] text-white py-3.5 rounded-xl font-semibold text-base flex items-center justify-between px-6 hover:opacity-90 transition-colors">
               <span>Ver pedido ({cartCount})</span>
               <span>${(cartTotal / 100).toFixed(0)}</span>
             </button>
@@ -196,7 +199,7 @@ function StoreContent() {
       {/* Footer */}
       <footer className="max-w-3xl mx-auto px-4 py-8 text-center">
         <p className="text-xs text-gray-400">
-          Powered by <a href="https://runbits.io" className="text-emerald-600 hover:underline">Runbits</a> — Tus clientes son tuyos
+          Powered by <a href="https://runbits.io" className="text-[var(--brand)] hover:underline">Runbits</a> — Tus clientes son tuyos
         </p>
       </footer>
     </div>
@@ -207,7 +210,7 @@ export default function StorePage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2" />
       </div>
     }>
       <StoreContent />
