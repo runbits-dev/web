@@ -20,6 +20,7 @@ type MenuItem = {
 
 type CartItem = MenuItem & { qty: number }
 type Rating = { id: string; rating: number; comment: string | null; created_at: number }
+type Promotion = { id: string; title: string; description: string; discount_type: string; discount_value: number; starts_at: string; ends_at: string }
 
 function StoreContent() {
   const searchParams = useSearchParams()
@@ -28,6 +29,7 @@ function StoreContent() {
   const [menu, setMenu] = useState<MenuItem[]>([])
   const [cart, setCart] = useState<CartItem[]>([])
   const [ratings, setRatings] = useState<Rating[]>([])
+  const [promos, setPromos] = useState<Promotion[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -39,6 +41,7 @@ function StoreContent() {
         setRestaurant(r)
         document.title = `${r.name} — Pedí online | Runbits`
         fetch(`${API}/api/orders/restaurants/${r.id}/ratings`).then(r => r.ok ? r.json() : []).then(setRatings).catch(() => {})
+        fetch(`${API}/api/promotions/active`).then(r => r.ok ? r.json() : []).then(setPromos).catch(() => {})
         return fetch(`${API}/api/restaurants/${r.id}/menu`)
       })
       .then(r => r.json())
@@ -115,6 +118,27 @@ function StoreContent() {
       </header>
 
       <div className="max-w-3xl mx-auto px-4 py-8">
+        {/* Active promotions */}
+        {promos.length > 0 && (
+          <div className="mb-6 space-y-2">
+            {promos.map(p => (
+              <div key={p.id} className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4 flex items-center gap-3">
+                <span className="text-2xl">🔥</span>
+                <div className="flex-1">
+                  <p className="font-semibold text-amber-900">{p.title}</p>
+                  <p className="text-sm text-amber-700">
+                    {p.discount_type === 'percentage' ? `${p.discount_value}% OFF` : `$${p.discount_value} OFF`}
+                    {p.description ? ` — ${p.description}` : ''}
+                  </p>
+                  <p className="text-xs text-amber-500 mt-1">
+                    Hasta {new Date(p.ends_at).toLocaleDateString('es-AR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Menu by category */}
         {categories.length > 0 ? categories.map(cat => {
           const items = menu.filter(i => i.category === cat)
