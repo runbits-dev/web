@@ -21,6 +21,9 @@ function Navbar() {
             <a href="#contact" className="text-sm text-gray-600 hover:text-brand-700 transition-colors">
               Contacto
             </a>
+            <Link href="/about" className="text-sm text-gray-600 hover:text-brand-700 transition-colors">
+              Nosotros
+            </Link>
           </div>
           <div className="flex items-center gap-3">
             <Link

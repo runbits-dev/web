@@ -91,7 +91,40 @@ const sprints: Sprint[] = [
       { id: '5.2', label: 'iOS build + App Store', repo: 'mobile' },
       { id: '5.3', label: 'Primer comercio real onboarded', repo: 'todos' },
       { id: '5.4', label: 'Smoke test end-to-end con pedido real', repo: 'todos' },
-      { id: '5.5', label: 'SEO local: tiendas indexables en Google', repo: 'web' },
+      { id: '5.5', label: '✅ SEO: robots.txt + sitemap.xml + OG metadata', repo: 'web' },
+    ],
+  },
+  {
+    id: 's6', title: 'Sprint 6 — Competitivo (vs PedidosYa/Rappi)', dates: 'mayo', color: '#f59e0b',
+    tasks: [
+      { id: '6.1', label: 'Tracking con ETA dinámico para el cliente', repo: 'delivery + store' },
+      { id: '6.2', label: 'Tienda con dominio propio del comercio', repo: 'web + CF Workers' },
+      { id: '6.3', label: 'Integración pagos locales (MercadoPago para clientes)', repo: 'billing + order' },
+      { id: '6.4', label: 'WhatsApp notificaciones para comercios', repo: 'notification' },
+      { id: '6.5', label: 'Sistema de ofertas/promociones (happy hour, BOGO)', repo: 'social + store' },
+      { id: '6.6', label: 'Página "Acerca de" / filosofía core', repo: 'web' },
+    ],
+  },
+  {
+    id: 's7', title: 'Sprint 7 — Diferenciación (vs Shopify/Pedix)', dates: 'mayo-junio', color: '#8b5cf6',
+    tasks: [
+      { id: '7.1', label: 'Generación de catálogo con IA (fotos + descripciones)', repo: 'web + restaurant' },
+      { id: '7.2', label: 'Programa de lealtad white-label para comercios', repo: 'social + billing' },
+      { id: '7.3', label: 'CRM: historial de clientes, segmentación', repo: 'social + web' },
+      { id: '7.4', label: 'Multi-sucursal (varias ubicaciones)', repo: 'restaurant + web' },
+      { id: '7.5', label: 'API pública para integraciones de terceros', repo: 'gateway' },
+      { id: '7.6', label: 'Facturación automática (CFDI MX, Factura AR)', repo: 'billing' },
+    ],
+  },
+  {
+    id: 's8', title: 'Sprint 8 — Super-App (Fase 2+)', dates: 'junio+', color: '#06b6d4',
+    tasks: [
+      { id: '8.1', label: 'Motor de reservas/booking (citas, turnos)', repo: 'nuevo servicio' },
+      { id: '8.2', label: 'Chatbot IA del negocio (FAQs automáticos)', repo: 'social + AI' },
+      { id: '8.3', label: 'Ecosistema de plugins/extensiones', repo: 'gateway + web' },
+      { id: '8.4', label: 'Onboarding con IA (crear tienda desde prompt)', repo: 'web + AI' },
+      { id: '8.5', label: 'Campañas marketing automatizadas (email, push)', repo: 'notification' },
+      { id: '8.6', label: 'Badge "Verificado por Runbits"', repo: 'restaurant + store' },
     ],
   },
 ]
