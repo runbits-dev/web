@@ -43,8 +43,8 @@ export default function StoreOrdersPage() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {orders.map(o => (
-                <tr key={o.id} className="hover:bg-slate-50">
-                  <td className="px-6 py-4 font-mono text-xs text-slate-500">{o.id.slice(0,8)}</td>
+                <tr key={o.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => window.location.href = `/dashboard/orders/detail?id=${o.id}`}>
+                  <td className="px-6 py-4 font-mono text-xs text-blue-600 underline">{o.id.slice(0,8)}</td>
                   <td className="px-6 py-4"><span className={`px-2.5 py-1 rounded-lg text-xs font-semibold ring-1 ${statusColors[o.status] || 'bg-slate-100 text-slate-600 ring-slate-200'}`}>{o.status}</span></td>
                   <td className="px-6 py-4 text-right font-semibold text-slate-900">${(o.total / 100).toFixed(2)}</td>
                   <td className="px-6 py-4 text-right text-slate-400 text-xs">{new Date(o.created_at).toLocaleString('es-AR')}</td>
