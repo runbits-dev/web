@@ -126,6 +126,55 @@ export default function StatsPage() {
               </div>
             </div>
           </div>
+
+          {/* Visual chart — pedidos comparativo */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <h2 className="font-semibold text-slate-900 mb-4">Actividad</h2>
+            {(() => {
+              const maxOrders = Math.max(stats.orders.today, stats.orders.this_week, stats.orders.this_month, 1)
+              const bars = [
+                { label: 'Hoy', value: stats.orders.today, revenue: stats.orders.revenue_today, color: '#059669' },
+                { label: 'Semana', value: stats.orders.this_week, revenue: 0, color: '#0ea5e9' },
+                { label: 'Mes', value: stats.orders.this_month, revenue: stats.orders.revenue_month, color: '#8b5cf6' },
+              ]
+              return (
+                <div className="space-y-4">
+                  {bars.map(b => (
+                    <div key={b.label}>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm font-medium text-slate-700">{b.label}</span>
+                        <span className="text-sm font-bold text-slate-900">{b.value} pedidos{b.revenue > 0 ? ` · ${formatARS(b.revenue)}` : ''}</span>
+                      </div>
+                      <div className="h-4 bg-slate-100 rounded-full overflow-hidden">
+                        <div className="h-full rounded-full transition-all duration-700" style={{
+                          width: `${Math.max(2, (b.value / maxOrders) * 100)}%`,
+                          backgroundColor: b.color,
+                        }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )
+            })()}
+
+            {/* KPIs adicionales */}
+            <div className="mt-6 pt-4 border-t border-slate-100 grid grid-cols-2 gap-4">
+              <div className="text-center">
+                <p className="text-xs text-slate-500 mb-1">Pedidos/día promedio (mes)</p>
+                <p className="text-xl font-bold text-slate-900">
+                  {stats.orders.this_month > 0 ? (stats.orders.this_month / new Date().getDate()).toFixed(1) : '0'}
+                </p>
+              </div>
+              <div className="text-center">
+                <p className="text-xs text-slate-500 mb-1">Tasa de crecimiento semanal</p>
+                <p className="text-xl font-bold text-slate-900">
+                  {stats.orders.this_week > 0 && stats.orders.today > 0
+                    ? `${((stats.orders.today / (stats.orders.this_week / 7)) * 100 - 100).toFixed(0)}%`
+                    : '—'}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
