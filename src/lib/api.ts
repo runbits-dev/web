@@ -131,6 +131,38 @@ export const api = {
   deleteMenuItem: (restaurantId: string, itemId: string) =>
     request<void>(`/api/restaurants/${restaurantId}/menu/${itemId}`, { method: 'DELETE' }),
 
+  // Coupons & Promotions (social-service via gateway)
+  getCoupons: () => request<any[]>('/api/coupons'),
+  createCoupon: (data: { code: string; discountType: 'percentage' | 'fixed'; discountValue: number; minOrder?: number; maxUses?: number; expiresAt?: string; restaurantId: string }) =>
+    request<any>('/api/coupons', { method: 'POST', body: JSON.stringify(data) }),
+  deleteCoupon: (id: string) => request<void>(`/api/coupons/${id}`, { method: 'DELETE' }),
+  validateCoupon: (code: string, restaurantId: string) =>
+    request<any>('/api/coupons/validate', { method: 'POST', body: JSON.stringify({ code, restaurantId }) }),
+
+  getActivePromotions: () => request<any[]>('/api/promotions/active'),
+  createPromotion: (data: { title: string; description: string; discountType: 'percentage' | 'fixed'; discountValue: number; startsAt: string; endsAt: string; restaurantId: string }) =>
+    request<any>('/api/promotions', { method: 'POST', body: JSON.stringify(data) }),
+  deletePromotion: (id: string) => request<void>(`/api/promotions/${id}`, { method: 'DELETE' }),
+
+  // Favorites (social-service via gateway)
+  getFavorites: () => request<any[]>('/api/favorites'),
+  addFavorite: (restaurantId: string) => request<any>(`/api/favorites/${restaurantId}`, { method: 'POST' }),
+  removeFavorite: (restaurantId: string) => request<void>(`/api/favorites/${restaurantId}`, { method: 'DELETE' }),
+
+  // Chat (social-service via gateway)
+  getChatMessages: (orderId: string) => request<any[]>(`/api/chat/orders/${orderId}/messages`),
+  sendChatMessage: (orderId: string, message: string) =>
+    request<any>(`/api/chat/orders/${orderId}/messages`, { method: 'POST', body: JSON.stringify({ message }) }),
+  markChatRead: (orderId: string) =>
+    request<void>(`/api/chat/orders/${orderId}/messages/read`, { method: 'PATCH' }),
+  getUnreadCount: () => request<{ count: number }>('/api/chat/unread-count'),
+
+  // Ratings (order-service via gateway)
+  rateOrder: (orderId: string, rating: number, comment?: string) =>
+    request<any>(`/api/orders/${orderId}/rate`, { method: 'POST', body: JSON.stringify({ rating, comment }) }),
+  getRestaurantRatings: (restaurantId: string) =>
+    request<any[]>(`/api/orders/restaurants/${restaurantId}/ratings`),
+
   getRiders: (zoneId?: string) =>
     request<any[]>(`/api/riders${zoneId ? `?zoneId=${zoneId}` : ''}`),
 

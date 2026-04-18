@@ -10,6 +10,7 @@ const storeNav = [
   { href: '/dashboard/menu', label: 'Menú', icon: '🍽️' },
   { href: '/dashboard/orders', label: 'Pedidos', icon: '📦' },
   { href: '/dashboard/stats', label: 'Estadísticas', icon: '📊' },
+  { href: '/dashboard/marketing', label: 'Marketing', icon: '🎯' },
   { href: '/dashboard/subscription', label: 'Suscripción', icon: '💳' },
   { href: '/dashboard/settings', label: 'Configuración', icon: '⚙️' },
 ]
