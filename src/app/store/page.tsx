@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
+import { Suspense, useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'https://api.runbits.dev'
@@ -19,8 +19,9 @@ type MenuItem = {
 
 type CartItem = MenuItem & { qty: number }
 
-export default function StorePage() {
-  const { slug } = useParams<{ slug: string }>()
+function StoreContent() {
+  const searchParams = useSearchParams()
+  const slug = searchParams.get('s') || searchParams.get('slug')
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null)
   const [menu, setMenu] = useState<MenuItem[]>([])
   const [cart, setCart] = useState<CartItem[]>([])
@@ -199,5 +200,17 @@ export default function StorePage() {
         </p>
       </footer>
     </div>
+  )
+}
+
+export default function StorePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600" />
+      </div>
+    }>
+      <StoreContent />
+    </Suspense>
   )
 }
