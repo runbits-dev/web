@@ -37,6 +37,7 @@ function StoreContent() {
       .then(r => r.ok ? r.json() : Promise.reject('not found'))
       .then((r: Restaurant) => {
         setRestaurant(r)
+        document.title = `${r.name} — Pedí online | Runbits`
         fetch(`${API}/api/orders/restaurants/${r.id}/ratings`).then(r => r.ok ? r.json() : []).then(setRatings).catch(() => {})
         return fetch(`${API}/api/restaurants/${r.id}/menu`)
       })
