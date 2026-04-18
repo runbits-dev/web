@@ -2,13 +2,24 @@
 
 import { useEffect, useState } from 'react'
 import { api } from '@/lib/api'
+import { OnboardingBanner } from '@/components/Onboarding'
 
 export default function StoreDashboard() {
   const [orders, setOrders] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [onboardingStatus, setOnboardingStatus] = useState('live')
+  const [menuCount, setMenuCount] = useState(0)
 
   useEffect(() => {
     api.getMyOrders().then(setOrders).catch(console.error).finally(() => setLoading(false))
+    api.me().then(u => {
+      if (u.restaurant_id) {
+        api.getRestaurantStats(u.restaurant_id).then((s: any) => {
+          setOnboardingStatus(s.onboarding_status ?? 'live')
+          setMenuCount(s.menu?.total_items ?? 0)
+        }).catch(() => {})
+      }
+    }).catch(() => {})
   }, [])
 
   const pending = orders.filter(o => ['PENDING','CONFIRMED','PREPARING'].includes(o.status))
@@ -21,6 +32,7 @@ export default function StoreDashboard() {
         <h1 className="text-2xl font-bold text-slate-900">Inicio</h1>
         <p className="text-slate-500 text-sm mt-1">Resumen de tu comercio</p>
       </div>
+      <OnboardingBanner status={onboardingStatus} menuCount={menuCount} />
       <div className="grid grid-cols-3 gap-4 mb-8">
         <StatCard label="Pedidos activos" value={pending.length} icon="📦" color="blue" />
         <StatCard label="Pedidos hoy" value={today.length} icon="📅" color="green" />
