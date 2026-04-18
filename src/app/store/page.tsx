@@ -19,6 +19,7 @@ type MenuItem = {
 }
 
 type CartItem = MenuItem & { qty: number }
+type Rating = { id: string; rating: number; comment: string | null; created_at: number }
 
 function StoreContent() {
   const searchParams = useSearchParams()
@@ -26,6 +27,7 @@ function StoreContent() {
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null)
   const [menu, setMenu] = useState<MenuItem[]>([])
   const [cart, setCart] = useState<CartItem[]>([])
+  const [ratings, setRatings] = useState<Rating[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -35,10 +37,11 @@ function StoreContent() {
       .then(r => r.ok ? r.json() : Promise.reject('not found'))
       .then((r: Restaurant) => {
         setRestaurant(r)
+        fetch(`${API}/api/orders/restaurants/${r.id}/ratings`).then(r => r.ok ? r.json() : []).then(setRatings).catch(() => {})
         return fetch(`${API}/api/restaurants/${r.id}/menu`)
       })
       .then(r => r.json())
-      .then((items: MenuItem[]) => setMenu(items.filter(i => i.is_available)))
+      .then((items: MenuItem[]) => setMenu(items.filter(i => i.is_available !== false && i.available !== 0)))
       .catch(() => setError('Restaurante no encontrado'))
       .finally(() => setLoading(false))
   }, [slug])
@@ -192,6 +195,33 @@ function StoreContent() {
               <span>Ver pedido ({cartCount})</span>
               <span>${(cartTotal / 100).toFixed(0)}</span>
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Ratings */}
+      {ratings.length > 0 && (
+        <div className="max-w-3xl mx-auto px-4 pb-8">
+          <h2 className="text-lg font-bold text-gray-900 mb-3">Calificaciones ({ratings.length})</h2>
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-3xl font-bold text-gray-900">
+              {(ratings.reduce((s, r) => s + r.rating, 0) / ratings.length).toFixed(1)}
+            </span>
+            <div className="text-yellow-400 text-xl">
+              {'★'.repeat(Math.round(ratings.reduce((s, r) => s + r.rating, 0) / ratings.length))}
+              {'☆'.repeat(5 - Math.round(ratings.reduce((s, r) => s + r.rating, 0) / ratings.length))}
+            </div>
+          </div>
+          <div className="space-y-3">
+            {ratings.slice(0, 5).map(r => (
+              <div key={r.id} className="bg-white rounded-xl border border-gray-200 p-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-yellow-400">{'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</span>
+                  <span className="text-xs text-gray-400">{new Date(r.created_at).toLocaleDateString('es-AR')}</span>
+                </div>
+                {r.comment && <p className="text-sm text-gray-600">{r.comment}</p>}
+              </div>
+            ))}
           </div>
         </div>
       )}
