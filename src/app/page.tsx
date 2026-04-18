@@ -53,17 +53,17 @@ function Hero() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className="inline-flex items-center gap-2 bg-brand-100 text-brand-800 text-sm font-medium px-4 py-1.5 rounded-full mb-8">
           <span className="w-2 h-2 bg-brand-500 rounded-full animate-pulse" />
-          Plataforma de delivery en crecimiento
+          La plataforma que pone a tu negocio primero
         </div>
 
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 tracking-tight max-w-4xl mx-auto leading-tight">
-          La plataforma de delivery que{' '}
-          <span className="text-brand-600">conecta tu negocio</span> con más clientes
+          Tus clientes son tuyos.{' '}
+          <span className="text-brand-600">Siempre.</span>
         </h1>
 
         <p className="mt-6 text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-          Runbits es la solución integral para comercios que quieren llegar a más clientes
-          con entregas rápidas y confiables. Gestioná todo desde un solo lugar.
+          A diferencia de las apps de delivery tradicionales, en Runbits los datos de tus clientes
+          te pertenecen. No somos intermediarios — somos tu infraestructura. Tarifa fija, sin comisiones por venta.
         </p>
 
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -98,6 +98,70 @@ function Hero() {
             <div className="text-2xl sm:text-3xl font-bold text-gray-900">50+</div>
             <div className="text-sm text-gray-500 mt-1">Repartidores</div>
           </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function WhyRunbits() {
+  const comparisons = [
+    {
+      them: 'En PedidosYa / Rappi, tus clientes son de la plataforma',
+      us: 'En Runbits, tus clientes son tuyos — vos tenés sus datos',
+      icon: '👥',
+    },
+    {
+      them: 'Te cobran 15-35% de comisión por cada venta',
+      us: 'Tarifa fija mensual desde USD $49. Sin comisiones. Nunca.',
+      icon: '💰',
+    },
+    {
+      them: 'Tu negocio compite con miles en el mismo feed',
+      us: 'Tu negocio tiene su propia tienda digital, sin competencia',
+      icon: '🏪',
+    },
+    {
+      them: 'Si te vas de la plataforma, perdés todo',
+      us: 'Si te vas de Runbits, te llevás tu base de clientes',
+      icon: '🔓',
+    },
+  ]
+
+  return (
+    <section className="py-20 bg-gray-50" id="why-runbits">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
+            ¿Por qué Runbits?
+          </h2>
+          <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+            Somos como Shopify, pero para negocios que venden y entregan. No somos dueños de tus clientes — solo te damos la infraestructura para que conectes con ellos directamente.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          {comparisons.map((c, i) => (
+            <div key={i} className="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+              <span className="text-2xl">{c.icon}</span>
+              <div className="mt-4 space-y-3">
+                <div className="flex items-start gap-2">
+                  <span className="text-red-400 mt-0.5 text-sm">✗</span>
+                  <p className="text-sm text-gray-500 line-through">{c.them}</p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-emerald-500 mt-0.5 text-sm">✓</span>
+                  <p className="text-sm font-medium text-gray-900">{c.us}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-12 text-center">
+          <p className="text-base text-gray-700 font-medium max-w-xl mx-auto">
+            Runbits no es un marketplace. Es <span className="text-brand-600 font-bold">tu plataforma</span> — donde vos controlás la relación con tus clientes, tus datos y tu marca.
+          </p>
         </div>
       </div>
     </section>
@@ -613,6 +677,7 @@ export default function Home() {
     <main>
       <Navbar />
       <Hero />
+      <WhyRunbits />
       <Features />
       <HowItWorks />
       <Pricing />
