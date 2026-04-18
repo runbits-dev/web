@@ -22,23 +22,30 @@ const PLANS = [
     name: 'starter',
     label: 'Starter',
     price: 49,
-    orders: 500,
-    features: ['Panel de gestión', 'Menú digital', 'QR de verificación', 'Soporte por email'],
+    orders: -1,
+    features: ['Pedidos ilimitados', 'Menú ilimitado', 'Tienda online', 'Push notifications', 'QR verificación', '2 cupones', '1 promo', 'Soporte email 48h'],
   },
   {
     name: 'growth',
     label: 'Growth',
     price: 129,
-    orders: 2500,
-    features: ['Todo de Starter', 'Dominio propio', 'Analytics avanzado', 'Soporte prioritario'],
+    orders: -1,
+    features: ['Todo de Starter', 'Dominio propio', 'Colores personalizados', '10 cupones', '5 promos', '3 campañas push/mes', '5 generaciones IA/mes', 'Verificación de clientes', 'Analytics con gráficos', 'Soporte email 24h'],
     popular: true,
   },
   {
     name: 'pro',
     label: 'Pro',
     price: 299,
-    orders: 8000,
-    features: ['Todo de Growth', 'Multi-sucursal', 'API acceso', 'Integraciones', 'Onboarding dedicado'],
+    orders: -1,
+    features: ['Todo de Growth', 'Cupones y promos ilimitados', '20 campañas push/mes', '50 generaciones IA/mes', 'White-label (sin marca Runbits)', '3 sucursales', '5 usuarios staff', '3 webhooks', 'Chat prioritario'],
+  },
+  {
+    name: 'enterprise',
+    label: 'Enterprise',
+    price: 499,
+    orders: -1,
+    features: ['Todo ilimitado', 'API REST completa', 'Webhooks ilimitados', 'Sucursales ilimitadas', 'Staff ilimitado', 'Verificación ilimitada', 'Facturación electrónica AFIP', 'Soporte dedicado', 'Onboarding personalizado'],
   },
 ]
 
@@ -207,7 +214,7 @@ export default function SubscriptionPage() {
       <p className="text-sm text-slate-500 mb-6">
         Tarifa fija mensual. Sin comisiones por venta. 14 días de prueba gratis.
       </p>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {PLANS.map(plan => {
           const isCurrent = sub?.plan === plan.name
           return (
