@@ -89,6 +89,8 @@ export const api = {
       name: account.name,
       phone: account.phone,
       role: activeRole as User['role'],
+      restaurant_id: account.restaurant_id ?? raw.entityId,
+      store_name: account.store_name,
     }
   },
 

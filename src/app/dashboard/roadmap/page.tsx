@@ -53,8 +53,8 @@ const sprints: Sprint[] = [
   {
     id: 's2', title: 'Sprint 2 — Pagos', dates: '21–24 abr', color: '#3b82f6',
     tasks: [
-      { id: '2.1', label: '⏳ Configurar STRIPE_SECRET_KEY + webhook secret en Worker', repo: 'billing-service' },
-      { id: '2.2', label: '⏳ Configurar MP_ACCESS_TOKEN + webhook secret en Worker', repo: 'billing-service' },
+      { id: '2.1', label: '✅ Stripe keys configuradas en Worker (live)', repo: 'billing-service' },
+      { id: '2.2', label: '⏸️ MercadoPago diferido (es para pagos de clientes del comercio)', repo: 'billing-service' },
       { id: '2.3', label: '✅ Página de suscripción en dashboard', repo: 'web' },
       { id: '2.4', label: '✅ Tablas subscriptions + afip_invoices en D1', repo: 'billing-service' },
       { id: '2.5', label: '✅ Código Stripe integration (checkout, webhooks, dunning)', repo: 'billing-service' },
@@ -76,11 +76,13 @@ const sprints: Sprint[] = [
   {
     id: 's4', title: 'Sprint 4 — UX / Growth', dates: '28–30 abr', color: '#06b6d4',
     tasks: [
-      { id: '4.1', label: 'Calificaciones y reseñas post-entrega', repo: 'social-service' },
-      { id: '4.2', label: 'Cupones y promociones', repo: 'billing + web' },
-      { id: '4.3', label: 'Favoritos (comercios + items)', repo: 'social + web' },
-      { id: '4.4', label: 'Chat comercio-usuario en orden activa', repo: 'social + web' },
-      { id: '4.5', label: 'Fotos evidencia de entrega (R2)', repo: 'delivery + mobile' },
+      { id: '4.1', label: '✅ Calificaciones y reseñas (backend order-service)', repo: 'order-service' },
+      { id: '4.2', label: '✅ Cupones y promociones (backend + dashboard /marketing)', repo: 'social + web' },
+      { id: '4.3', label: '✅ Favoritos (backend social-service)', repo: 'social-service' },
+      { id: '4.4', label: '✅ Chat (backend social-service)', repo: 'social-service' },
+      { id: '4.5', label: '✅ Fotos evidencia (backend order-service)', repo: 'order-service' },
+      { id: '4.6', label: '✅ Mobile app TypeScript clean, EAS build triggered', repo: 'mobile' },
+      { id: '4.7', label: '✅ Landing: core philosophy "tus clientes son tuyos"', repo: 'web' },
     ],
   },
 ]
