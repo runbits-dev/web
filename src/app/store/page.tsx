@@ -32,6 +32,8 @@ function StoreContent() {
   const [promos, setPromos] = useState<Promotion[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [showCheckout, setShowCheckout] = useState(false)
+  const [deliveryMethod, setDeliveryMethod] = useState<'pickup' | 'delivery'>('delivery')
 
   useEffect(() => {
     if (!slug) return
@@ -212,11 +214,74 @@ function StoreContent() {
         )}
       </div>
 
+      {/* Checkout modal */}
+      {showCheckout && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-end sm:items-center justify-center p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full max-w-md max-h-[80vh] overflow-y-auto p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold text-gray-900">Tu pedido</h2>
+              <button onClick={() => setShowCheckout(false)} className="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
+            </div>
+
+            {/* Items */}
+            <div className="space-y-2 mb-4">
+              {cart.map(c => (
+                <div key={c.id} className="flex items-center justify-between text-sm">
+                  <span className="text-gray-700">{c.qty}x {c.name}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-500">${(c.price * c.qty / 100).toFixed(0)}</span>
+                    <button onClick={() => removeFromCart(c.id)} className="text-red-400 hover:text-red-600 text-xs">✕</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Delivery method */}
+            <div className="border-t border-gray-200 pt-4 mb-4">
+              <p className="text-sm font-semibold text-gray-900 mb-2">Método de entrega</p>
+              <div className="space-y-2">
+                <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer ${deliveryMethod === 'delivery' ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200'}`}>
+                  <input type="radio" name="delivery" checked={deliveryMethod === 'delivery'} onChange={() => setDeliveryMethod('delivery')} className="accent-emerald-600" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-900">Envío a domicilio</p>
+                    <p className="text-xs text-gray-500">~{restaurant?.avg_delivery_time_min || 30} min</p>
+                  </div>
+                  <span className="text-sm font-semibold text-gray-700">$500</span>
+                </label>
+                <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer ${deliveryMethod === 'pickup' ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200'}`}>
+                  <input type="radio" name="delivery" checked={deliveryMethod === 'pickup'} onChange={() => setDeliveryMethod('pickup')} className="accent-emerald-600" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-900">Retiro en local</p>
+                    <p className="text-xs text-gray-500">~15 min</p>
+                  </div>
+                  <span className="text-sm font-semibold text-emerald-600">Gratis</span>
+                </label>
+              </div>
+            </div>
+
+            {/* Total */}
+            <div className="border-t border-gray-200 pt-4 mb-4">
+              <div className="flex justify-between text-sm"><span className="text-gray-500">Subtotal</span><span>${(cartTotal / 100).toFixed(0)}</span></div>
+              <div className="flex justify-between text-sm mt-1"><span className="text-gray-500">Envío</span><span>{deliveryMethod === 'pickup' ? 'Gratis' : '$500'}</span></div>
+              <div className="flex justify-between font-bold text-lg mt-2 pt-2 border-t border-gray-100">
+                <span>Total</span>
+                <span>${((cartTotal + (deliveryMethod === 'delivery' ? 50000 : 0)) / 100).toFixed(0)}</span>
+              </div>
+            </div>
+
+            <button className="w-full py-3.5 rounded-xl font-semibold text-base text-white hover:opacity-90 transition-colors" style={{ backgroundColor: brandColor }}>
+              Confirmar pedido
+            </button>
+            <p className="text-xs text-gray-400 text-center mt-3">Necesitás estar logueado para confirmar</p>
+          </div>
+        </div>
+      )}
+
       {/* Floating cart */}
-      {cartCount > 0 && (
+      {cartCount > 0 && !showCheckout && (
         <div className="fixed bottom-0 inset-x-0 p-4 bg-white border-t border-gray-200 shadow-xl">
           <div className="max-w-3xl mx-auto">
-            <button className="w-full bg-[var(--brand)] text-white py-3.5 rounded-xl font-semibold text-base flex items-center justify-between px-6 hover:opacity-90 transition-colors">
+            <button onClick={() => setShowCheckout(true)} className="w-full text-white py-3.5 rounded-xl font-semibold text-base flex items-center justify-between px-6 hover:opacity-90 transition-colors" style={{ backgroundColor: brandColor }}>
               <span>Ver pedido ({cartCount})</span>
               <span>${(cartTotal / 100).toFixed(0)}</span>
             </button>
