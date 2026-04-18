@@ -68,7 +68,7 @@ const sprints: Sprint[] = [
       { id: '3.5', label: '✅ Mobile APK compilado (25 pantallas, 3 roles)', repo: 'mobile' },
       { id: '3.6', label: '✅ Competitive analysis (17 plataformas)', repo: 'docs' },
       { id: '3.7', label: 'Tracking rider en tiempo real (GPS en KV, falta mapa)', repo: 'delivery + web' },
-      { id: '3.8', label: 'Integración WhatsApp pedidos', repo: 'gateway' },
+      { id: '3.8', label: '⏸️ WhatsApp notificaciones (diferido a futuro)', repo: 'gateway' },
     ],
   },
   {
