@@ -1,6 +1,37 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+
+const ROADMAP_API = 'https://runbits-roadmap-api.lucas-i-carrizo.workers.dev'
+
+function getToken(): string | null {
+  if (typeof window === 'undefined') return null
+  return localStorage.getItem('token')
+}
+
+async function fetchState(): Promise<Record<string, boolean>> {
+  const token = getToken()
+  if (!token) return {}
+  try {
+    const res = await fetch(`${ROADMAP_API}/state`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    if (!res.ok) return {}
+    return await res.json()
+  } catch { return {} }
+}
+
+async function saveState(state: Record<string, boolean>): Promise<void> {
+  const token = getToken()
+  if (!token) return
+  try {
+    await fetch(`${ROADMAP_API}/state`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(state),
+    })
+  } catch {}
+}
 
 type Task = { id: string; label: string; repo: string }
 type Sprint = { id: string; title: string; dates: string; color: string; tasks: Task[] }
@@ -73,21 +104,22 @@ const log: { date: string; text: string }[] = [
 
 export default function RoadmapPage() {
   const [checked, setChecked] = useState<Record<string, boolean>>({})
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem('runbits-roadmap') || '{}')
-      setChecked(saved)
-    } catch {}
+    fetchState().then(state => {
+      setChecked(state)
+      setLoaded(true)
+    })
   }, [])
 
-  function toggle(id: string) {
+  const toggle = useCallback((id: string) => {
     setChecked(prev => {
       const next = { ...prev, [id]: !prev[id] }
-      localStorage.setItem('runbits-roadmap', JSON.stringify(next))
+      saveState(next)
       return next
     })
-  }
+  }, [])
 
   const totalTasks = sprints.reduce((s, sp) => s + sp.tasks.length, 0)
   const doneTasks = sprints.reduce((s, sp) => s + sp.tasks.filter(t => checked[t.id]).length, 0)
