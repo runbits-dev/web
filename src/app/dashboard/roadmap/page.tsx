@@ -55,7 +55,7 @@ const sprints: Sprint[] = [
       { id: '2.2', label: '✅ Tablas D1 (subscriptions + afip_invoices)', repo: 'D1' },
       { id: '2.3', label: '✅ Página /dashboard/subscription (3 planes + trial)', repo: 'web' },
       { id: '2.4', label: '✅ Código Stripe completo (checkout, webhooks, dunning)', repo: 'billing-service' },
-      { id: '2.5', label: '✅ AFIP/ARCA facturación electrónica', repo: 'billing-service' },
+      { id: '2.5', label: '⚠️ AFIP removido (empresa US/Wyoming, no aplica)', repo: 'billing-service' },
     ],
   },
   {
