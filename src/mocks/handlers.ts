@@ -24,9 +24,9 @@ const userSuperadmin = {
 }
 
 const initialMenuItems = [
-  { id: 'item-001', restaurant_id: 'rest-001', name: 'Hamburguesa Clásica', description: 'Carne, lechuga, tomate, cheddar', price: 150000, category: 'Principales', is_available: true, sort_order: 1, created_at: 1700000000000 },
-  { id: 'item-002', restaurant_id: 'rest-001', name: 'Papas Fritas', description: 'Porción grande', price: 80000, category: 'Acompañamientos', is_available: true, sort_order: 2, created_at: 1700000001000 },
-  { id: 'item-003', restaurant_id: 'rest-001', name: 'Coca Cola', description: '500ml', price: 50000, category: 'Bebidas', is_available: false, sort_order: 3, created_at: 1700000002000 },
+  { id: 'item-001', restaurant_id: 'rest-001', name: 'Hamburguesa Clásica', description: 'Carne, lechuga, tomate, cheddar', price: 150000, category: 'Principales', is_available: true, available: 1, sort_order: 1, created_at: 1700000000000 },
+  { id: 'item-002', restaurant_id: 'rest-001', name: 'Papas Fritas', description: 'Porción grande', price: 80000, category: 'Acompañamientos', is_available: true, available: 1, sort_order: 2, created_at: 1700000001000 },
+  { id: 'item-003', restaurant_id: 'rest-001', name: 'Coca Cola', description: '500ml', price: 50000, category: 'Bebidas', is_available: false, available: 0, sort_order: 3, created_at: 1700000002000 },
 ]
 
 const orders = [
@@ -101,6 +101,7 @@ export const handlers = [
 
   http.post(`${API}/api/restaurants/:restaurantId/menu`, async ({ request }) => {
     const body = await request.json() as Record<string, unknown>
+    const isAvail = body.isAvailable !== false
     const newItem = {
       id: `item-${Date.now()}`,
       restaurant_id: 'rest-001',
@@ -108,7 +109,8 @@ export const handlers = [
       description: (body.description as string) ?? '',
       price: body.price as number,
       category: (body.category as string) ?? '',
-      is_available: body.isAvailable !== false,
+      is_available: isAvail,
+      available: isAvail ? 1 : 0,
       sort_order: mockMenu.length + 1,
       created_at: Date.now(),
     }
@@ -125,7 +127,7 @@ export const handlers = [
       ...(body.name !== undefined && { name: body.name as string }),
       ...(body.description !== undefined && { description: body.description as string }),
       ...(body.price !== undefined && { price: body.price as number }),
-      ...(body.isAvailable !== undefined && { is_available: body.isAvailable as boolean }),
+      ...(body.isAvailable !== undefined && { is_available: body.isAvailable as boolean, available: (body.isAvailable as boolean) ? 1 : 0 }),
     }
     mockMenu = mockMenu.map(i => i.id === params.itemId ? updated : i)
     return HttpResponse.json(updated)

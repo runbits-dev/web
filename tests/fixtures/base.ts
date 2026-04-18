@@ -30,9 +30,9 @@ const userSuperadmin = {
 }
 
 export const menuItems = [
-  { id: 'item-001', restaurant_id: 'rest-001', name: 'Hamburguesa Clásica', description: 'Carne, lechuga, tomate, cheddar', price: 150000, category: 'Principales', is_available: true, sort_order: 1, created_at: 1700000000000 },
-  { id: 'item-002', restaurant_id: 'rest-001', name: 'Papas Fritas', description: 'Porción grande', price: 80000, category: 'Acompañamientos', is_available: true, sort_order: 2, created_at: 1700000001000 },
-  { id: 'item-003', restaurant_id: 'rest-001', name: 'Coca Cola', description: '500ml', price: 50000, category: 'Bebidas', is_available: false, sort_order: 3, created_at: 1700000002000 },
+  { id: 'item-001', restaurant_id: 'rest-001', name: 'Hamburguesa Clásica', description: 'Carne, lechuga, tomate, cheddar', price: 150000, category: 'Principales', is_available: true, available: 1, sort_order: 1, created_at: 1700000000000 },
+  { id: 'item-002', restaurant_id: 'rest-001', name: 'Papas Fritas', description: 'Porción grande', price: 80000, category: 'Acompañamientos', is_available: true, available: 1, sort_order: 2, created_at: 1700000001000 },
+  { id: 'item-003', restaurant_id: 'rest-001', name: 'Coca Cola', description: '500ml', price: 50000, category: 'Bebidas', is_available: false, available: 0, sort_order: 3, created_at: 1700000002000 },
 ]
 
 export const myOrders = [
@@ -101,8 +101,8 @@ export async function setupApiRoutes(page: Page) {
           ...(body.description !== undefined ? { description: body.description } : {}),
           ...(body.price !== undefined ? { price: body.price } : {}),
           ...(body.category !== undefined ? { category: body.category } : {}),
-          ...(body.isAvailable !== undefined ? { is_available: body.isAvailable } : {}),
-          ...(body.is_available !== undefined ? { is_available: body.is_available } : {}),
+          ...(body.isAvailable !== undefined ? { is_available: body.isAvailable, available: body.isAvailable ? 1 : 0 } : {}),
+          ...(body.is_available !== undefined ? { is_available: body.is_available, available: body.is_available ? 1 : 0 } : {}),
         }
         await route.fulfill({ json: currentMenu[idx] })
       } else {
@@ -202,6 +202,7 @@ export async function setupApiRoutes(page: Page) {
     const method = route.request().method()
     if (method === 'POST') {
       const body = await route.request().postDataJSON()
+      const avail = body.is_available !== false
       const newItem = {
         id: `item-${Date.now()}`,
         restaurant_id: 'rest-001',
@@ -209,7 +210,8 @@ export async function setupApiRoutes(page: Page) {
         description: body.description || '',
         price: body.price || 0,
         category: body.category || '',
-        is_available: body.is_available !== false,
+        is_available: avail,
+        available: avail ? 1 : 0,
         sort_order: currentMenu.length + 1,
         created_at: Date.now(),
       }
