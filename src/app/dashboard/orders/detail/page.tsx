@@ -7,6 +7,53 @@ import { api } from '@/lib/api'
 
 type Message = { id: string; sender_id: string; sender_role: string; message: string; created_at: number }
 
+const API = process.env.NEXT_PUBLIC_API_URL || 'https://api.runbits.dev'
+
+function RiderMap({ riderId }: { riderId: string }) {
+  const [pos, setPos] = useState<{ lat: number; lng: number } | null>(null)
+  const mapRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    const poll = async () => {
+      try {
+        const res = await fetch(`${API}/api/riders/${riderId}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        })
+        if (res.ok) {
+          const data = await res.json()
+          if (data.gps) setPos({ lat: data.gps.lat, lng: data.gps.lng })
+        }
+      } catch {}
+    }
+    poll()
+    const interval = setInterval(poll, 10000)
+    return () => clearInterval(interval)
+  }, [riderId])
+
+  if (!pos) return (
+    <div className="h-48 bg-slate-50 rounded-xl flex items-center justify-center text-sm text-slate-400">
+      Esperando ubicación del repartidor...
+    </div>
+  )
+
+  const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${pos.lng-0.01},${pos.lat-0.01},${pos.lng+0.01},${pos.lat+0.01}&layer=mapnik&marker=${pos.lat},${pos.lng}`
+
+  return (
+    <div className="space-y-2">
+      <iframe
+        src={mapUrl}
+        className="w-full h-64 rounded-xl border border-slate-200"
+        style={{ border: 0 }}
+        loading="lazy"
+      />
+      <p className="text-xs text-slate-400 text-center">
+        Lat: {pos.lat.toFixed(6)}, Lng: {pos.lng.toFixed(6)} · Actualiza cada 10s
+      </p>
+    </div>
+  )
+}
+
 const statusColors: Record<string, string> = {
   PENDING: 'bg-amber-50 text-amber-700',
   CONFIRMED: 'bg-blue-50 text-blue-700',
@@ -65,6 +112,14 @@ function OrderDetailContent() {
           <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${statusColors[order.status] || 'bg-slate-100 text-slate-600'}`}>{order.status}</span>
         </div>
       </div>
+
+      {/* Rider tracking map */}
+      {order.rider_id && ['PICKED_UP', 'IN_TRANSIT'].includes(order.status) && (
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 mb-6">
+          <h2 className="font-semibold text-slate-900 mb-3">Seguimiento del repartidor</h2>
+          <RiderMap riderId={order.rider_id} />
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Order details */}
