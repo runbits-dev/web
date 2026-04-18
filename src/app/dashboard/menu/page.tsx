@@ -3,13 +3,29 @@
 import { useEffect, useState } from 'react'
 import { api } from '@/lib/api'
 
+type VariantOption = { name: string; priceDelta?: number }
+type Variant = { name: string; required?: boolean; options: VariantOption[] }
+
 type MenuItem = {
   id: string
   name: string
   description: string
   price: number
   is_available: boolean
+  available?: number
   category?: string
+  variants_json?: string | null
+}
+
+function parseVariants(item: MenuItem): Variant[] {
+  if (!item.variants_json) return []
+  try { return JSON.parse(item.variants_json) } catch { return [] }
+}
+
+function isItemAvailable(item: MenuItem): boolean {
+  if (isItemAvailable(item) !== undefined) return isItemAvailable(item)
+  if (item.available !== undefined) return item.available === 1
+  return true
 }
 
 type ModalState =
@@ -52,7 +68,7 @@ export default function MenuPage() {
       description: item.description || '',
       price: (item.price / 100).toFixed(2),
       category: item.category || '',
-      is_available: item.is_available,
+      is_available: isItemAvailable(item),
     })
     setError(null)
     setModal({ mode: 'edit', item })
@@ -92,7 +108,7 @@ export default function MenuPage() {
   async function handleToggle(item: MenuItem) {
     if (!restaurantId) return
     try {
-      const updated = await api.updateMenuItem(restaurantId, item.id, { is_available: !item.is_available })
+      const updated = await api.updateMenuItem(restaurantId, item.id, { is_available: !isItemAvailable(item) })
       setItems(prev => prev.map(i => i.id === item.id ? updated : i))
     } catch {}
   }
@@ -150,12 +166,12 @@ export default function MenuPage() {
                 <button
                   onClick={() => handleToggle(item)}
                   className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors ${
-                    item.is_available
+                    isItemAvailable(item)
                       ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
                       : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
                   }`}
                 >
-                  {item.is_available ? 'Disponible' : 'No disponible'}
+                  {isItemAvailable(item) ? 'Disponible' : 'No disponible'}
                 </button>
                 <button
                   onClick={() => openEdit(item)}
