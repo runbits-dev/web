@@ -15,7 +15,7 @@ type Restaurant = {
 
 type MenuItem = {
   id: string; name: string; description: string; price: number
-  category: string; is_available: boolean
+  category: string; is_available: boolean; available?: number
 }
 
 type CartItem = MenuItem & { qty: number }
