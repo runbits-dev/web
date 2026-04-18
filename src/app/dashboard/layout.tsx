@@ -15,6 +15,7 @@ const storeNav = [
 
 const adminNav = [
   { href: '/dashboard/admin', label: 'Overview', icon: '📈', exact: true },
+  { href: '/dashboard/roadmap', label: 'Roadmap', icon: '🗺️' },
   { href: '/dashboard/admin/zones', label: 'Zonas', icon: '🗺️' },
   { href: '/dashboard/admin/restaurants', label: 'Restaurantes', icon: '🍽️' },
   { href: '/dashboard/admin/riders', label: 'Repartidores', icon: '🚴' },
