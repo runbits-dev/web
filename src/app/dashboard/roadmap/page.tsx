@@ -125,6 +125,8 @@ const sprints: Sprint[] = [
       { id: '8.4', label: 'Onboarding con IA (crear tienda desde prompt)', repo: 'web + AI' },
       { id: '8.5', label: 'Campañas marketing automatizadas (email, push)', repo: 'notification' },
       { id: '8.6', label: 'Badge "Verificado por Runbits"', repo: 'restaurant + store' },
+      { id: '8.7', label: 'Docs IA: asistente RAG que reemplaza documentación estática', repo: 'AI + web' },
+      { id: '8.8', label: 'Verificación de identidad (niveles ARCA 0-3)', repo: 'auth + web' },
     ],
   },
 ]
