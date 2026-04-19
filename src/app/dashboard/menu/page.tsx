@@ -33,7 +33,7 @@ type ModalState =
   | { mode: 'create' }
   | { mode: 'edit'; item: MenuItem }
 
-const EMPTY_FORM = { name: '', description: '', price: '', category: '', is_available: true }
+const EMPTY_FORM = { name: '', description: '', price: '', category: '', is_available: true, imagePreview: '' }
 
 export default function MenuPage() {
   const [items, setItems] = useState<MenuItem[]>([])
@@ -239,6 +239,33 @@ export default function MenuPage() {
                     onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
                     placeholder="Ej: Principales"
                   />
+                </div>
+              </div>
+              {/* Photo upload */}
+              <div>
+                <label className="text-xs font-semibold text-slate-600 mb-1 block">Foto del producto</label>
+                <div className="flex items-center gap-3">
+                  {form.imagePreview ? (
+                    <img src={form.imagePreview} alt="Preview" className="w-16 h-16 rounded-xl object-cover border border-slate-200" />
+                  ) : (
+                    <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center text-2xl border border-slate-200">📷</div>
+                  )}
+                  <div className="flex-1">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
+                      onChange={e => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          const reader = new FileReader()
+                          reader.onload = () => setForm(f => ({ ...f, imagePreview: reader.result as string }))
+                          reader.readAsDataURL(file)
+                        }
+                      }}
+                    />
+                    <p className="text-xs text-slate-400 mt-1">JPG, PNG o WebP. Máximo 5MB.</p>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
