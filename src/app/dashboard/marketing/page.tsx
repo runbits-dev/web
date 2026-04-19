@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { api } from '@/lib/api'
 
 type Coupon = { id: string; code: string; discount_type: string; discount_value: number; min_order: number; max_uses: number; used_count: number; expires_at: string | null; restaurant_id: string }
-type Promotion = { id: string; title: string; description: string; discount_type: string; discount_value: number; starts_at: string; ends_at: string; restaurant_id: string; is_active: boolean }
+type Promotion = { id: string; name?: string; title?: string; description?: string; type?: string; config?: string | Record<string, any>; discount_type?: string; discount_value?: number; starts_at: string | number; ends_at: string | number; restaurant_id: string; active?: number; is_active?: boolean }
 
 export default function MarketingPage() {
   const [coupons, setCoupons] = useState<Coupon[]>([])
