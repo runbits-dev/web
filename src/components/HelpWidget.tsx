@@ -17,11 +17,18 @@ const FAQ: Record<string, string> = {
 
 function findAnswer(question: string): string {
   const q = question.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  const words = q.replace(/[¿?¡!,.:]/g, '').split(/\s+/).filter(w => w.length > 2)
+  let bestMatch = ''
+  let bestScore = 0
   for (const [key, answer] of Object.entries(FAQ)) {
     const k = key.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    if (q.includes(k) || k.split(' ').every(w => q.includes(w))) return answer
+    const kWords = k.split(/\s+/)
+    const matchCount = kWords.filter(w => words.some(qw => qw.includes(w) || w.includes(qw))).length
+    const score = matchCount / kWords.length
+    if (score > bestScore) { bestScore = score; bestMatch = answer }
   }
-  return 'No encontré una respuesta para eso. Probá con: "cómo cargo productos", "cómo creo un cupón", "cómo veo mis pedidos", o escribinos a soporte@runbits.io.'
+  if (bestScore >= 0.4) return bestMatch
+  return 'No encontré una respuesta exacta. Probá preguntar sobre: cargar productos, crear cupones, ver pedidos, cambiar plan, personalizar tienda, delivery. O escribinos a soporte@runbits.io.'
 }
 
 type Message = { role: 'user' | 'assistant'; text: string }

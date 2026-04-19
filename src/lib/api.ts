@@ -95,7 +95,7 @@ export const api = {
   },
 
   updateProfile: (data: { name?: string; phone?: string }) =>
-    request<User>('/api/auth/profile', { method: 'PATCH', body: JSON.stringify(data) }),
+    request<User>('/api/auth/me', { method: 'PATCH', body: JSON.stringify(data) }),
 
   getMyOrders: () => request<any[]>('/api/orders/mine'),
 
