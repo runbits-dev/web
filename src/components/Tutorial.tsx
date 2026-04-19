@@ -58,11 +58,22 @@ export function Tutorial() {
   const [step, setStep] = useState(0)
 
   useEffect(() => {
-    if (localStorage.getItem('show_tutorial') === 'true') {
-      setShow(true)
-      localStorage.removeItem('show_tutorial')
-    }
+    const dismissed = localStorage.getItem('tutorial_dismissed')
+    if (dismissed === 'true') return
+    setShow(true)
+    const savedStep = parseInt(localStorage.getItem('tutorial_step') || '0', 10)
+    if (savedStep > 0 && savedStep < TUTORIAL_STEPS.length) setStep(savedStep)
   }, [])
+
+  useEffect(() => {
+    if (show) localStorage.setItem('tutorial_step', String(step))
+  }, [step, show])
+
+  function dismiss() {
+    localStorage.setItem('tutorial_dismissed', 'true')
+    localStorage.removeItem('tutorial_step')
+    setShow(false)
+  }
 
   if (!show) return null
 
@@ -93,20 +104,25 @@ export function Tutorial() {
             )}
             {isFirst && (
               <button onClick={() => setShow(false)} className="flex-1 py-2.5 rounded-xl font-semibold border border-gray-200 text-gray-500 text-sm hover:bg-gray-50">
-                Saltar
+                Después
               </button>
             )}
             <button
-              onClick={() => isLast ? setShow(false) : setStep(s => s + 1)}
+              onClick={() => isLast ? dismiss() : setStep(s => s + 1)}
               className="flex-1 bg-emerald-600 text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-emerald-700 transition-colors"
             >
               {isLast ? '¡Empezar!' : 'Siguiente →'}
             </button>
           </div>
 
-          <p className="text-xs text-gray-400 text-center mt-3">
-            {step + 1} de {TUTORIAL_STEPS.length}
-          </p>
+          <div className="flex items-center justify-between mt-3">
+            <p className="text-xs text-gray-400">{step + 1} de {TUTORIAL_STEPS.length}</p>
+            {!isFirst && !isLast && (
+              <button onClick={dismiss} className="text-xs text-gray-400 hover:text-gray-600">
+                No mostrar más
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
