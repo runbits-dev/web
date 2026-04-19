@@ -1,17 +1,20 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { UtensilsCrossed, ShoppingBag, ShoppingCart, Heart, Briefcase, Scissors, PawPrint, Car, Package, type LucideIcon } from 'lucide-react'
 
-const BUSINESS_TYPES = [
-  { id: 'restaurant', label: 'Restaurante / Comida', icon: '🍽️', desc: 'Delivery de comida, café, bar, heladería' },
-  { id: 'store', label: 'Tienda / Retail', icon: '🛍️', desc: 'Ropa, electrónica, accesorios' },
-  { id: 'grocery', label: 'Supermercado / Almacén', icon: '🛒', desc: 'Alimentos, bebidas, hogar' },
-  { id: 'pharmacy', label: 'Farmacia / Salud', icon: '💊', desc: 'Medicamentos, perfumería' },
-  { id: 'services', label: 'Servicios profesionales', icon: '💼', desc: 'Turnos, consultas, reparaciones' },
-  { id: 'beauty', label: 'Belleza / Estética', icon: '💇', desc: 'Peluquería, spa, barbería' },
-  { id: 'pets', label: 'Mascotas', icon: '🐾', desc: 'Pet shop, veterinaria' },
-  { id: 'transport', label: 'Transporte / Viajes', icon: '🚗', desc: 'Viajes, remises, fletes' },
-  { id: 'other', label: 'Otro', icon: '📦', desc: 'Cualquier otro tipo' },
+type BType = { id: string; label: string; Icon: LucideIcon; desc: string; examples: string }
+
+const BUSINESS_TYPES: BType[] = [
+  { id: 'restaurant', label: 'Restaurante / Comida', Icon: UtensilsCrossed, desc: 'Restaurantes, bares, cafés, heladerías, panaderías.', examples: 'Ej: pizzería, hamburguesería, sushi' },
+  { id: 'store', label: 'Tienda / Retail', Icon: ShoppingBag, desc: 'Ropa, electrónica, accesorios, librerías.', examples: 'Ej: boutique, ferretería, bazar' },
+  { id: 'grocery', label: 'Supermercado / Almacén', Icon: ShoppingCart, desc: 'Alimentos, bebidas, productos del hogar.', examples: 'Ej: almacén, dietética, vinoteca' },
+  { id: 'pharmacy', label: 'Farmacia / Salud', Icon: Heart, desc: 'Farmacias, perfumerías, productos de salud.', examples: 'Ej: farmacia, herboristería, óptica' },
+  { id: 'services', label: 'Servicios profesionales', Icon: Briefcase, desc: 'Servicios por turno o consulta.', examples: 'Ej: consultorio, estudio contable, clases' },
+  { id: 'beauty', label: 'Belleza / Estética', Icon: Scissors, desc: 'Peluquerías, barberías, spa, estética.', examples: 'Ej: peluquería, salón de uñas, masajes' },
+  { id: 'pets', label: 'Mascotas', Icon: PawPrint, desc: 'Pet shops, veterinarias, peluquerías caninas.', examples: 'Ej: veterinaria, tienda de alimento' },
+  { id: 'transport', label: 'Transporte / Logística', Icon: Car, desc: 'Transporte de personas o mercadería.', examples: 'Ej: remisería, fletes, mensajería' },
+  { id: 'other', label: 'Otro tipo de negocio', Icon: Package, desc: 'Cualquier negocio que no encaje arriba.', examples: 'Ej: lavadero, gimnasio, coworking' },
 ]
 
 export function BusinessSetup({ onComplete }: { onComplete: (type: string) => void }) {
@@ -19,7 +22,7 @@ export function BusinessSetup({ onComplete }: { onComplete: (type: string) => vo
 
   return (
     <div className="fixed inset-0 bg-white z-[80] flex items-center justify-center p-4">
-      <div className="w-full max-w-lg">
+      <div className="w-full max-w-xl">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-gray-900">¿Qué tipo de negocio tenés?</h1>
           <p className="text-sm text-gray-500 mt-2">Esto nos permite adaptar tu panel a tus necesidades. Podés cambiarlo después.</p>
@@ -30,14 +33,16 @@ export function BusinessSetup({ onComplete }: { onComplete: (type: string) => vo
             <button
               key={bt.id}
               onClick={() => setSelected(bt.id)}
-              className={`text-center p-4 rounded-xl border-2 transition-all ${
+              className={`text-left p-4 rounded-xl border-2 transition-all ${
                 selected === bt.id
                   ? 'border-emerald-500 bg-emerald-50 shadow-sm'
                   : 'border-gray-200 hover:border-gray-300'
               }`}
             >
-              <span className="text-3xl block">{bt.icon}</span>
+              <bt.Icon className={`w-6 h-6 ${selected === bt.id ? 'text-emerald-600' : 'text-gray-400'}`} />
               <p className="text-xs font-semibold text-gray-900 mt-2">{bt.label}</p>
+              <p className="text-[10px] text-gray-400 mt-0.5 leading-tight">{bt.desc}</p>
+              <p className="text-[9px] text-gray-300 mt-0.5">{bt.examples}</p>
             </button>
           ))}
         </div>
