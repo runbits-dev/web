@@ -1,19 +1,23 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { api } from '@/lib/api'
+import { UtensilsCrossed, ShoppingBag, ShoppingCart, Heart, Briefcase, Scissors, PawPrint, Car, Package } from 'lucide-react'
+
+const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''
 
 const BUSINESS_TYPES = [
-  { id: 'restaurant', label: 'Restaurante / Comida', icon: '🍽️', desc: 'Delivery de comida, café, panadería, heladería' },
-  { id: 'store', label: 'Tienda / Retail', icon: '🛍️', desc: 'Ropa, electrónica, accesorios, productos físicos' },
-  { id: 'grocery', label: 'Supermercado / Almacén', icon: '🛒', desc: 'Alimentos, bebidas, productos del hogar' },
-  { id: 'pharmacy', label: 'Farmacia / Salud', icon: '💊', desc: 'Medicamentos, perfumería, productos de salud' },
-  { id: 'services', label: 'Servicios profesionales', icon: '💼', desc: 'Turnos, consultas, reparaciones, clases' },
-  { id: 'beauty', label: 'Belleza / Estética', icon: '💇', desc: 'Peluquería, spa, manicura, barbería' },
-  { id: 'pets', label: 'Mascotas', icon: '🐾', desc: 'Pet shop, veterinaria, peluquería canina' },
-  { id: 'other', label: 'Otro', icon: '📦', desc: 'Cualquier otro tipo de negocio' },
+  { id: 'restaurant', label: 'Restaurante / Comida', Icon: UtensilsCrossed, desc: 'Restaurantes, bares, cafés, heladerías, panaderías. Ideal para delivery de comida preparada.', examples: 'Ej: pizzería, hamburguesería, sushi' },
+  { id: 'store', label: 'Tienda / Retail', Icon: ShoppingBag, desc: 'Ropa, electrónica, accesorios, librerías. Venta de productos físicos con envío o retiro.', examples: 'Ej: boutique, ferretería, bazar' },
+  { id: 'grocery', label: 'Supermercado / Almacén', Icon: ShoppingCart, desc: 'Supermercados, almacenes, dietéticas, verdurerías. Alimentos y productos del hogar.', examples: 'Ej: almacén de barrio, dietética, vinoteca' },
+  { id: 'pharmacy', label: 'Farmacia / Salud', Icon: Heart, desc: 'Farmacias, perfumerías, productos de salud y bienestar.', examples: 'Ej: farmacia, herboristería, óptica' },
+  { id: 'services', label: 'Servicios profesionales', Icon: Briefcase, desc: 'Profesionales que ofrecen servicios por turno o consulta.', examples: 'Ej: consultorio, estudio contable, clases' },
+  { id: 'beauty', label: 'Belleza / Estética', Icon: Scissors, desc: 'Peluquerías, barberías, spa, centros de estética. Turnos y horarios.', examples: 'Ej: peluquería, salón de uñas, masajes' },
+  { id: 'pets', label: 'Mascotas', Icon: PawPrint, desc: 'Pet shops, veterinarias, peluquerías caninas. Productos y servicios.', examples: 'Ej: veterinaria, tienda de alimento' },
+  { id: 'transport', label: 'Transporte / Logística', Icon: Car, desc: 'Transporte de personas o mercancía. Remises, fletes, mensajería.', examples: 'Ej: remisería, servicio de fletes' },
+  { id: 'other', label: 'Otro tipo de negocio', Icon: Package, desc: 'Cualquier negocio que no encaje en las categorías anteriores.', examples: 'Ej: lavadero, gimnasio, coworking' },
 ]
 
 type Step = 1 | 2 | 3
@@ -29,6 +33,52 @@ export default function RegisterPage() {
   const [businessType, setBusinessType] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [googleReady, setGoogleReady] = useState(false)
+
+  const handleGoogleCredential = useCallback(async (response: { credential: string }) => {
+    setLoading(true)
+    setError('')
+    try {
+      const res = await api.loginWithGoogle(response.credential)
+      localStorage.setItem('token', res.token)
+      localStorage.setItem('user', JSON.stringify(res.user))
+      localStorage.setItem('show_tutorial', 'true')
+      // Skip to step 2 (business type) since Google gave us name/email
+      setName(res.user?.name || '')
+      setEmail(res.user?.email || '')
+      setStep(2)
+    } catch {
+      setError('Error al registrar con Google')
+    } finally { setLoading(false) }
+  }, [])
+
+  useEffect(() => {
+    if (!GOOGLE_CLIENT_ID) return
+    const script = document.createElement('script')
+    script.src = 'https://accounts.google.com/gsi/client'
+    script.async = true
+    script.onload = () => {
+      if ((window as any).google) {
+        (window as any).google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleGoogleCredential,
+        })
+        setGoogleReady(true)
+      }
+    }
+    document.head.appendChild(script)
+  }, [handleGoogleCredential])
+
+  useEffect(() => {
+    if (googleReady && step === 1) {
+      const btn = document.getElementById('google-register-btn')
+      if (btn && (window as any).google) {
+        (window as any).google.accounts.id.renderButton(btn, {
+          type: 'standard', theme: 'outline', size: 'large', width: 380, text: 'signup_with',
+        })
+      }
+    }
+  }, [googleReady, step])
 
   async function handleRegister() {
     if (!name || !email || !password) { setError('Completá todos los campos'); return }
@@ -94,8 +144,17 @@ export default function RegisterPage() {
                   <input type="password" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" value={password} onChange={e => setPassword(e.target.value)} placeholder="Mínimo 8 caracteres" />
                 </div>
               </div>
-              <button onClick={() => { if (!name || !email || !password) { setError('Completá nombre, email y contraseña'); return } setError(''); setStep(2) }} className="w-full mt-6 bg-emerald-600 text-white py-3 rounded-xl font-semibold hover:bg-emerald-700 transition-colors">
-                Siguiente →
+              {GOOGLE_CLIENT_ID && (
+                <>
+                  <div className="relative my-5">
+                    <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200" /></div>
+                    <div className="relative flex justify-center text-xs"><span className="bg-white px-3 text-gray-400">o registrate con</span></div>
+                  </div>
+                  <div id="google-register-btn" className="flex justify-center mb-4" />
+                </>
+              )}
+              <button onClick={() => { if (!name || !email || !password) { setError('Completá nombre, email y contraseña'); return } setError(''); setStep(2) }} className="w-full mt-4 bg-emerald-600 text-white py-3 rounded-xl font-semibold hover:bg-emerald-700 transition-colors">
+                Siguiente con email →
               </button>
             </div>
           )}
@@ -116,9 +175,10 @@ export default function RegisterPage() {
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
-                    <span className="text-2xl">{bt.icon}</span>
+                    <span className="text-2xl">{bt.Icon ? <bt.Icon className='w-6 h-6 text-emerald-600' /> : null}</span>
                     <p className="text-sm font-semibold text-gray-900 mt-1">{bt.label}</p>
                     <p className="text-xs text-gray-500 mt-0.5">{bt.desc}</p>
+                    {bt.examples && <p className="text-[10px] text-gray-400 mt-1">{bt.examples}</p>}
                   </button>
                 ))}
               </div>
@@ -139,7 +199,7 @@ export default function RegisterPage() {
               {error && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">{error}</div>}
               <div className="space-y-4">
                 <div className="bg-gray-50 rounded-xl p-3 flex items-center gap-3">
-                  <span className="text-2xl">{BUSINESS_TYPES.find(b => b.id === businessType)?.icon}</span>
+                  {(() => { const T = BUSINESS_TYPES.find(b => b.id === businessType); return T?.Icon ? <T.Icon className="w-6 h-6 text-emerald-600" /> : null })()}
                   <div>
                     <p className="text-sm font-semibold text-gray-900">{BUSINESS_TYPES.find(b => b.id === businessType)?.label}</p>
                     <p className="text-xs text-gray-500">{BUSINESS_TYPES.find(b => b.id === businessType)?.desc}</p>
