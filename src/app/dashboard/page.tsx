@@ -9,6 +9,9 @@ export default function StoreDashboard() {
   const [loading, setLoading] = useState(true)
   const [onboardingStatus, setOnboardingStatus] = useState('live')
   const [menuCount, setMenuCount] = useState(0)
+  const [hasPhone, setHasPhone] = useState(false)
+  const [hasAddress, setHasAddress] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
     api.getMyOrders().then(setOrders).catch(console.error).finally(() => setLoading(false))
@@ -17,6 +20,11 @@ export default function StoreDashboard() {
         api.getRestaurantStats(u.restaurant_id).then((s: any) => {
           setOnboardingStatus(s.onboarding_status ?? 'live')
           setMenuCount(s.menu?.total_items ?? 0)
+          setIsOpen(!!s.is_open)
+        }).catch(() => {})
+        api.getRestaurant(u.restaurant_id).then((r: any) => {
+          setHasPhone(!!r.phone)
+          setHasAddress(!!r.address)
         }).catch(() => {})
       }
     }).catch(() => {})
@@ -32,7 +40,7 @@ export default function StoreDashboard() {
         <h1 className="text-2xl font-bold text-slate-900">Inicio</h1>
         <p className="text-slate-500 text-sm mt-1">Resumen de tu comercio</p>
       </div>
-      <OnboardingBanner status={onboardingStatus} menuCount={menuCount} />
+      <OnboardingBanner status={onboardingStatus} menuCount={menuCount} hasPhone={hasPhone} hasAddress={hasAddress} isOpen={isOpen} />
       <div className="grid grid-cols-3 gap-4 mb-8">
         <StatCard label="Pedidos activos" value={pending.length} icon="📦" color="blue" />
         <StatCard label="Pedidos hoy" value={today.length} icon="📅" color="green" />

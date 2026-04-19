@@ -4,13 +4,17 @@ import Link from 'next/link'
 
 type Step = { label: string; href: string; done: boolean; icon: string }
 
-export function OnboardingBanner({ status, menuCount }: { status: string; menuCount: number }) {
-  if (status === 'live') return null
+export function OnboardingBanner({ status, menuCount, hasPhone, hasAddress, isOpen }: { status: string; menuCount: number; hasPhone?: boolean; hasAddress?: boolean; isOpen?: boolean }) {
+  const profileDone = !!(hasPhone || hasAddress) || status !== 'pending'
+  const menuDone = menuCount > 0
+  const storeDone = !!isOpen || status === 'live'
+
+  if (profileDone && menuDone && storeDone) return null
 
   const steps: Step[] = [
-    { label: 'Completar perfil', href: '/dashboard/settings', done: status !== 'pending', icon: '1' },
-    { label: 'Cargar menú', href: '/dashboard/menu', done: menuCount > 0 || ['menu_added', 'live'].includes(status), icon: '2' },
-    { label: 'Abrir tu tienda', href: '/dashboard/settings', done: status === 'live', icon: '3' },
+    { label: 'Completar perfil', href: '/dashboard/settings', done: profileDone, icon: '1' },
+    { label: 'Cargar catálogo', href: '/dashboard/menu', done: menuDone, icon: '2' },
+    { label: 'Abrir tu tienda', href: '/dashboard/settings', done: storeDone, icon: '3' },
   ]
 
   const doneCount = steps.filter(s => s.done).length
