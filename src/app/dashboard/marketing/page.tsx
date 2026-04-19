@@ -135,26 +135,33 @@ export default function MarketingPage() {
 
       {/* Create form */}
       {showForm && tab === 'coupons' && (
-        <div className="bg-white rounded-2xl border border-slate-200 p-5 mb-6 space-y-3">
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 mb-6 space-y-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-sm text-blue-700">
+            💡 Un <strong>cupón</strong> es un código que tus clientes ingresan al hacer un pedido para obtener un descuento. Ej: "BIENVENIDO" para un 10% off en la primera compra.
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-semibold text-slate-600 mb-1 block">Código *</label>
               <input className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" placeholder="DESCUENTO20" value={code} onChange={e => setCode(e.target.value)} />
+              <p className="text-xs text-slate-400 mt-1">Lo que el cliente escribe para activar el descuento. Sin espacios, en mayúsculas.</p>
             </div>
             <div>
-              <label className="text-xs font-semibold text-slate-600 mb-1 block">Tipo</label>
+              <label className="text-xs font-semibold text-slate-600 mb-1 block">Tipo de descuento</label>
               <select className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" value={discountType} onChange={e => setDiscountType(e.target.value as any)}>
                 <option value="percentage">Porcentaje (%)</option>
                 <option value="fixed">Monto fijo ($)</option>
               </select>
+              <p className="text-xs text-slate-400 mt-1">{discountType === 'percentage' ? 'Ej: 20 = 20% de descuento sobre el total' : 'Ej: 500 = $500 de descuento sobre el total'}</p>
             </div>
             <div>
-              <label className="text-xs font-semibold text-slate-600 mb-1 block">Valor *</label>
+              <label className="text-xs font-semibold text-slate-600 mb-1 block">Valor del descuento *</label>
               <input type="number" className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" placeholder={discountType === 'percentage' ? '20' : '500'} value={discountValue} onChange={e => setDiscountValue(e.target.value)} />
+              <p className="text-xs text-slate-400 mt-1">{discountType === 'percentage' ? 'Porcentaje a descontar (sin el símbolo %)' : 'Monto en pesos a descontar'}</p>
             </div>
             <div>
               <label className="text-xs font-semibold text-slate-600 mb-1 block">Pedido mínimo ($)</label>
               <input type="number" className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" placeholder="0" value={minOrder} onChange={e => setMinOrder(e.target.value)} />
+              <p className="text-xs text-slate-400 mt-1">El cliente necesita un pedido mayor a este monto para usar el cupón. Dejá en 0 para sin mínimo.</p>
             </div>
           </div>
           <div className="flex gap-3">
@@ -167,34 +174,43 @@ export default function MarketingPage() {
       )}
 
       {showForm && tab === 'promotions' && (
-        <div className="bg-white rounded-2xl border border-slate-200 p-5 mb-6 space-y-3">
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 mb-6 space-y-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-sm text-blue-700">
+            💡 Una <strong>promoción</strong> es una oferta visible en tu tienda con fecha de inicio y fin. Los clientes la ven automáticamente sin necesidad de ingresar un código. Ideal para happy hour, ofertas del día, o temporadas.
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="col-span-2">
               <label className="text-xs font-semibold text-slate-600 mb-1 block">Título *</label>
               <input className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" placeholder="Happy Hour -30%" value={promoTitle} onChange={e => setPromoTitle(e.target.value)} />
+              <p className="text-xs text-slate-400 mt-1">El nombre que ven tus clientes en la tienda. Que sea claro y atractivo.</p>
             </div>
             <div className="col-span-2">
               <label className="text-xs font-semibold text-slate-600 mb-1 block">Descripción</label>
               <input className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" placeholder="30% off en hamburguesas de 18 a 21hs" value={promoDesc} onChange={e => setPromoDesc(e.target.value)} />
+              <p className="text-xs text-slate-400 mt-1">Detalle de la oferta. Qué productos aplica, condiciones, etc.</p>
             </div>
             <div>
-              <label className="text-xs font-semibold text-slate-600 mb-1 block">Tipo</label>
+              <label className="text-xs font-semibold text-slate-600 mb-1 block">Tipo de descuento</label>
               <select className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" value={promoDiscountType} onChange={e => setPromoDiscountType(e.target.value as any)}>
                 <option value="percentage">Porcentaje (%)</option>
                 <option value="fixed">Monto fijo ($)</option>
               </select>
+              <p className="text-xs text-slate-400 mt-1">{promoDiscountType === 'percentage' ? 'Descuento en porcentaje sobre el total del pedido' : 'Monto fijo que se descuenta del total'}</p>
             </div>
             <div>
-              <label className="text-xs font-semibold text-slate-600 mb-1 block">Valor *</label>
+              <label className="text-xs font-semibold text-slate-600 mb-1 block">Valor del descuento *</label>
               <input type="number" className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" value={promoDiscountValue} onChange={e => setPromoDiscountValue(e.target.value)} />
+              <p className="text-xs text-slate-400 mt-1">{promoDiscountType === 'percentage' ? 'Ej: 30 = 30% off' : 'Ej: 1000 = $1000 de descuento'}</p>
             </div>
             <div>
-              <label className="text-xs font-semibold text-slate-600 mb-1 block">Inicio *</label>
+              <label className="text-xs font-semibold text-slate-600 mb-1 block">Fecha y hora de inicio *</label>
               <input type="datetime-local" className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" value={promoStart} onChange={e => setPromoStart(e.target.value)} />
+              <p className="text-xs text-slate-400 mt-1">Cuándo empieza a verse la promoción en tu tienda</p>
             </div>
             <div>
-              <label className="text-xs font-semibold text-slate-600 mb-1 block">Fin *</label>
+              <label className="text-xs font-semibold text-slate-600 mb-1 block">Fecha y hora de fin *</label>
               <input type="datetime-local" className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" value={promoEnd} onChange={e => setPromoEnd(e.target.value)} />
+              <p className="text-xs text-slate-400 mt-1">Cuándo deja de verse. Después de esta fecha se desactiva sola.</p>
             </div>
           </div>
           <div className="flex gap-3">
