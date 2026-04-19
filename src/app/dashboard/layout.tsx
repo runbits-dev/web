@@ -68,9 +68,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <aside className="fixed left-0 top-0 bottom-0 w-64 bg-white border-r border-slate-200 flex flex-col">
         <div className="p-6 border-b border-slate-100">
           <span className="logo-runbits logo-runbits-dark text-lg">RunBits</span>
-          <p className="text-xs text-slate-400 mt-0.5">
-            {isSuperAdmin ? 'superadmin' : (user?.store_name || 'panel')}
-          </p>
+          {(isSuperAdmin || user?.store_name) && (
+            <p className="text-xs text-slate-400 mt-0.5">
+              {isSuperAdmin ? 'Administrador' : user?.store_name}
+            </p>
+          )}
         </div>
 
         {isSuperAdmin && (
