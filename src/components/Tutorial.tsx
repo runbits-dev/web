@@ -56,18 +56,24 @@ const TUTORIAL_STEPS = [
 export function Tutorial() {
   const [show, setShow] = useState(false)
   const [step, setStep] = useState(0)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const dismissed = localStorage.getItem('tutorial_dismissed')
-    if (dismissed === 'true') return
-    setShow(true)
-    const savedStep = parseInt(localStorage.getItem('tutorial_step') || '0', 10)
-    if (savedStep > 0 && savedStep < TUTORIAL_STEPS.length) setStep(savedStep)
+    setMounted(true)
+    try {
+      const dismissed = localStorage.getItem('tutorial_dismissed')
+      if (dismissed === 'true') return
+      setShow(true)
+      const savedStep = parseInt(localStorage.getItem('tutorial_step') || '0', 10)
+      if (savedStep > 0 && savedStep < TUTORIAL_STEPS.length) setStep(savedStep)
+    } catch {}
   }, [])
 
   useEffect(() => {
-    if (show) localStorage.setItem('tutorial_step', String(step))
-  }, [step, show])
+    if (mounted && show) {
+      try { localStorage.setItem('tutorial_step', String(step)) } catch {}
+    }
+  }, [step, show, mounted])
 
   function dismiss() {
     localStorage.setItem('tutorial_dismissed', 'true')
@@ -75,7 +81,7 @@ export function Tutorial() {
     setShow(false)
   }
 
-  if (!show) return null
+  if (!mounted || !show) return null
 
   const current = TUTORIAL_STEPS[step]
   const isLast = step === TUTORIAL_STEPS.length - 1

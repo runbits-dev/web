@@ -471,9 +471,7 @@ function Pricing() {
                 className={`mt-8 block w-full text-center py-3 px-6 rounded-xl font-semibold transition-colors ${
                   plan.highlighted
                     ? 'bg-white text-brand-700 hover:bg-brand-50'
-                    : (plan as any).trial
-                      ? 'bg-blue-600 text-white hover:bg-blue-700'
-                      : 'border-2 border-brand-600 text-brand-700 hover:bg-brand-50'
+                    : 'border-2 border-brand-600 text-brand-700 hover:bg-brand-50'
                 }`}
               >
                 {plan.cta}
