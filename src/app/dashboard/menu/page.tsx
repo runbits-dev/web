@@ -57,6 +57,11 @@ export default function MenuPage() {
   const [error, setError] = useState<string | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
 
+  const bt = typeof window !== 'undefined' ? localStorage.getItem('business_type') || 'other' : 'other'
+  const presetCats = CATEGORY_PRESETS[bt] || CATEGORY_PRESETS.other
+  const existingCats = [...new Set(items.map(i => i.category).filter(Boolean))]
+  const allCategories = [...new Set([...presetCats, ...existingCats])]
+
   useEffect(() => {
     api.me().then(u => {
       if (u.restaurant_id) {
@@ -246,30 +251,22 @@ export default function MenuPage() {
                 </div>
                 <div>
                   <label className="text-xs font-semibold text-slate-600 mb-1 block">Categoría</label>
-                  {(() => {
-                    const bt = typeof window !== 'undefined' ? localStorage.getItem('business_type') || 'other' : 'other'
-                    const presets = CATEGORY_PRESETS[bt] || CATEGORY_PRESETS.other
-                    const existingCats = [...new Set(items.map(i => i.category).filter(Boolean))]
-                    const allCats = [...new Set([...presets, ...existingCats])]
-                    return (
-                      <select
-                        className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-                        value={form.category}
-                        onChange={e => {
-                          if (e.target.value === '__custom__') {
-                            const custom = prompt('Nombre de la nueva categoría:')
-                            if (custom) setForm(f => ({ ...f, category: custom.trim() }))
-                          } else {
-                            setForm(f => ({ ...f, category: e.target.value }))
-                          }
-                        }}
-                      >
-                        <option value="">Sin categoría</option>
-                        {allCats.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                        <option value="__custom__">+ Crear nueva categoría...</option>
-                      </select>
-                    )
-                  })()
+                  <select
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                    value={form.category}
+                    onChange={e => {
+                      if (e.target.value === '__custom__') {
+                        const custom = prompt('Nombre de la nueva categoría:')
+                        if (custom) setForm(f => ({ ...f, category: custom.trim() }))
+                      } else {
+                        setForm(f => ({ ...f, category: e.target.value }))
+                      }
+                    }}
+                  >
+                    <option value="">Sin categoría</option>
+                    {allCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                    <option value="__custom__">+ Crear nueva categoría...</option>
+                  </select>
                 </div>
               </div>
               {/* Photo upload */}
