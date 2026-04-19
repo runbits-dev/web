@@ -5,6 +5,8 @@ import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { api, type User } from '@/lib/api'
 import { Tutorial } from '@/components/Tutorial'
+import { HelpWidget } from '@/components/HelpWidget'
+import { BusinessSetup, getNavForBusinessType } from '@/components/BusinessSetup'
 import { Home, ShoppingBag, PackageCheck, BarChart3, Megaphone, CreditCard, Settings, LayoutDashboard, MapPin, Store, Bike, ClipboardList, Users, DollarSign, Wallet, Receipt, Map } from 'lucide-react'
 
 const storeNav = [
@@ -35,10 +37,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname()
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const [businessType, setBusinessType] = useState<string | null>(null)
+  const [showSetup, setShowSetup] = useState(false)
 
   useEffect(() => {
     const token = localStorage.getItem('token')
     if (!token) { router.push('/login'); return }
+    const bt = localStorage.getItem('business_type')
+    if (bt) setBusinessType(bt)
+    else setShowSetup(true)
     api.me()
       .then(setUser)
       .catch(() => { localStorage.removeItem('token'); router.push('/login') })
@@ -61,7 +68,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const isSuperAdmin = user?.role === 'superadmin'
   const isAdminSection = pathname.startsWith('/dashboard/admin')
-  const nav = isAdminSection ? adminNav : storeNav
+  const dynamicStoreNav = businessType ? getNavForBusinessType(businessType) : storeNav
+  const nav = isAdminSection ? adminNav : dynamicStoreNav
+
+  if (showSetup && !businessType) {
+    return <BusinessSetup onComplete={(type) => { setBusinessType(type); setShowSetup(false) }} />
+  }
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -101,7 +113,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                   active ? 'bg-blue-50 text-blue-700 shadow-sm' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                 }`}>
-                {'Icon' in item && item.Icon ? <item.Icon className="w-5 h-5" /> : null}
+                {(() => {
+                  const iconMap: Record<string, any> = { Home, ShoppingBag, PackageCheck, BarChart3, Megaphone, CreditCard, Settings, LayoutDashboard, MapPin, Store, Bike, ClipboardList, Users, DollarSign, Wallet, Receipt, Map }
+                  const IconComp = ('Icon' in item && (item as any).Icon) ? (item as any).Icon : ('iconName' in item ? iconMap[(item as any).iconName] : null)
+                  return IconComp ? <IconComp className="w-5 h-5" /> : null
+                })()}
                 {item.label}
               </Link>
             )
@@ -127,6 +143,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="max-w-6xl">{children}</div>
       </main>
       <Tutorial />
+      <HelpWidget />
     </div>
   )
 }
