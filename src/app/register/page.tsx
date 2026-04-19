@@ -39,7 +39,7 @@ export default function RegisterPage() {
     setLoading(true)
     setError('')
     try {
-      const res = await api.loginWithGoogle(response.credential)
+      const res = await api.loginGoogle(response.credential)
       localStorage.setItem('token', res.token)
       localStorage.setItem('user', JSON.stringify(res.user))
       localStorage.setItem('show_tutorial', 'true')
