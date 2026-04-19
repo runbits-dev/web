@@ -141,6 +141,9 @@ const sprints: Sprint[] = [
       { id: '9.7', label: 'Multi-negocio: 1 cuenta, múltiples tipos de comercio', repo: 'auth + restaurant' },
       { id: '9.8', label: 'Enforcement de límites por plan (gateway middleware)', repo: 'gateway + billing' },
       { id: '9.9', label: 'Admin backend: gestión de planes y comercios', repo: 'web + billing' },
+      { id: '9.10', label: 'Solicitar número D-U-N-S para la LLC (dnb.com, ~30 días)', repo: 'legal' },
+      { id: '9.11', label: 'Convertir Google Play a cuenta Organization con DUNS', repo: 'stores' },
+      { id: '9.12', label: 'Publicar app en Google Play (cuenta Individual mientras tanto)', repo: 'mobile' },
     ],
   },
 ]
