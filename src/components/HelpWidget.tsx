@@ -95,7 +95,7 @@ export function HelpWidget() {
                 onClick={() => { setInput(''); setMessages(prev => [...prev, { role: 'user', text: q.label }]); setTimeout(() => setMessages(prev => [...prev, { role: 'assistant', text: findAnswer(q.faq) }]), 400) }}
                 className="shrink-0 text-xs px-2.5 py-1.5 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors whitespace-nowrap"
               >
-                {q}
+                {q.label}
               </button>
             ))}
           </div>
