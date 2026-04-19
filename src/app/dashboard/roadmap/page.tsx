@@ -129,6 +129,20 @@ const sprints: Sprint[] = [
       { id: '8.8', label: 'Verificación de identidad (niveles ARCA 0-3)', repo: 'auth + web' },
     ],
   },
+  {
+    id: 's9', title: 'Sprint 9 — UX & Onboarding', dates: 'activo', color: '#f97316',
+    tasks: [
+      { id: '9.1', label: '✅ Registro público con wizard 3 pasos + tipo de negocio', repo: 'web' },
+      { id: '9.2', label: '✅ Fix landing pricing (sin comisiones, 4 planes correctos)', repo: 'web' },
+      { id: '9.3', label: '✅ Fix links /register (antes iban a /dashboard/register)', repo: 'web' },
+      { id: '9.4', label: 'Tutorial interactivo primera vez (guía por secciones)', repo: 'web' },
+      { id: '9.5', label: 'Setup inicial por tipo de negocio (vistas personalizadas)', repo: 'web + restaurant' },
+      { id: '9.6', label: 'Upload de fotos de productos (R2)', repo: 'web + restaurant' },
+      { id: '9.7', label: 'Multi-negocio: 1 cuenta, múltiples tipos de comercio', repo: 'auth + restaurant' },
+      { id: '9.8', label: 'Enforcement de límites por plan (gateway middleware)', repo: 'gateway + billing' },
+      { id: '9.9', label: 'Admin backend: gestión de planes y comercios', repo: 'web + billing' },
+    ],
+  },
 ]
 
 const services = [
