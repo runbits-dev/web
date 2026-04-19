@@ -8,7 +8,7 @@ const TUTORIAL_STEPS = [
   { selector: '[data-tour="orders"]', title: 'Pedidos', description: 'Cuando un cliente pide, aparece acá. Podés ver el detalle y chatear con el cliente.', position: 'right' as const },
   { selector: '[data-tour="stats"]', title: 'Estadísticas', description: 'Pedidos por día, ingresos, ticket promedio, y gráficos de tendencia.', position: 'right' as const },
   { selector: '[data-tour="marketing"]', title: 'Marketing', description: 'Creá cupones de descuento y promociones con horario para tus clientes.', position: 'right' as const },
-  { selector: '[data-tour="subscription"]', title: 'Suscripción', description: 'Tu plan actual, uso, y opciones de upgrade.', position: 'right' as const },
+  { selector: '[data-tour="subscription"]', title: 'Suscripción', description: 'Revisá tu plan actual, tu consumo, y las opciones para escalar cuando lo necesites.', position: 'right' as const },
   { selector: '[data-tour="settings"]', title: 'Configuración', description: 'Datos de tu negocio, horarios, dirección, y personalización.', position: 'right' as const },
 ]
 
