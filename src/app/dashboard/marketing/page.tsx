@@ -34,8 +34,10 @@ export default function MarketingPage() {
     api.me().then(u => {
       if (u.restaurant_id) {
         setRestaurantId(u.restaurant_id)
-        Promise.all([api.getCoupons(), api.getActivePromotions()])
-          .then(([c, p]) => { setCoupons(c); setPromotions(p) })
+        Promise.all([
+          api.getCoupons(u.restaurant_id).catch(() => []),
+          api.getActivePromotions(u.restaurant_id).catch(() => []),
+        ]).then(([c, p]) => { setCoupons(Array.isArray(c) ? c : []); setPromotions(Array.isArray(p) ? p : []) })
           .catch(() => {})
           .finally(() => setLoading(false))
       } else {
@@ -251,13 +253,15 @@ export default function MarketingPage() {
             <div className="bg-white rounded-2xl border border-slate-200 p-16 text-center">
               <p className="text-slate-400 text-sm">No hay promociones activas.</p>
             </div>
-          ) : promotions.map(p => (
+          ) : promotions.map(p => {
+            const config = typeof p.config === 'string' ? JSON.parse(p.config) : (p.config || {})
+            return (
             <div key={p.id} className="bg-white rounded-2xl border border-slate-200 p-5 flex items-center justify-between">
               <div>
-                <p className="font-semibold text-slate-900">{p.title}</p>
+                <p className="font-semibold text-slate-900">{p.name || p.title}</p>
                 <p className="text-sm text-slate-500 mt-0.5">
-                  {p.discount_type === 'percentage' ? `${p.discount_value}% off` : `$${p.discount_value} off`}
-                  {p.description && ` · ${p.description}`}
+                  {config.discountType === 'percentage' ? `${config.discountValue}% off` : `$${config.discountValue} off`}
+                  {config.description && ` · ${config.description}`}
                 </p>
                 <p className="text-xs text-slate-400 mt-1">
                   {new Date(p.starts_at).toLocaleDateString('es-AR')} → {new Date(p.ends_at).toLocaleDateString('es-AR')}
@@ -265,7 +269,8 @@ export default function MarketingPage() {
               </div>
               <button onClick={() => deletePromotion(p.id)} className="text-xs text-red-400 hover:text-red-600 font-medium px-3 py-1.5 rounded-lg hover:bg-red-50">Eliminar</button>
             </div>
-          ))}
+            )
+          })}
         </div>
       )}
     </div>

@@ -134,7 +134,7 @@ export const api = {
     request<void>(`/api/restaurants/${restaurantId}/menu/${itemId}`, { method: 'DELETE' }),
 
   // Coupons & Promotions (social-service via gateway)
-  getCoupons: () => request<any[]>('/api/coupons'),
+  getCoupons: (restaurantId?: string) => request<any[]>(`/api/coupons${restaurantId ? `?restaurantId=${restaurantId}` : ''}`),
   createCoupon: (data: { code: string; discountType: 'percentage' | 'fixed'; discountValue: number; minOrder?: number; maxUses?: number; expiresAt?: string; restaurantId: string }) =>
     request<any>('/api/coupons', { method: 'POST', body: JSON.stringify({
       restaurantId: data.restaurantId, code: data.code, discountType: data.discountType,
@@ -145,7 +145,7 @@ export const api = {
   validateCoupon: (code: string, restaurantId: string) =>
     request<any>('/api/coupons/validate', { method: 'POST', body: JSON.stringify({ code, restaurantId }) }),
 
-  getActivePromotions: () => request<any[]>('/api/promotions/active'),
+  getActivePromotions: (restaurantId?: string) => request<any[]>(`/api/promotions/active${restaurantId ? `?restaurantId=${restaurantId}` : ''}`),
   createPromotion: (data: { title: string; description: string; discountType: 'percentage' | 'fixed'; discountValue: number; startsAt: string; endsAt: string; restaurantId: string }) =>
     request<any>('/api/promotions', { method: 'POST', body: JSON.stringify({
       restaurantId: data.restaurantId,
