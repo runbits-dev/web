@@ -69,6 +69,7 @@ export default function MenuPage() {
       price: (item.price / 100).toFixed(2),
       category: item.category || '',
       is_available: isItemAvailable(item),
+      imagePreview: '',
     })
     setError(null)
     setModal({ mode: 'edit', item })

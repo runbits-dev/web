@@ -181,7 +181,7 @@ function Features() {
       ),
       title: 'App para clientes',
       description:
-        'Tus clientes piden desde su celular. Catálogo digital, seguimiento en tiempo real y múltiples medios de pago.',
+        'Tus clientes piden desde su celular. Catálogo digital con fotos, seguimiento en tiempo real y múltiples medios de pago.',
     },
     {
       icon: (
@@ -191,7 +191,7 @@ function Features() {
       ),
       title: 'Panel de comercio',
       description:
-        'Gestioná tu menú, controlá pedidos en tiempo real y accedé a estadísticas detalladas de tu negocio.',
+        'Gestioná tu catálogo, controlá pedidos en tiempo real y accedé a estadísticas detalladas de tu negocio.',
     },
     {
       icon: (
@@ -256,7 +256,7 @@ function HowItWorks() {
     },
     {
       number: '02',
-      title: 'Cargá tu menú',
+      title: 'Cargá tu catálogo',
       description:
         'Subí tus productos con fotos, precios y descripciones. Organizalos por categorías para que tus clientes encuentren todo fácil.',
     },
@@ -316,7 +316,7 @@ function Pricing() {
       highlighted: false,
       features: [
         'Pedidos ilimitados',
-        'Menú ilimitado con variantes',
+        'Catálogo ilimitado con variantes',
         'Tienda online propia',
         'Push notifications',
         'QR de verificación de entrega',
@@ -391,7 +391,7 @@ function Pricing() {
             Tarifa fija. Sin comisiones. Nunca.
           </h2>
           <p className="mt-4 text-lg text-gray-600">
-            Todos los planes incluyen pedidos y menú ilimitados. Pagás una tarifa fija mensual y te quedás con el 100% de tus ventas.
+            Todos los planes incluyen pedidos y catálogo ilimitados. Pagás una tarifa fija mensual y te quedás con el 100% de tus ventas.
           </p>
         </div>
 
