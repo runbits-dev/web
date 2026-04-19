@@ -23,7 +23,7 @@ function parseVariants(item: MenuItem): Variant[] {
 }
 
 function isItemAvailable(item: MenuItem): boolean {
-  if (isItemAvailable(item) !== undefined) return isItemAvailable(item)
+  if (item.is_available !== undefined) return item.is_available
   if (item.available !== undefined) return item.available === 1
   return true
 }
@@ -32,6 +32,18 @@ type ModalState =
   | { mode: 'closed' }
   | { mode: 'create' }
   | { mode: 'edit'; item: MenuItem }
+
+const CATEGORY_PRESETS: Record<string, string[]> = {
+  restaurant: ['Entradas', 'Principales', 'Acompañamientos', 'Postres', 'Bebidas', 'Combos', 'Promociones'],
+  store: ['Destacados', 'Nuevos', 'Ofertas', 'Accesorios', 'Indumentaria', 'Electrónica'],
+  grocery: ['Frutas y verduras', 'Lácteos', 'Carnes', 'Panadería', 'Bebidas', 'Limpieza', 'Congelados'],
+  pharmacy: ['Medicamentos', 'Perfumería', 'Cuidado personal', 'Bebés', 'Suplementos'],
+  services: ['Consultas', 'Turnos', 'Paquetes', 'Urgencias'],
+  beauty: ['Cortes', 'Color', 'Tratamientos', 'Manos y pies', 'Depilación'],
+  pets: ['Alimento', 'Accesorios', 'Higiene', 'Juguetes', 'Salud'],
+  transport: ['Viajes', 'Fletes', 'Encomiendas'],
+  other: ['General', 'Destacados', 'Ofertas'],
+}
 
 const EMPTY_FORM = { name: '', description: '', price: '', category: '', is_available: true, imagePreview: '' }
 
@@ -234,12 +246,30 @@ export default function MenuPage() {
                 </div>
                 <div>
                   <label className="text-xs font-semibold text-slate-600 mb-1 block">Categoría</label>
-                  <input
-                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-                    value={form.category}
-                    onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-                    placeholder="Ej: Principales"
-                  />
+                  {(() => {
+                    const bt = typeof window !== 'undefined' ? localStorage.getItem('business_type') || 'other' : 'other'
+                    const presets = CATEGORY_PRESETS[bt] || CATEGORY_PRESETS.other
+                    const existingCats = [...new Set(items.map(i => i.category).filter(Boolean))]
+                    const allCats = [...new Set([...presets, ...existingCats])]
+                    return (
+                      <select
+                        className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                        value={form.category}
+                        onChange={e => {
+                          if (e.target.value === '__custom__') {
+                            const custom = prompt('Nombre de la nueva categoría:')
+                            if (custom) setForm(f => ({ ...f, category: custom.trim() }))
+                          } else {
+                            setForm(f => ({ ...f, category: e.target.value }))
+                          }
+                        }}
+                      >
+                        <option value="">Sin categoría</option>
+                        {allCats.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                        <option value="__custom__">+ Crear nueva categoría...</option>
+                      </select>
+                    )
+                  })()
                 </div>
               </div>
               {/* Photo upload */}
