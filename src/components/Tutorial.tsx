@@ -1,61 +1,21 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 const TUTORIAL_STEPS = [
-  {
-    title: '¡Bienvenido a Runbits!',
-    description: 'Te vamos a mostrar las secciones principales de tu panel. Toma menos de 1 minuto.',
-    target: null,
-    icon: '👋',
-  },
-  {
-    title: 'Inicio',
-    description: 'Acá ves un resumen rápido de tu negocio: pedidos activos, ingresos del día, y si tenés pasos pendientes del setup.',
-    target: '/dashboard',
-    icon: '🏠',
-  },
-  {
-    title: 'Catálogo',
-    description: 'Cargá tus productos con nombre, descripción, precio, categoría y foto. Tus clientes los ven en tu tienda online.',
-    target: '/dashboard/menu',
-    icon: '🍽️',
-  },
-  {
-    title: 'Pedidos',
-    description: 'Cuando un cliente hace un pedido, aparece acá. Podés ver el detalle, chatear con el cliente, y seguir el estado.',
-    target: '/dashboard/orders',
-    icon: '📦',
-  },
-  {
-    title: 'Estadísticas',
-    description: 'Datos de tu negocio: pedidos por día/semana/mes, ingresos, ticket promedio, y gráficos de tendencia.',
-    target: '/dashboard/stats',
-    icon: '📊',
-  },
-  {
-    title: 'Marketing',
-    description: 'Creá cupones de descuento y promociones con horario. Tus clientes los ven en tu tienda.',
-    target: '/dashboard/marketing',
-    icon: '🎯',
-  },
-  {
-    title: 'Suscripción',
-    description: 'Gestioná tu plan, vé tu uso, y hacé upgrade cuando necesites más features.',
-    target: '/dashboard/subscription',
-    icon: '💳',
-  },
-  {
-    title: '¡Listo!',
-    description: 'Ya conocés tu panel. El primer paso es cargar tus productos en el Catálogo. ¡Éxitos!',
-    target: null,
-    icon: '🚀',
-  },
+  { selector: '[data-tour="home"]', title: 'Inicio', description: 'Resumen de tu negocio: pedidos activos, ingresos, y pasos pendientes del setup.', position: 'right' as const },
+  { selector: '[data-tour="menu"]', title: 'Catálogo', description: 'Cargá tus productos con nombre, precio, foto y categoría. Tus clientes los ven en tu tienda.', position: 'right' as const },
+  { selector: '[data-tour="orders"]', title: 'Pedidos', description: 'Cuando un cliente pide, aparece acá. Podés ver el detalle y chatear con el cliente.', position: 'right' as const },
+  { selector: '[data-tour="stats"]', title: 'Estadísticas', description: 'Pedidos por día, ingresos, ticket promedio, y gráficos de tendencia.', position: 'right' as const },
+  { selector: '[data-tour="marketing"]', title: 'Marketing', description: 'Creá cupones de descuento y promociones con horario para tus clientes.', position: 'right' as const },
+  { selector: '[data-tour="subscription"]', title: 'Suscripción', description: 'Tu plan actual, uso, y opciones de upgrade.', position: 'right' as const },
+  { selector: '[data-tour="settings"]', title: 'Configuración', description: 'Datos de tu negocio, horarios, dirección, y personalización.', position: 'right' as const },
 ]
 
 export function Tutorial() {
   const [show, setShow] = useState(false)
   const [step, setStep] = useState(0)
+  const [pos, setPos] = useState<{ top: number; left: number; width: number; height: number } | null>(null)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -69,6 +29,26 @@ export function Tutorial() {
     } catch {}
   }, [])
 
+  const updatePosition = useCallback(() => {
+    if (!show) return
+    const current = TUTORIAL_STEPS[step]
+    if (!current) return
+    const el = document.querySelector(current.selector)
+    if (el) {
+      const rect = el.getBoundingClientRect()
+      setPos({ top: rect.top, left: rect.left, width: rect.width, height: rect.height })
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    } else {
+      setPos(null)
+    }
+  }, [step, show])
+
+  useEffect(() => {
+    updatePosition()
+    window.addEventListener('resize', updatePosition)
+    return () => window.removeEventListener('resize', updatePosition)
+  }, [updatePosition])
+
   useEffect(() => {
     if (mounted && show) {
       try { localStorage.setItem('tutorial_step', String(step)) } catch {}
@@ -76,61 +56,79 @@ export function Tutorial() {
   }, [step, show, mounted])
 
   function dismiss() {
-    localStorage.setItem('tutorial_dismissed', 'true')
-    localStorage.removeItem('tutorial_step')
+    try {
+      localStorage.setItem('tutorial_dismissed', 'true')
+      localStorage.removeItem('tutorial_step')
+    } catch {}
     setShow(false)
   }
 
   if (!mounted || !show) return null
 
   const current = TUTORIAL_STEPS[step]
+  if (!current) return null
   const isLast = step === TUTORIAL_STEPS.length - 1
   const isFirst = step === 0
 
+  const tooltipTop = pos ? pos.top + pos.height / 2 - 80 : 200
+  const tooltipLeft = pos ? pos.left + pos.width + 16 : 280
+
   return (
-    <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-        {/* Progress */}
-        <div className="h-1 bg-gray-100">
-          <div className="h-full bg-emerald-500 transition-all duration-300" style={{ width: `${((step + 1) / TUTORIAL_STEPS.length) * 100}%` }} />
-        </div>
+    <>
+      {/* Overlay */}
+      <div className="fixed inset-0 z-[90]" style={{ background: 'rgba(0,0,0,0.4)' }} />
 
-        <div className="p-6">
-          <div className="text-center mb-4">
-            <span className="text-4xl">{current?.icon}</span>
-          </div>
-          <h2 className="text-xl font-bold text-gray-900 text-center">{current?.title}</h2>
-          <p className="text-sm text-gray-600 text-center mt-3 leading-relaxed">{current?.description}</p>
+      {/* Highlight the target element */}
+      {pos && (
+        <div className="fixed z-[95] rounded-xl transition-all duration-300 pointer-events-none" style={{
+          top: pos.top - 4,
+          left: pos.left - 4,
+          width: pos.width + 8,
+          height: pos.height + 8,
+          boxShadow: '0 0 0 4000px rgba(0,0,0,0.4)',
+          border: '2px solid #059669',
+          background: 'transparent',
+        }} />
+      )}
 
-          <div className="flex gap-3 mt-6">
+      {/* Tooltip */}
+      <div className="fixed z-[100] w-72 bg-white rounded-2xl shadow-2xl p-5 transition-all duration-300" style={{
+        top: Math.max(16, Math.min(tooltipTop, typeof window !== 'undefined' ? window.innerHeight - 250 : 500)),
+        left: Math.max(16, tooltipLeft),
+      }}>
+        {/* Arrow pointing left */}
+        <div className="absolute -left-2 top-20 w-4 h-4 bg-white rotate-45 shadow-sm" />
+
+        <div className="relative">
+          <p className="text-xs text-emerald-600 font-semibold mb-1">{step + 1} de {TUTORIAL_STEPS.length}</p>
+          <h3 className="text-base font-bold text-gray-900">{current.title}</h3>
+          <p className="text-sm text-gray-600 mt-2 leading-relaxed">{current.description}</p>
+
+          <div className="flex gap-2 mt-4">
             {!isFirst && (
-              <button onClick={() => setStep(s => s - 1)} className="flex-1 py-2.5 rounded-xl font-semibold border border-gray-200 text-gray-600 text-sm hover:bg-gray-50">
-                ← Anterior
+              <button onClick={() => setStep(s => s - 1)} className="flex-1 py-2 rounded-xl text-xs font-semibold border border-gray-200 text-gray-600 hover:bg-gray-50">
+                ←
               </button>
             )}
             {isFirst && (
-              <button onClick={() => setShow(false)} className="flex-1 py-2.5 rounded-xl font-semibold border border-gray-200 text-gray-500 text-sm hover:bg-gray-50">
+              <button onClick={() => setShow(false)} className="flex-1 py-2 rounded-xl text-xs font-semibold border border-gray-200 text-gray-400 hover:bg-gray-50">
                 Después
               </button>
             )}
             <button
               onClick={() => isLast ? dismiss() : setStep(s => s + 1)}
-              className="flex-1 bg-emerald-600 text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-emerald-700 transition-colors"
+              className="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-xs font-semibold hover:bg-emerald-700"
             >
-              {isLast ? '¡Empezar!' : 'Siguiente →'}
+              {isLast ? '¡Listo!' : 'Siguiente →'}
             </button>
           </div>
-
-          <div className="flex items-center justify-between mt-3">
-            <p className="text-xs text-gray-400">{step + 1} de {TUTORIAL_STEPS.length}</p>
-            {!isFirst && !isLast && (
-              <button onClick={dismiss} className="text-xs text-gray-400 hover:text-gray-600">
-                No mostrar más
-              </button>
-            )}
-          </div>
+          {!isFirst && (
+            <button onClick={dismiss} className="text-xs text-gray-400 hover:text-gray-600 mt-2 w-full text-center">
+              No mostrar más
+            </button>
+          )}
         </div>
       </div>
-    </div>
+    </>
   )
 }

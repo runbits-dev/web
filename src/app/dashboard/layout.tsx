@@ -7,13 +7,13 @@ import { api, type User } from '@/lib/api'
 import { Tutorial } from '@/components/Tutorial'
 
 const storeNav = [
-  { href: '/dashboard', label: 'Inicio', icon: '🏠', exact: true },
-  { href: '/dashboard/menu', label: 'Menú', icon: '🍽️' },
-  { href: '/dashboard/orders', label: 'Pedidos', icon: '📦' },
-  { href: '/dashboard/stats', label: 'Estadísticas', icon: '📊' },
-  { href: '/dashboard/marketing', label: 'Marketing', icon: '🎯' },
-  { href: '/dashboard/subscription', label: 'Suscripción', icon: '💳' },
-  { href: '/dashboard/settings', label: 'Configuración', icon: '⚙️' },
+  { href: '/dashboard', label: 'Inicio', icon: '🏠', exact: true, tour: 'home' },
+  { href: '/dashboard/menu', label: 'Catálogo', icon: '🍽️', tour: 'menu' },
+  { href: '/dashboard/orders', label: 'Pedidos', icon: '📦', tour: 'orders' },
+  { href: '/dashboard/stats', label: 'Estadísticas', icon: '📊', tour: 'stats' },
+  { href: '/dashboard/marketing', label: 'Marketing', icon: '🎯', tour: 'marketing' },
+  { href: '/dashboard/subscription', label: 'Suscripción', icon: '💳', tour: 'subscription' },
+  { href: '/dashboard/settings', label: 'Configuración', icon: '⚙️', tour: 'settings' },
 ]
 
 const adminNav = [
@@ -94,6 +94,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             const active = item.exact ? pathname === item.href : pathname.startsWith(item.href)
             return (
               <Link key={item.href} href={item.href}
+                data-tour={(item as any).tour || undefined}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                   active ? 'bg-blue-50 text-blue-700 shadow-sm' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                 }`}>
