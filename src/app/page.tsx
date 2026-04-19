@@ -33,7 +33,7 @@ function Navbar() {
               Iniciar sesión
             </Link>
             <Link
-              href="/dashboard/register"
+              href="/register"
               className="text-sm font-medium bg-brand-600 text-white px-4 py-2 rounded-lg hover:bg-brand-700 transition-colors"
             >
               Registrar comercio
@@ -71,7 +71,7 @@ function Hero() {
 
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
-            href="/dashboard/register"
+            href="/register"
             className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 text-base font-semibold text-white bg-brand-600 rounded-xl hover:bg-brand-700 shadow-lg shadow-brand-600/25 transition-all hover:shadow-xl hover:shadow-brand-600/30 hover:-translate-y-0.5"
           >
             Registrar mi comercio
@@ -467,7 +467,7 @@ function Pricing() {
                 ))}
               </ul>
               <Link
-                href={plan.price ? '/dashboard/register' : 'mailto:sales@runbits.io'}
+                href={plan.price ? '/register' : 'mailto:sales@runbits.io'}
                 className={`mt-8 block w-full text-center py-3 px-6 rounded-xl font-semibold transition-colors ${
                   plan.highlighted
                     ? 'bg-white text-brand-700 hover:bg-brand-50'

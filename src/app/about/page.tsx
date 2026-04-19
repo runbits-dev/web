@@ -103,7 +103,7 @@ export default function AboutPage() {
         </div>
 
         <div className="mt-16 flex flex-col sm:flex-row gap-4">
-          <Link href="/dashboard/register" className="inline-flex items-center justify-center px-8 py-3.5 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-colors">
+          <Link href="/register" className="inline-flex items-center justify-center px-8 py-3.5 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-colors">
             Registrar mi comercio
           </Link>
           <Link href="/" className="inline-flex items-center justify-center px-8 py-3.5 border border-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-colors">
