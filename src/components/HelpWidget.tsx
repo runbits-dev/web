@@ -84,10 +84,15 @@ export function HelpWidget() {
 
           {/* Quick actions */}
           <div className="px-3 py-2 border-b border-gray-100 flex gap-1.5 overflow-x-auto shrink-0">
-            {['Cargar productos', 'Crear cupón', 'Ver pedidos', 'Cambiar plan'].map(q => (
+            {[
+              { label: 'Cargar productos', key: 'cómo cargo productos' },
+              { label: 'Crear cupón', key: 'cómo creo un cupón' },
+              { label: 'Ver pedidos', key: 'cómo veo mis pedidos' },
+              { label: 'Cambiar plan', key: 'cómo cambio mi plan' },
+            ].map(q => (
               <button
-                key={q}
-                onClick={() => { setInput(''); setMessages(prev => [...prev, { role: 'user', text: `¿Cómo ${q.toLowerCase()}?` }]); setTimeout(() => setMessages(prev => [...prev, { role: 'assistant', text: findAnswer(q.toLowerCase()) }]), 400) }}
+                key={q.label}
+                onClick={() => { setInput(''); setMessages(prev => [...prev, { role: 'user', text: q.label }]); setTimeout(() => setMessages(prev => [...prev, { role: 'assistant', text: findAnswer(q.key) }]), 400) }}
                 className="shrink-0 text-xs px-2.5 py-1.5 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors whitespace-nowrap"
               >
                 {q}

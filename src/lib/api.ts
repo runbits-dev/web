@@ -136,14 +136,25 @@ export const api = {
   // Coupons & Promotions (social-service via gateway)
   getCoupons: () => request<any[]>('/api/coupons'),
   createCoupon: (data: { code: string; discountType: 'percentage' | 'fixed'; discountValue: number; minOrder?: number; maxUses?: number; expiresAt?: string; restaurantId: string }) =>
-    request<any>('/api/coupons', { method: 'POST', body: JSON.stringify(data) }),
+    request<any>('/api/coupons', { method: 'POST', body: JSON.stringify({
+      restaurantId: data.restaurantId, code: data.code, discountType: data.discountType,
+      discountValue: data.discountValue, minOrderAmount: data.minOrder || 0,
+      usageLimit: data.maxUses || undefined,
+    }) }),
   deleteCoupon: (id: string) => request<void>(`/api/coupons/${id}`, { method: 'DELETE' }),
   validateCoupon: (code: string, restaurantId: string) =>
     request<any>('/api/coupons/validate', { method: 'POST', body: JSON.stringify({ code, restaurantId }) }),
 
   getActivePromotions: () => request<any[]>('/api/promotions/active'),
   createPromotion: (data: { title: string; description: string; discountType: 'percentage' | 'fixed'; discountValue: number; startsAt: string; endsAt: string; restaurantId: string }) =>
-    request<any>('/api/promotions', { method: 'POST', body: JSON.stringify(data) }),
+    request<any>('/api/promotions', { method: 'POST', body: JSON.stringify({
+      restaurantId: data.restaurantId,
+      name: data.title,
+      type: 'happy_hour',
+      config: { discountType: data.discountType, discountValue: data.discountValue, description: data.description },
+      startsAt: new Date(data.startsAt).getTime(),
+      endsAt: new Date(data.endsAt).getTime(),
+    }) }),
   deletePromotion: (id: string) => request<void>(`/api/promotions/${id}`, { method: 'DELETE' }),
 
   // Favorites (social-service via gateway)
