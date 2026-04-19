@@ -146,6 +146,7 @@ export const api = {
     request<any>('/api/coupons/validate', { method: 'POST', body: JSON.stringify({ code, restaurantId }) }),
 
   getActivePromotions: (restaurantId?: string) => request<any[]>(`/api/promotions/active${restaurantId ? `?restaurantId=${restaurantId}` : ''}`),
+  getAllPromotions: (restaurantId: string) => request<any[]>(`/api/promotions?restaurantId=${restaurantId}`),
   createPromotion: (data: { title: string; description: string; discountType: 'percentage' | 'fixed'; discountValue: number; startsAt: string; endsAt: string; restaurantId: string }) =>
     request<any>('/api/promotions', { method: 'POST', body: JSON.stringify({
       restaurantId: data.restaurantId,

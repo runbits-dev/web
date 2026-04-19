@@ -36,7 +36,7 @@ export default function MarketingPage() {
         setRestaurantId(u.restaurant_id)
         Promise.all([
           api.getCoupons(u.restaurant_id).catch(() => []),
-          api.getActivePromotions(u.restaurant_id).catch(() => []),
+          api.getAllPromotions(u.restaurant_id).catch(() => []),
         ]).then(([c, p]) => { setCoupons(Array.isArray(c) ? c : []); setPromotions(Array.isArray(p) ? p : []) })
           .catch(() => {})
           .finally(() => setLoading(false))
