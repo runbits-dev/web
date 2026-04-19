@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { api, type User } from '@/lib/api'
+import { Tutorial } from '@/components/Tutorial'
 
 const storeNav = [
   { href: '/dashboard', label: 'Inicio', icon: '🏠', exact: true },
@@ -121,6 +122,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <main className="ml-64 p-8">
         <div className="max-w-6xl">{children}</div>
       </main>
+      <Tutorial />
     </div>
   )
 }
