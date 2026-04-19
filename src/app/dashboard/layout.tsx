@@ -5,28 +5,29 @@ import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { api, type User } from '@/lib/api'
 import { Tutorial } from '@/components/Tutorial'
+import { Home, ShoppingBag, PackageCheck, BarChart3, Megaphone, CreditCard, Settings, LayoutDashboard, MapPin, Store, Bike, ClipboardList, Users, DollarSign, Wallet, Receipt, Map } from 'lucide-react'
 
 const storeNav = [
-  { href: '/dashboard', label: 'Inicio', icon: '🏠', exact: true, tour: 'home' },
-  { href: '/dashboard/menu', label: 'Catálogo', icon: '🍽️', tour: 'menu' },
-  { href: '/dashboard/orders', label: 'Pedidos', icon: '📦', tour: 'orders' },
-  { href: '/dashboard/stats', label: 'Estadísticas', icon: '📊', tour: 'stats' },
-  { href: '/dashboard/marketing', label: 'Marketing', icon: '🎯', tour: 'marketing' },
-  { href: '/dashboard/subscription', label: 'Suscripción', icon: '💳', tour: 'subscription' },
-  { href: '/dashboard/settings', label: 'Configuración', icon: '⚙️', tour: 'settings' },
+  { href: '/dashboard', label: 'Inicio', Icon: Home, exact: true, tour: 'home' },
+  { href: '/dashboard/menu', label: 'Catálogo', Icon: ShoppingBag, tour: 'menu' },
+  { href: '/dashboard/orders', label: 'Pedidos', Icon: PackageCheck, tour: 'orders' },
+  { href: '/dashboard/stats', label: 'Estadísticas', Icon: BarChart3, tour: 'stats' },
+  { href: '/dashboard/marketing', label: 'Marketing', Icon: Megaphone, tour: 'marketing' },
+  { href: '/dashboard/subscription', label: 'Suscripción', Icon: CreditCard, tour: 'subscription' },
+  { href: '/dashboard/settings', label: 'Configuración', Icon: Settings, tour: 'settings' },
 ]
 
 const adminNav = [
-  { href: '/dashboard/admin', label: 'Overview', icon: '📈', exact: true },
-  { href: '/dashboard/roadmap', label: 'Roadmap', icon: '🗺️' },
-  { href: '/dashboard/admin/zones', label: 'Zonas', icon: '🗺️' },
-  { href: '/dashboard/admin/restaurants', label: 'Restaurantes', icon: '🍽️' },
-  { href: '/dashboard/admin/riders', label: 'Repartidores', icon: '🚴' },
-  { href: '/dashboard/admin/orders', label: 'Pedidos', icon: '📦' },
-  { href: '/dashboard/admin/agents', label: 'Agentes', icon: '👥' },
-  { href: '/dashboard/admin/commissions', label: 'Comisiones', icon: '💰' },
-  { href: '/dashboard/admin/payouts', label: 'Pagos', icon: '💸' },
-  { href: '/dashboard/admin/subscriptions', label: 'Subscripciones', icon: '🧾' },
+  { href: '/dashboard/admin', label: 'Overview', Icon: LayoutDashboard, exact: true },
+  { href: '/dashboard/roadmap', label: 'Roadmap', Icon: Map },
+  { href: '/dashboard/admin/zones', label: 'Zonas', Icon: MapPin },
+  { href: '/dashboard/admin/restaurants', label: 'Restaurantes', Icon: Store },
+  { href: '/dashboard/admin/riders', label: 'Repartidores', Icon: Bike },
+  { href: '/dashboard/admin/orders', label: 'Pedidos', Icon: ClipboardList },
+  { href: '/dashboard/admin/agents', label: 'Agentes', Icon: Users },
+  { href: '/dashboard/admin/commissions', label: 'Comisiones', Icon: DollarSign },
+  { href: '/dashboard/admin/payouts', label: 'Pagos', Icon: Wallet },
+  { href: '/dashboard/admin/subscriptions', label: 'Subscripciones', Icon: Receipt },
 ]
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -98,7 +99,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                   active ? 'bg-blue-50 text-blue-700 shadow-sm' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                 }`}>
-                <span className="text-lg">{item.icon}</span>
+                {'Icon' in item && item.Icon ? <item.Icon className="w-5 h-5" /> : null}
                 {item.label}
               </Link>
             )
