@@ -116,17 +116,18 @@ export function Tutorial() {
               </button>
             )}
             <button
-              onClick={() => isLast ? dismiss() : setStep(s => s + 1)}
+              onClick={() => isLast ? setShow(false) : setStep(s => s + 1)}
               className="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-xs font-semibold hover:bg-emerald-700"
             >
-              {isLast ? '¡Listo!' : 'Siguiente →'}
+              {isLast ? '¡Entendido!' : 'Siguiente →'}
             </button>
           </div>
-          {!isFirst && (
-            <button onClick={dismiss} className="text-xs text-gray-400 hover:text-gray-600 mt-2 w-full text-center">
-              No mostrar más
-            </button>
-          )}
+          <button
+            onClick={() => { if (window.confirm('¿Seguro que no querés ver más el tutorial? Podés reactivarlo en Configuración.')) dismiss() }}
+            className="text-xs text-gray-400 hover:text-gray-600 mt-3 w-full text-center"
+          >
+            No mostrar más
+          </button>
         </div>
       </div>
     </>
