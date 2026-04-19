@@ -199,9 +199,9 @@ function Features() {
           <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
         </svg>
       ),
-      title: 'Red de repartidores',
+      title: 'Delivery flexible',
       description:
-        'Contamos con una red de repartidores verificados para entregas rápidas y confiables en tu zona.',
+        'Usá tus propios repartidores o conectá con servicios de envío externos. Tracking GPS y verificación QR incluidos.',
     },
     {
       icon: (
@@ -264,7 +264,7 @@ function HowItWorks() {
       number: '03',
       title: 'Empezá a recibir pedidos',
       description:
-        'Tu comercio aparece en la app de Runbits. Recibí pedidos, gestioná entregas y hacé crecer tu negocio.',
+        'Tu tienda online está lista. Compartí el link con tus clientes, recibí pedidos y gestioná todo desde el dashboard.',
     },
   ]
 
@@ -308,91 +308,78 @@ function Pricing() {
 
   const plans = [
     {
-      name: 'Free Trial',
-      description: 'Probá Runbits sin compromiso',
-      billing: '30 días gratis — sin tarjeta de crédito',
-      price: '0',
-      popular: false,
-      highlighted: false,
-      trial: true,
-      features: [
-        'Perfil de comercio en la app',
-        'Gestión de menú y pedidos',
-        'Soporte por email',
-        'Hasta 50 pedidos en el período',
-        'Acceso completo por 30 días',
-      ],
-      cta: 'Probar gratis',
-    },
-    {
       name: 'Starter',
       description: 'Para negocios que recién arrancan',
-      billing: 'Facturación hasta USD 5.000/mes',
+      billing: 'Tarifa fija — sin comisiones, nunca',
       price: '49',
       popular: false,
       highlighted: false,
       features: [
-        'Perfil de comercio en la app',
-        'Gestión de menú y pedidos',
-        'Soporte por email',
+        'Pedidos ilimitados',
+        'Menú ilimitado con variantes',
+        'Tienda online propia',
+        'Push notifications',
+        'QR de verificación de entrega',
         'Estadísticas básicas',
-        'Hasta 200 pedidos/mes',
+        '14 días de prueba gratis',
       ],
-      cta: 'Empezar ahora',
+      cta: 'Probar 14 días gratis',
     },
     {
       name: 'Growth',
       description: 'Para negocios en crecimiento',
-      billing: 'Facturación hasta USD 25.000/mes',
-      price: '149',
+      billing: 'Todo de Starter + herramientas de crecimiento',
+      price: '129',
       popular: true,
       highlighted: true,
       features: [
-        'Todo del plan Starter',
-        'Comisión reducida por pedido',
-        'Posicionamiento destacado en la app',
-        'Analytics avanzados',
-        'Soporte prioritario',
-        'Promociones y cupones',
-        'Pedidos ilimitados',
+        'Todo de Starter',
+        'Dominio propio (tu-negocio.com)',
+        'Colores y marca personalizados',
+        '10 cupones + 5 promos activas',
+        '3 campañas push/mes a tus clientes',
+        'Analytics con gráficos y tendencias',
+        'Verificación de clientes',
+        'Soporte email 24h',
       ],
       cta: 'Elegir Growth',
     },
     {
       name: 'Pro',
-      description: 'Para negocios con alto volumen',
-      billing: 'Facturación hasta USD 100.000/mes',
-      price: '499',
+      description: 'Para negocios que necesitan escalar',
+      billing: 'Todo de Growth + escala y automatización',
+      price: '299',
       popular: false,
       highlighted: false,
       features: [
-        'Todo del plan Growth',
-        'Comisión mínima por pedido',
-        'Múltiples sucursales',
-        'API de integración',
-        'Account manager dedicado',
-        'Reportes personalizados',
-        'Soporte 24/7',
+        'Todo de Growth',
+        'Cupones y promos ilimitados',
+        'White-label (sin marca Runbits)',
+        'Hasta 3 sucursales',
+        '5 usuarios staff con roles',
+        '50 generaciones IA/mes',
+        'Webhooks + integraciones',
+        'Chat prioritario',
       ],
       cta: 'Elegir Pro',
     },
     {
       name: 'Enterprise',
-      description: 'Para cadenas y grandes operaciones',
-      billing: 'Facturación superior a USD 100.000/mes',
-      price: null,
+      description: 'Para cadenas y franquicias',
+      billing: 'Todo ilimitado + soporte dedicado',
+      price: '499',
       popular: false,
       highlighted: false,
       features: [
-        'Todo del plan Pro',
-        'Precios y comisiones a medida',
-        'Integraciones custom (POS, ERP)',
-        'SLA garantizado',
+        'Todo de Pro, sin límites',
+        'API REST completa',
+        'Sucursales y staff ilimitados',
+        'Facturación electrónica AFIP',
+        'Verificación de clientes ilimitada',
         'Onboarding personalizado',
-        'Infraestructura dedicada',
-        'Soporte enterprise 24/7',
+        'Account manager dedicado',
       ],
-      cta: 'Contactar ventas',
+      cta: 'Elegir Enterprise',
     },
   ]
 
@@ -401,33 +388,26 @@ function Pricing() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
-            Planes que se adaptan a tu facturación
+            Tarifa fija. Sin comisiones. Nunca.
           </h2>
           <p className="mt-4 text-lg text-gray-600">
-            Elegí el plan según el tamaño de tu negocio. Todos incluyen acceso completo a la plataforma.
+            Todos los planes incluyen pedidos y menú ilimitados. Pagás una tarifa fija mensual y te quedás con el 100% de tus ventas.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
           {plans.map((plan) => (
             <div
               key={plan.name}
               className={`relative rounded-2xl p-7 flex flex-col ${
                 plan.highlighted
                   ? 'bg-brand-600 text-white shadow-xl shadow-brand-600/20 ring-2 ring-brand-600'
-                  : (plan as any).trial
-                    ? 'bg-blue-50 border-2 border-blue-200 border-dashed'
-                    : 'bg-gray-50 border border-gray-100'
+                  : 'bg-gray-50 border border-gray-100'
               }`}
             >
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-400 text-amber-900 text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap">
                   Más elegido
-                </div>
-              )}
-              {(plan as any).trial && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap">
-                  Gratis 30 días
                 </div>
               )}
               <div>
