@@ -351,6 +351,17 @@ export default function SettingsPage() {
           )}
         </div>
       )}
+
+      {/* Ayuda */}
+      <div className="mt-8 bg-white rounded-2xl border border-slate-200 p-6">
+        <h2 className="font-semibold text-slate-900 mb-4">Ayuda</h2>
+        <button
+          onClick={() => { localStorage.removeItem('tutorial_dismissed'); localStorage.removeItem('tutorial_step'); window.location.href = '/dashboard' }}
+          className="text-sm text-emerald-600 font-medium hover:underline"
+        >
+          🔄 Ver tutorial de nuevo
+        </button>
+      </div>
     </div>
   )
 }
