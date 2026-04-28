@@ -4,9 +4,11 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Loader2, CheckCircle, XCircle } from 'lucide-react'
+import { useI18n } from '@/i18n'
 
 export default function AuthCallbackPage() {
   const router = useRouter()
+  const { t } = useI18n()
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [errorMsg, setErrorMsg] = useState('')
 
@@ -18,14 +20,14 @@ export default function AuthCallbackPage() {
     if (error) {
       setStatus('error')
       const messages: Record<string, string> = {
-        facebook_denied: 'Cancelaste el login con Facebook',
-        facebook_missing_code: 'No se recibió el código de Facebook',
-        facebook_failed: 'Error al autenticar con Facebook',
-        google_failed: 'Error al autenticar con Google',
-        google_denied: 'Cancelaste el login con Google',
-        account_inactive: 'Tu cuenta está inactiva',
+        facebook_denied: t('login.errorFacebookDenied'),
+        facebook_missing_code: t('auth.callback.errorNoCode'),
+        facebook_failed: t('login.errorFacebookFailed'),
+        google_failed: t('login.errorGoogleFailed'),
+        google_denied: t('login.errorGoogleDenied'),
+        account_inactive: t('login.errorAccountInactive'),
       }
-      setErrorMsg(messages[error] || 'Error de autenticación')
+      setErrorMsg(messages[error] || t('login.errorAuth'))
       return
     }
 
@@ -40,7 +42,7 @@ export default function AuthCallbackPage() {
     const code = params.get('code')
     if (!code) {
       setStatus('error')
-      setErrorMsg('No se recibió el código de autenticación')
+      setErrorMsg(t('auth.callback.errorNoCode'))
       return
     }
 
@@ -59,9 +61,9 @@ export default function AuthCallbackPage() {
       })
       .catch(() => {
         setStatus('error')
-        setErrorMsg('Error al procesar la autenticación. Intentá de nuevo.')
+        setErrorMsg(t('auth.callback.errorProcessing'))
       })
-  }, [router])
+  }, [router, t])
 
   return (
     <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
@@ -71,15 +73,15 @@ export default function AuthCallbackPage() {
         {status === 'loading' && (
           <div className="mt-8">
             <Loader2 className="w-10 h-10 text-indigo-600 animate-spin mx-auto" />
-            <p className="text-sm text-gray-500 mt-4">Procesando...</p>
+            <p className="text-sm text-gray-500 mt-4">{t('auth.callback.processing')}</p>
           </div>
         )}
 
         {status === 'success' && (
           <div className="mt-8">
             <CheckCircle className="w-10 h-10 text-indigo-600 mx-auto" />
-            <p className="text-sm font-semibold text-gray-900 mt-4">Sesión iniciada</p>
-            <p className="text-xs text-gray-500 mt-1">Redirigiendo al dashboard...</p>
+            <p className="text-sm font-semibold text-gray-900 mt-4">{t('auth.callback.success')}</p>
+            <p className="text-xs text-gray-500 mt-1">{t('auth.callback.redirecting')}</p>
           </div>
         )}
 
@@ -88,7 +90,7 @@ export default function AuthCallbackPage() {
             <XCircle className="w-10 h-10 text-red-500 mx-auto" />
             <p className="text-sm font-semibold text-gray-900 mt-4">{errorMsg}</p>
             <Link href="/login" className="inline-block mt-6 text-sm text-indigo-600 font-medium hover:underline">
-              Volver al login
+              {t('auth.callback.backToLogin')}
             </Link>
           </div>
         )}

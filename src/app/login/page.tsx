@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { api } from '@/lib/api'
 import { Loader2, Eye, EyeOff } from 'lucide-react'
+import { useI18n } from '@/i18n'
 
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.runbits.dev'
@@ -12,6 +13,7 @@ const FACEBOOK_APP_ID = '896485670109777'
 
 export default function LoginPage() {
   const router = useRouter()
+  const { t } = useI18n()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -28,11 +30,13 @@ export default function LoginPage() {
     const err = params.get('error')
     if (err) {
       const messages: Record<string, string> = {
-        facebook_denied: 'Cancelaste el login con Facebook',
-        facebook_failed: 'Error al autenticar con Facebook',
-        account_inactive: 'Tu cuenta está inactiva',
+        facebook_denied: t('login.errorFacebookDenied'),
+        facebook_failed: t('login.errorFacebookFailed'),
+        google_failed: t('login.errorGoogleFailed'),
+        google_denied: t('login.errorGoogleDenied'),
+        account_inactive: t('login.errorAccountInactive'),
       }
-      setError(messages[err] || 'Error de autenticación')
+      setError(messages[err] || t('login.errorAuth'))
       window.history.replaceState({}, '', '/login')
     }
   }, [])
@@ -75,7 +79,7 @@ export default function LoginPage() {
       if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken)
       router.push('/dashboard')
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Error con Google')
+      setError(err instanceof Error ? err.message : t('login.errorGoogleFailed'))
       setSocialLoading(false)
     }
   }
@@ -93,7 +97,7 @@ export default function LoginPage() {
       const redirectUri = encodeURIComponent(`${API_BASE}/api/auth/facebook/callback`)
       window.location.href = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${FACEBOOK_APP_ID}&redirect_uri=${redirectUri}&scope=email,public_profile&response_type=code&state=${encodeURIComponent(state)}`
     } catch {
-      setError('Error al conectar con Facebook')
+      setError(t('login.errorConnection'))
       setSocialLoading(false)
     }
   }
@@ -123,7 +127,7 @@ export default function LoginPage() {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Error al iniciar sesión'
       if (msg.includes('google') || msg.includes('Google')) {
-        setError('Esta cuenta usa Google. Usá el botón de arriba.')
+        setError(t('login.errorGoogleHint'))
       } else {
         setError(msg)
       }
@@ -171,7 +175,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-[420px]">
         <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
-          <h1 className="text-2xl font-bold text-gray-900 mb-8">Ingresar a Runbits</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-8">{t('login.title')}</h1>
 
           {needs2FA ? (
             <div className="flex flex-col items-center py-4">
@@ -180,8 +184,8 @@ export default function LoginPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
-              <p className="text-sm font-medium text-gray-900 mb-1">Verificación en dos pasos</p>
-              <p className="text-xs text-gray-500 mb-6">Ingresá el código de 6 dígitos de tu app authenticator</p>
+              <p className="text-sm font-medium text-gray-900 mb-1">{t('login.twoFA.title')}</p>
+              <p className="text-xs text-gray-500 mb-6">{t('login.twoFA.subtitle')}</p>
               <input type="text" inputMode="numeric" maxLength={6} value={totpCode}
                 onChange={e => setTotpCode(e.target.value.replace(/\D/g, ''))}
                 className="w-full border border-gray-300 rounded-xl px-4 py-4 text-center text-3xl font-mono tracking-[0.6em] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
@@ -206,7 +210,7 @@ export default function LoginPage() {
               Google
             </button>
 
-            <button onClick={() => alert('Apple Sign In estará disponible pronto')} className={socialBtnClass}>
+            <button onClick={() => alert(t('login.apple'))} className={socialBtnClass}>
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
               Apple
             </button>
@@ -220,14 +224,14 @@ export default function LoginPage() {
           {/* Divider */}
           <div className="flex items-center gap-3 mb-6">
             <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-sm text-gray-400">o</span>
+            <span className="text-sm text-gray-400">{t('login.or')}</span>
             <div className="flex-1 h-px bg-gray-200" />
           </div>
 
           {/* Email + Password form */}
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label className="text-sm font-medium text-gray-900 mb-1.5 block">Email</label>
+              <label className="text-sm font-medium text-gray-900 mb-1.5 block">{t('login.email')}</label>
               <input type="email" value={email} onChange={e => setEmail(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 autoComplete="email" />
@@ -235,8 +239,8 @@ export default function LoginPage() {
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-sm font-medium text-gray-900">Contraseña</label>
-                <Link href="/auth/reset-password" className="text-sm text-indigo-600 hover:underline">Olvidé mi contraseña</Link>
+                <label className="text-sm font-medium text-gray-900">{t('login.password')}</label>
+                <Link href="/auth/reset-password" className="text-sm text-indigo-600 hover:underline">{t('login.forgotPassword')}</Link>
               </div>
               <div className="relative">
                 <input type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)}
@@ -257,19 +261,19 @@ export default function LoginPage() {
 
             <button type="submit" disabled={loading}
               className="w-full bg-indigo-600 text-white rounded-lg py-2.5 text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50 transition-colors">
-              {loading ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : 'Iniciar sesión'}
+              {loading ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : t('login.submit')}
             </button>
           </form>
 
           <p className="text-center text-sm text-gray-500 mt-6">
-            ¿No tenés cuenta? <Link href="/register" className="text-indigo-600 font-semibold hover:underline">Crear cuenta</Link>
+            {t('login.noAccount')} <Link href="/register" className="text-indigo-600 font-semibold hover:underline">{t('login.createAccount')}</Link>
           </p>
           </>
           )}
         </div>
 
         <p className="text-center text-xs text-gray-400 mt-6">
-          Al continuar, acepto los <Link href="/terms" className="text-indigo-600 hover:underline">términos</Link>, la <Link href="/privacy" className="text-indigo-600 hover:underline">política de privacidad</Link> y la <Link href="/cancellation" className="text-indigo-600 hover:underline">política de cancelación</Link>.
+          {t('login.terms')} <Link href="/terms" className="text-indigo-600 hover:underline">{t('login.termsLink')}</Link>, <Link href="/privacy" className="text-indigo-600 hover:underline">{t('login.privacyLink')}</Link> y <Link href="/cancellation" className="text-indigo-600 hover:underline">{t('login.cancellationLink')}</Link>.
         </p>
       </div>
     </div>

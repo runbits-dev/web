@@ -28,7 +28,22 @@
     "errorFacebookDenied": "Cancelaste el login con Facebook",
     "errorFacebookFailed": "Error al autenticar con Facebook",
     "errorAccountInactive": "Tu cuenta está inactiva",
-    "errorAuth": "Error de autenticación"
+    "errorAuth": "Error de autenticación",
+    "errorGoogleFailed": "Error al autenticar con Google",
+    "errorGoogleDenied": "Cancelaste el login con Google",
+    "errorGoogleHint": "Esta cuenta usa Google. Usá el botón de arriba.",
+    "errorConnection": "Error de conexión",
+    "twoFA": {
+      "title": "Verificación en dos pasos",
+      "subtitle": "Ingresá el código de 6 dígitos de tu app authenticator",
+      "invalidCode": "Código incorrecto",
+      "tooManyAttempts": "Demasiados intentos"
+    },
+    "apple": "Apple Sign In estará disponible pronto",
+    "terms": "Al continuar, acepto los",
+    "termsLink": "términos",
+    "privacyLink": "política de privacidad",
+    "cancellationLink": "política de cancelación"
   },
   "register": {
     "title": "Registrar comercio",
@@ -63,6 +78,28 @@
     "close": "Cerrar",
     "yes": "Sí",
     "no": "No"
+  },
+  "auth": {
+    "callback": {
+      "processing": "Procesando...",
+      "success": "Sesión iniciada",
+      "redirecting": "Redirigiendo al dashboard...",
+      "errorNoCode": "No se recibió el código de autenticación",
+      "errorProcessing": "Error al procesar la autenticación. Intentá de nuevo.",
+      "backToLogin": "Volver al login"
+    },
+    "resetPassword": {
+      "title": "Recuperar contraseña",
+      "subtitle": "Te enviaremos un link para restablecer tu contraseña",
+      "email": "Email",
+      "submit": "Enviar link",
+      "sent": "Si el email existe, recibirás un link de recuperación.",
+      "newPassword": "Nueva contraseña",
+      "confirmPassword": "Confirmar contraseña",
+      "resetSubmit": "Restablecer contraseña",
+      "resetSuccess": "Contraseña actualizada. Redirigiendo al login...",
+      "backToLogin": "Volver al login"
+    }
   },
   "footer": {
     "tagline": "Tu negocio, tu plataforma.",

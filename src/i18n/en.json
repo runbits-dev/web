@@ -28,7 +28,22 @@
     "errorFacebookDenied": "You cancelled the Facebook login",
     "errorFacebookFailed": "Error authenticating with Facebook",
     "errorAccountInactive": "Your account is inactive",
-    "errorAuth": "Authentication error"
+    "errorAuth": "Authentication error",
+    "errorGoogleFailed": "Error authenticating with Google",
+    "errorGoogleDenied": "You cancelled the Google login",
+    "errorGoogleHint": "This account uses Google. Use the button above.",
+    "errorConnection": "Connection error",
+    "twoFA": {
+      "title": "Two-step verification",
+      "subtitle": "Enter the 6-digit code from your authenticator app",
+      "invalidCode": "Invalid code",
+      "tooManyAttempts": "Too many attempts"
+    },
+    "apple": "Apple Sign In will be available soon",
+    "terms": "By continuing, I agree to the",
+    "termsLink": "terms",
+    "privacyLink": "privacy policy",
+    "cancellationLink": "cancellation policy"
   },
   "register": {
     "title": "Register your store",
@@ -63,6 +78,28 @@
     "close": "Close",
     "yes": "Yes",
     "no": "No"
+  },
+  "auth": {
+    "callback": {
+      "processing": "Processing...",
+      "success": "Signed in",
+      "redirecting": "Redirecting to dashboard...",
+      "errorNoCode": "Authentication code not received",
+      "errorProcessing": "Error processing authentication. Please try again.",
+      "backToLogin": "Back to login"
+    },
+    "resetPassword": {
+      "title": "Reset password",
+      "subtitle": "We'll send you a link to reset your password",
+      "email": "Email",
+      "submit": "Send link",
+      "sent": "If the email exists, you'll receive a recovery link.",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm password",
+      "resetSubmit": "Reset password",
+      "resetSuccess": "Password updated. Redirecting to login...",
+      "backToLogin": "Back to login"
+    }
   },
   "footer": {
     "tagline": "Your business, your platform.",

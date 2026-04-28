@@ -4,11 +4,13 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Loader2, CheckCircle, KeyRound } from 'lucide-react'
+import { useI18n } from '@/i18n'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.runbits.dev'
 
 export default function ResetPasswordPage() {
   const router = useRouter()
+  const { t } = useI18n()
   const [token, setToken] = useState<string | null>(null)
 
   // Request state
@@ -84,7 +86,7 @@ export default function ResetPasswordPage() {
           <div className="flex items-center gap-3 mb-6">
             <KeyRound className="w-6 h-6 text-indigo-600" />
             <h1 className="text-xl font-bold text-gray-900">
-              {token ? 'Nueva contraseña' : 'Restablecer contraseña'}
+              {token ? t('auth.resetPassword.newPassword') : t('auth.resetPassword.title')}
             </h1>
           </div>
 
@@ -93,15 +95,15 @@ export default function ResetPasswordPage() {
             success ? (
               <div className="space-y-4 text-center">
                 <CheckCircle className="w-10 h-10 text-indigo-600 mx-auto" />
-                <p className="text-sm text-gray-700 font-medium">Contraseña actualizada correctamente</p>
+                <p className="text-sm text-gray-700 font-medium">{t('auth.resetPassword.resetSuccess')}</p>
                 <Link href="/login" className="block text-sm text-indigo-600 font-semibold hover:underline">
-                  Ir al inicio de sesión
+                  {t('auth.resetPassword.backToLogin')}
                 </Link>
               </div>
             ) : (
               <form onSubmit={handleConfirm} className="space-y-5">
                 <div>
-                  <label className="text-sm font-medium text-gray-900 mb-1.5 block">Nueva contraseña</label>
+                  <label className="text-sm font-medium text-gray-900 mb-1.5 block">{t('auth.resetPassword.newPassword')}</label>
                   <input
                     type="password"
                     value={newPassword}
@@ -112,7 +114,7 @@ export default function ResetPasswordPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-900 mb-1.5 block">Confirmar contraseña</label>
+                  <label className="text-sm font-medium text-gray-900 mb-1.5 block">{t('auth.resetPassword.confirmPassword')}</label>
                   <input
                     type="password"
                     value={confirmPassword}
@@ -134,7 +136,7 @@ export default function ResetPasswordPage() {
                   disabled={loading}
                   className="w-full bg-indigo-600 text-white rounded-lg py-2.5 text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50 transition-colors"
                 >
-                  {loading ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : 'Actualizar contraseña'}
+                  {loading ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : t('auth.resetPassword.resetSubmit')}
                 </button>
               </form>
             )
@@ -143,21 +145,18 @@ export default function ResetPasswordPage() {
             sent ? (
               <div className="space-y-4 text-center">
                 <CheckCircle className="w-10 h-10 text-indigo-600 mx-auto" />
-                <p className="text-sm text-gray-700 font-medium">Revisá tu email</p>
-                <p className="text-sm text-gray-500">
-                  Si existe una cuenta con ese email, te enviamos un link para restablecer tu contraseña.
-                </p>
+                <p className="text-sm text-gray-700 font-medium">{t('auth.resetPassword.sent')}</p>
                 <Link href="/login" className="block text-sm text-indigo-600 font-semibold hover:underline">
-                  Volver al inicio de sesión
+                  {t('auth.resetPassword.backToLogin')}
                 </Link>
               </div>
             ) : (
               <form onSubmit={handleRequest} className="space-y-5">
                 <p className="text-sm text-gray-500">
-                  Ingresá tu email y te enviaremos un link para crear una nueva contraseña.
+                  {t('auth.resetPassword.subtitle')}
                 </p>
                 <div>
-                  <label className="text-sm font-medium text-gray-900 mb-1.5 block">Email</label>
+                  <label className="text-sm font-medium text-gray-900 mb-1.5 block">{t('auth.resetPassword.email')}</label>
                   <input
                     type="email"
                     value={email}
@@ -179,7 +178,7 @@ export default function ResetPasswordPage() {
                   disabled={loading}
                   className="w-full bg-indigo-600 text-white rounded-lg py-2.5 text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50 transition-colors"
                 >
-                  {loading ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : 'Enviar link de recuperación'}
+                  {loading ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : t('auth.resetPassword.submit')}
                 </button>
               </form>
             )
@@ -188,7 +187,7 @@ export default function ResetPasswordPage() {
         </div>
 
         <p className="text-center text-sm text-gray-500 mt-6">
-          <Link href="/login" className="text-indigo-600 font-semibold hover:underline">Volver al inicio de sesión</Link>
+          <Link href="/login" className="text-indigo-600 font-semibold hover:underline">{t('auth.resetPassword.backToLogin')}</Link>
         </p>
       </div>
     </div>
