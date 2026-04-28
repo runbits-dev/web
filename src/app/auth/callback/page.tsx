@@ -11,8 +11,8 @@ export default function AuthCallbackPage() {
   const [errorMsg, setErrorMsg] = useState('')
 
   useEffect(() => {
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.runbits.dev'
     const params = new URLSearchParams(window.location.search)
-    const token = params.get('token')
     const error = params.get('error')
 
     if (error) {
@@ -21,6 +21,8 @@ export default function AuthCallbackPage() {
         facebook_denied: 'Cancelaste el login con Facebook',
         facebook_missing_code: 'No se recibió el código de Facebook',
         facebook_failed: 'Error al autenticar con Facebook',
+        google_failed: 'Error al autenticar con Google',
+        google_denied: 'Cancelaste el login con Google',
         account_inactive: 'Tu cuenta está inactiva',
       }
       setErrorMsg(messages[error] || 'Error de autenticación')
@@ -29,23 +31,36 @@ export default function AuthCallbackPage() {
 
     const requires2FA = params.get('requires2FA')
     const tempToken = params.get('tempToken')
-    const refreshToken = params.get('refreshToken')
 
     if (requires2FA === 'true' && tempToken) {
       router.replace(`/login?needs2FA=true&tempToken=${encodeURIComponent(tempToken)}`)
       return
     }
 
-    if (!token) {
+    const code = params.get('code')
+    if (!code) {
       setStatus('error')
-      setErrorMsg('No se recibió el token de autenticación')
+      setErrorMsg('No se recibió el código de autenticación')
       return
     }
 
-    localStorage.setItem('token', token)
-    if (refreshToken) localStorage.setItem('refreshToken', refreshToken)
-    setStatus('success')
-    setTimeout(() => router.push('/dashboard'), 1000)
+    fetch(`${API_BASE}/api/auth/exchange-code`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code }),
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) throw new Error(data.error)
+        localStorage.setItem('token', data.token)
+        if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken)
+        setStatus('success')
+        setTimeout(() => router.push('/dashboard'), 500)
+      })
+      .catch(() => {
+        setStatus('error')
+        setErrorMsg('Error al procesar la autenticación. Intentá de nuevo.')
+      })
   }, [router])
 
   return (
