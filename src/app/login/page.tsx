@@ -125,6 +125,10 @@ export default function LoginPage() {
     }
   }
 
+  useEffect(() => {
+    if (totpCode.length === 6 && needs2FA && !loading) verify2FA()
+  }, [totpCode])
+
   async function verify2FA() {
     setLoading(true)
     setError('')
