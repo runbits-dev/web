@@ -174,21 +174,28 @@ export default function LoginPage() {
           <h1 className="text-2xl font-bold text-gray-900 mb-8">Ingresar a Runbits</h1>
 
           {needs2FA ? (
-            <div className="space-y-4">
-              <p className="text-sm text-gray-600">Ingresá el código de tu app authenticator:</p>
+            <div className="flex flex-col items-center py-4">
+              <div className="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <p className="text-sm font-medium text-gray-900 mb-1">Verificación en dos pasos</p>
+              <p className="text-xs text-gray-500 mb-6">Ingresá el código de 6 dígitos de tu app authenticator</p>
               <input type="text" inputMode="numeric" maxLength={6} value={totpCode}
                 onChange={e => setTotpCode(e.target.value.replace(/\D/g, ''))}
-                className="w-full border border-gray-300 rounded-lg px-3.5 py-3 text-center text-2xl font-mono tracking-[0.5em]"
-                placeholder="000000" autoFocus />
-              {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg px-3.5 py-2.5">
-                  <p className="text-red-700 text-sm">{error}</p>
+                className="w-full border border-gray-300 rounded-xl px-4 py-4 text-center text-3xl font-mono tracking-[0.6em] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                placeholder="------" autoFocus />
+              {loading && (
+                <div className="mt-4">
+                  <Loader2 className="w-5 h-5 text-indigo-600 animate-spin mx-auto" />
                 </div>
               )}
-              <button onClick={verify2FA} disabled={loading || totpCode.length !== 6}
-                className="w-full bg-indigo-600 text-white rounded-lg py-2.5 text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50">
-                {loading ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : 'Verificar'}
-              </button>
+              {error && (
+                <div className="mt-4 w-full bg-red-50 border border-red-200 rounded-lg px-3.5 py-2.5">
+                  <p className="text-red-700 text-sm text-center">{error}</p>
+                </div>
+              )}
             </div>
           ) : (
           <>
