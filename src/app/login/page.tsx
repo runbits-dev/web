@@ -39,13 +39,13 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!GOOGLE_CLIENT_ID) return
+    const existing = document.querySelector('script[src="https://accounts.google.com/gsi/client"]')
+    if (existing) { initGoogle(); return }
     const script = document.createElement('script')
     script.src = 'https://accounts.google.com/gsi/client'
     script.async = true
-    script.defer = true
     script.onload = () => initGoogle()
     document.head.appendChild(script)
-    return () => { document.head.removeChild(script) }
   }, [])
 
   function initGoogle() {
