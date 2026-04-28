@@ -43,7 +43,7 @@ export default function ResetPasswordPage() {
       })
       if (!res.ok) {
         const d = await res.json()
-        throw new Error(d.error || 'Error al enviar el email')
+        throw new Error(d.error || t('auth.resetPassword.errorSend'))
       }
       setSent(true)
     } catch (err: any) {
@@ -55,8 +55,8 @@ export default function ResetPasswordPage() {
 
   async function handleConfirm(e: React.FormEvent) {
     e.preventDefault()
-    if (newPassword.length < 8) { setError('La contraseña debe tener al menos 8 caracteres'); return }
-    if (newPassword !== confirmPassword) { setError('Las contraseñas no coinciden'); return }
+    if (newPassword.length < 10) { setError(t('auth.resetPassword.errorMinLength')); return }
+    if (newPassword !== confirmPassword) { setError(t('auth.resetPassword.errorMismatch')); return }
     setError('')
     setLoading(true)
     try {
@@ -67,7 +67,7 @@ export default function ResetPasswordPage() {
       })
       if (!res.ok) {
         const d = await res.json()
-        throw new Error(d.error || 'Error al actualizar la contraseña')
+        throw new Error(d.error || t('auth.resetPassword.errorReset'))
       }
       setSuccess(true)
     } catch (err: any) {
@@ -109,7 +109,7 @@ export default function ResetPasswordPage() {
                     value={newPassword}
                     onChange={e => setNewPassword(e.target.value)}
                     className="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    placeholder="Mínimo 8 caracteres"
+                    placeholder={t('auth.resetPassword.placeholderMin')}
                     autoComplete="new-password"
                   />
                 </div>
@@ -120,7 +120,7 @@ export default function ResetPasswordPage() {
                     value={confirmPassword}
                     onChange={e => setConfirmPassword(e.target.value)}
                     className="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    placeholder="Repetí la contraseña"
+                    placeholder={t('auth.resetPassword.placeholderConfirm')}
                     autoComplete="new-password"
                   />
                 </div>

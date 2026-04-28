@@ -3,10 +3,12 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Loader2, CheckCircle, XCircle } from 'lucide-react'
+import { useI18n } from '@/i18n'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.runbits.dev'
 
 export default function VerifyEmailPage() {
+  const { t } = useI18n()
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [errorMsg, setErrorMsg] = useState('')
 
@@ -16,19 +18,19 @@ export default function VerifyEmailPage() {
 
     if (!token) {
       setStatus('error')
-      setErrorMsg('Token no encontrado en la URL')
+      setErrorMsg(t('auth.verifyEmail.errorToken'))
       return
     }
 
     fetch(`${API_BASE}/api/auth/verify-email?token=${encodeURIComponent(token)}`)
       .then(async res => {
         const data = await res.json()
-        if (!res.ok) throw new Error(data.error || 'Token inválido o expirado')
+        if (!res.ok) throw new Error(data.error || t('auth.verifyEmail.errorInvalid'))
         setStatus('success')
       })
       .catch(err => {
         setStatus('error')
-        setErrorMsg(err.message || 'Error al verificar el email')
+        setErrorMsg(err.message || t('auth.verifyEmail.errorGeneric'))
       })
   }, [])
 
@@ -40,17 +42,17 @@ export default function VerifyEmailPage() {
         {status === 'loading' && (
           <div className="mt-8">
             <Loader2 className="w-10 h-10 text-indigo-600 animate-spin mx-auto" />
-            <p className="text-sm text-gray-500 mt-4">Verificando tu email...</p>
+            <p className="text-sm text-gray-500 mt-4">{t('auth.verifyEmail.verifying')}</p>
           </div>
         )}
 
         {status === 'success' && (
           <div className="mt-8">
             <CheckCircle className="w-10 h-10 text-indigo-600 mx-auto" />
-            <p className="text-sm font-semibold text-gray-900 mt-4">Email verificado</p>
-            <p className="text-xs text-gray-500 mt-1">Tu dirección de email ha sido confirmada correctamente.</p>
+            <p className="text-sm font-semibold text-gray-900 mt-4">{t('auth.verifyEmail.success')}</p>
+            <p className="text-xs text-gray-500 mt-1">{t('auth.verifyEmail.successMsg')}</p>
             <Link href="/dashboard" className="inline-block mt-6 text-sm text-indigo-600 font-medium hover:underline">
-              Ir al dashboard
+              {t('auth.verifyEmail.goToDashboard')}
             </Link>
           </div>
         )}
@@ -58,10 +60,10 @@ export default function VerifyEmailPage() {
         {status === 'error' && (
           <div className="mt-8">
             <XCircle className="w-10 h-10 text-red-500 mx-auto" />
-            <p className="text-sm font-semibold text-gray-900 mt-4">No pudimos verificar tu email</p>
+            <p className="text-sm font-semibold text-gray-900 mt-4">{t('auth.verifyEmail.errorTitle')}</p>
             <p className="text-xs text-gray-500 mt-1">{errorMsg}</p>
             <Link href="/login" className="inline-block mt-6 text-sm text-indigo-600 font-medium hover:underline">
-              Ir a iniciar sesión
+              {t('auth.verifyEmail.goToLogin')}
             </Link>
           </div>
         )}

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { api } from '@/lib/api'
+import { useI18n } from '@/i18n'
 import { Package, Wrench, Layers, Search, ArrowLeft, ChevronRight, Check, User, Store } from 'lucide-react'
 
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''
@@ -13,56 +14,56 @@ const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''
 type OfferType = 'products' | 'services' | 'both'
 type FunctionalType = 'food' | 'goods' | 'appointment' | 'task' | 'realtime' | 'food+appointment' | 'goods+appointment' | 'goods+task'
 type OperationType = 'independent' | 'business'
-type BusinessCategory = { id: string; label: string; functionalType: FunctionalType; featured: boolean }
+type BusinessCategory = { id: string; functionalType: FunctionalType; featured: boolean }
 
 const PRODUCT_CATEGORIES: BusinessCategory[] = [
-  { id: 'restaurante', label: 'Restaurante', functionalType: 'food', featured: true },
-  { id: 'pizzeria', label: 'Pizzería', functionalType: 'food', featured: true },
-  { id: 'cafe', label: 'Café', functionalType: 'food', featured: true },
-  { id: 'heladeria', label: 'Heladería', functionalType: 'food', featured: true },
-  { id: 'panaderia', label: 'Panadería', functionalType: 'food', featured: true },
-  { id: 'almacen', label: 'Almacén', functionalType: 'goods', featured: true },
-  { id: 'farmacia', label: 'Farmacia', functionalType: 'goods', featured: true },
-  { id: 'tienda-ropa', label: 'Tienda de ropa', functionalType: 'goods', featured: true },
-  { id: 'ferreteria', label: 'Ferretería', functionalType: 'goods', featured: true },
-  { id: 'pet-shop', label: 'Pet Shop', functionalType: 'goods', featured: true },
-  { id: 'hamburgueseria', label: 'Hamburguesería', functionalType: 'food', featured: false },
-  { id: 'sushi', label: 'Sushi', functionalType: 'food', featured: false },
-  { id: 'rotiseria', label: 'Rotisería', functionalType: 'food', featured: false },
-  { id: 'vinoteca', label: 'Vinoteca', functionalType: 'goods', featured: false },
-  { id: 'dietetica', label: 'Dietética', functionalType: 'goods', featured: false },
-  { id: 'libreria', label: 'Librería', functionalType: 'goods', featured: false },
-  { id: 'bazar', label: 'Bazar', functionalType: 'goods', featured: false },
-  { id: 'electronica', label: 'Electrónica', functionalType: 'goods', featured: false },
-  { id: 'producto-otro', label: 'Otro producto', functionalType: 'goods', featured: false },
+  { id: 'restaurante', functionalType: 'food', featured: true },
+  { id: 'pizzeria', functionalType: 'food', featured: true },
+  { id: 'cafe', functionalType: 'food', featured: true },
+  { id: 'heladeria', functionalType: 'food', featured: true },
+  { id: 'panaderia', functionalType: 'food', featured: true },
+  { id: 'almacen', functionalType: 'goods', featured: true },
+  { id: 'farmacia', functionalType: 'goods', featured: true },
+  { id: 'tienda-ropa', functionalType: 'goods', featured: true },
+  { id: 'ferreteria', functionalType: 'goods', featured: true },
+  { id: 'pet-shop', functionalType: 'goods', featured: true },
+  { id: 'hamburgueseria', functionalType: 'food', featured: false },
+  { id: 'sushi', functionalType: 'food', featured: false },
+  { id: 'rotiseria', functionalType: 'food', featured: false },
+  { id: 'vinoteca', functionalType: 'goods', featured: false },
+  { id: 'dietetica', functionalType: 'goods', featured: false },
+  { id: 'libreria', functionalType: 'goods', featured: false },
+  { id: 'bazar', functionalType: 'goods', featured: false },
+  { id: 'electronica', functionalType: 'goods', featured: false },
+  { id: 'producto-otro', functionalType: 'goods', featured: false },
 ]
 
 const SERVICE_CATEGORIES: BusinessCategory[] = [
-  { id: 'peluqueria', label: 'Peluquería', functionalType: 'appointment', featured: true },
-  { id: 'barberia', label: 'Barbería', functionalType: 'appointment', featured: true },
-  { id: 'medico', label: 'Médico / Consultorio', functionalType: 'appointment', featured: true },
-  { id: 'dentista', label: 'Dentista', functionalType: 'appointment', featured: true },
-  { id: 'spa', label: 'Spa / Masajes', functionalType: 'appointment', featured: true },
-  { id: 'electricista', label: 'Electricista', functionalType: 'task', featured: true },
-  { id: 'plomero', label: 'Plomero', functionalType: 'task', featured: true },
-  { id: 'remis', label: 'Remis / Taxi', functionalType: 'realtime', featured: true },
-  { id: 'cadeteria', label: 'Cadetería', functionalType: 'realtime', featured: true },
-  { id: 'flete', label: 'Flete / Mudanza', functionalType: 'realtime', featured: true },
-  { id: 'profesor', label: 'Profesor particular', functionalType: 'appointment', featured: false },
-  { id: 'psicologo', label: 'Psicólogo', functionalType: 'appointment', featured: false },
-  { id: 'disenador', label: 'Diseñador', functionalType: 'task', featured: false },
-  { id: 'limpieza', label: 'Limpieza', functionalType: 'task', featured: false },
-  { id: 'taller-mecanico', label: 'Taller mecánico', functionalType: 'task', featured: false },
-  { id: 'servicio-otro', label: 'Otro servicio', functionalType: 'task', featured: false },
+  { id: 'peluqueria', functionalType: 'appointment', featured: true },
+  { id: 'barberia', functionalType: 'appointment', featured: true },
+  { id: 'medico', functionalType: 'appointment', featured: true },
+  { id: 'dentista', functionalType: 'appointment', featured: true },
+  { id: 'spa', functionalType: 'appointment', featured: true },
+  { id: 'electricista', functionalType: 'task', featured: true },
+  { id: 'plomero', functionalType: 'task', featured: true },
+  { id: 'remis', functionalType: 'realtime', featured: true },
+  { id: 'cadeteria', functionalType: 'realtime', featured: true },
+  { id: 'flete', functionalType: 'realtime', featured: true },
+  { id: 'profesor', functionalType: 'appointment', featured: false },
+  { id: 'psicologo', functionalType: 'appointment', featured: false },
+  { id: 'disenador', functionalType: 'task', featured: false },
+  { id: 'limpieza', functionalType: 'task', featured: false },
+  { id: 'taller-mecanico', functionalType: 'task', featured: false },
+  { id: 'servicio-otro', functionalType: 'task', featured: false },
 ]
 
 const BOTH_CATEGORIES: BusinessCategory[] = [
-  { id: 'pet-shop-peluqueria', label: 'Pet Shop + Peluquería canina', functionalType: 'goods+appointment', featured: true },
-  { id: 'salon-productos', label: 'Salón + Productos', functionalType: 'goods+appointment', featured: true },
-  { id: 'farmacia-turnos', label: 'Farmacia + Turnos', functionalType: 'goods+appointment', featured: true },
-  { id: 'taller-repuestos', label: 'Taller + Repuestos', functionalType: 'goods+task', featured: true },
-  { id: 'veterinaria-petshop', label: 'Veterinaria + Pet Shop', functionalType: 'goods+appointment', featured: true },
-  { id: 'ambos-otro', label: 'Otro mixto', functionalType: 'goods+appointment', featured: true },
+  { id: 'pet-shop-peluqueria', functionalType: 'goods+appointment', featured: true },
+  { id: 'salon-productos', functionalType: 'goods+appointment', featured: true },
+  { id: 'farmacia-turnos', functionalType: 'goods+appointment', featured: true },
+  { id: 'taller-repuestos', functionalType: 'goods+task', featured: true },
+  { id: 'veterinaria-petshop', functionalType: 'goods+appointment', featured: true },
+  { id: 'ambos-otro', functionalType: 'goods+appointment', featured: true },
 ]
 
 function getCategoriesForType(type: OfferType): BusinessCategory[] {
@@ -73,52 +74,12 @@ function getCategoriesForType(type: OfferType): BusinessCategory[] {
   }
 }
 
-function getDashboardPreview(type: FunctionalType): string {
-  switch (type) {
-    case 'food': return 'Menú + Pedidos'
-    case 'goods': return 'Catálogo + Pedidos'
-    case 'appointment': return 'Servicios + Turnos'
-    case 'task': return 'Servicios + Trabajos'
-    case 'realtime': return 'Servicios + Viajes'
-    case 'food+appointment': return 'Menú + Pedidos + Turnos'
-    case 'goods+appointment': return 'Catálogo + Pedidos + Turnos'
-    case 'goods+task': return 'Catálogo + Pedidos + Trabajos'
-  }
-}
-
 // ─── Plans ───────────────────────────────────────────────────────────────────
 
-const PLANS = [
-  {
-    id: 'free',
-    label: 'Free',
-    price: 0,
-    description: 'Operá tu negocio sin costo',
-    features: ['Catálogo ilimitado', 'Pedidos ilimitados', 'Tienda online', 'Chat con clientes', '3 cupones', '1 promo activa', 'Estadísticas básicas'],
-  },
-  {
-    id: 'pro',
-    label: 'Pro',
-    price: 29,
-    description: 'Herramientas para crecer',
-    features: ['Todo de Free', 'Cupones y promos ilimitados', 'Dominio propio', 'Marca personalizada', 'Analytics con gráficos', '5 campañas push/mes', 'Perfiles ilimitados'],
-    popular: true,
-  },
-  {
-    id: 'business',
-    label: 'Business',
-    price: 99,
-    description: 'Para escalar tu operación',
-    features: ['Todo de Pro', 'White-label', 'Multi-sucursal (5)', '5 usuarios staff', 'Webhooks', 'Email marketing', 'Verificación de clientes'],
-  },
-  {
-    id: 'enterprise',
-    label: 'Enterprise',
-    price: 249,
-    description: 'Todo ilimitado + IA',
-    features: ['Todo de Business', 'Asistente IA 24/7', 'WhatsApp bot', 'GPS tracking', 'API REST', 'Sucursales ilimitadas', 'Soporte dedicado'],
-  },
-]
+const PLAN_IDS = ['free', 'pro', 'business', 'enterprise'] as const
+const PLAN_PRICES: Record<string, number> = { free: 0, pro: 29, business: 99, enterprise: 249 }
+const PLAN_FEATURE_COUNT: Record<string, number> = { free: 7, pro: 7, business: 7, enterprise: 7 }
+const PLAN_POPULAR: Record<string, boolean> = { free: false, pro: true, business: false, enterprise: false }
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
@@ -126,6 +87,7 @@ type Step = 1 | 2 | 3 | 4 | 5 | 6
 
 export default function RegisterPage() {
   const router = useRouter()
+  const { t } = useI18n()
   const [step, setStep] = useState<Step>(1)
 
   // Step 1: Account
@@ -159,10 +121,10 @@ export default function RegisterPage() {
     if (!categorySearch.trim()) return categories.filter(c => c.featured)
     const q = categorySearch.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     return categories.filter(c => {
-      const label = c.label.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      const label = t(`register.categories.${c.id}`).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
       return label.includes(q)
     })
-  }, [categories, categorySearch])
+  }, [categories, categorySearch, t])
 
   const chosenCategory = categories.find(c => c.id === selectedCategory)
 
@@ -178,9 +140,9 @@ export default function RegisterPage() {
       setEmail(res.user?.email || '')
       setStep(2)
     } catch {
-      setError('Error al registrar con Google')
+      setError(t('register.errorGoogleRegister'))
     } finally { setLoading(false) }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     if (!GOOGLE_CLIENT_ID) return
@@ -214,12 +176,12 @@ export default function RegisterPage() {
 
   async function handleRegister() {
     if (!chosenCategory || !operationType) return
-    if (!businessName.trim()) { setError('Ingresá un nombre'); return }
+    if (!businessName.trim()) { setError(t('register.errorName')); return }
     setLoading(true)
     setError('')
     try {
       if (!isGoogleUser) {
-        if (!name || !email || !password) { setError('Completá todos los campos'); return }
+        if (!name || !email || !password) { setError(t('register.errorFields')); return }
         const res = await api.register({ name, email, phone, password, role: 'restaurant_owner' })
         localStorage.setItem('token', res.token)
         localStorage.setItem('user', JSON.stringify(res.user))
@@ -235,7 +197,7 @@ export default function RegisterPage() {
       localStorage.setItem('show_tutorial', 'true')
       router.push('/dashboard')
     } catch (e: any) {
-      setError(e?.message || 'Error al registrar')
+      setError(e?.message || t('register.errorRegister'))
     } finally { setLoading(false) }
   }
 
@@ -246,7 +208,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-2xl">
         <div className="text-center mb-8">
           <Link href="/" className="text-2xl font-bold text-gray-900">Runbits</Link>
-          <p className="text-sm text-gray-500 mt-2">Creá tu cuenta en minutos</p>
+          <p className="text-sm text-gray-500 mt-2">{t('register.subtitle')}</p>
         </div>
 
         {/* Progress */}
@@ -266,38 +228,38 @@ export default function RegisterPage() {
           {/* ─── Step 1: Account ─── */}
           {step === 1 && (
             <div>
-              <h2 className="text-lg font-bold text-gray-900 mb-1">Tu cuenta</h2>
-              <p className="text-sm text-gray-500 mb-5">Datos de acceso a la plataforma</p>
+              <h2 className="text-lg font-bold text-gray-900 mb-1">{t('register.step1.title')}</h2>
+              <p className="text-sm text-gray-500 mb-5">{t('register.step1.subtitle')}</p>
               {error && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">{error}</div>}
               <div className="space-y-4">
                 <div>
-                  <label className="text-xs font-semibold text-gray-600 mb-1 block">Nombre completo *</label>
-                  <input className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" value={name} onChange={e => setName(e.target.value)} placeholder="Juan Pérez" />
+                  <label className="text-xs font-semibold text-gray-600 mb-1 block">{t('register.nameLabel')}</label>
+                  <input className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" value={name} onChange={e => setName(e.target.value)} placeholder={t('register.namePlaceholder')} />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-gray-600 mb-1 block">Email *</label>
-                  <input type="email" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" value={email} onChange={e => setEmail(e.target.value)} placeholder="juan@minegocio.com" />
+                  <label className="text-xs font-semibold text-gray-600 mb-1 block">{t('register.emailLabel')}</label>
+                  <input type="email" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" value={email} onChange={e => setEmail(e.target.value)} placeholder={t('register.emailPlaceholder')} />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-gray-600 mb-1 block">Teléfono</label>
-                  <input type="tel" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+54 9 11 1234-5678" />
+                  <label className="text-xs font-semibold text-gray-600 mb-1 block">{t('register.phoneLabel')}</label>
+                  <input type="tel" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" value={phone} onChange={e => setPhone(e.target.value)} placeholder={t('register.phonePlaceholder')} />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-gray-600 mb-1 block">Contraseña *</label>
-                  <input type="password" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" value={password} onChange={e => setPassword(e.target.value)} placeholder="Mínimo 8 caracteres" />
+                  <label className="text-xs font-semibold text-gray-600 mb-1 block">{t('register.passwordLabel')}</label>
+                  <input type="password" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" value={password} onChange={e => setPassword(e.target.value)} placeholder={t('register.passwordPlaceholder')} />
                 </div>
               </div>
               {GOOGLE_CLIENT_ID && (
                 <>
                   <div className="relative my-5">
                     <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200" /></div>
-                    <div className="relative flex justify-center text-xs"><span className="bg-white px-3 text-gray-400">o registrate con</span></div>
+                    <div className="relative flex justify-center text-xs"><span className="bg-white px-3 text-gray-400">{t('register.orRegisterWith')}</span></div>
                   </div>
                   <div id="google-register-btn" className="flex justify-center mb-4" />
                 </>
               )}
-              <button onClick={() => { if (!name || !email || !password) { setError('Completá nombre, email y contraseña'); return }; setError(''); setStep(2) }} className="w-full mt-4 bg-indigo-600 text-white py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors">
-                Siguiente
+              <button onClick={() => { if (!name || !email || !password) { setError(t('register.completeFields')); return }; setError(''); setStep(2) }} className="w-full mt-4 bg-indigo-600 text-white py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors">
+                {t('register.next')}
               </button>
             </div>
           )}
@@ -305,13 +267,13 @@ export default function RegisterPage() {
           {/* ─── Step 2: Offer type ─── */}
           {step === 2 && (
             <div>
-              <h2 className="text-lg font-bold text-gray-900 mb-1">¿Qué ofrecés?</h2>
-              <p className="text-sm text-gray-500 mb-5">Esto define cómo funciona tu panel. Podés cambiarlo después.</p>
+              <h2 className="text-lg font-bold text-gray-900 mb-1">{t('register.step2.title')}</h2>
+              <p className="text-sm text-gray-500 mb-5">{t('register.step2.subtitle')}</p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {([
-                  { type: 'products' as OfferType, label: 'Productos', desc: 'Vendo productos físicos', Icon: Package },
-                  { type: 'services' as OfferType, label: 'Servicios', desc: 'Ofrezco servicios o trabajos', Icon: Wrench },
-                  { type: 'both' as OfferType, label: 'Ambos', desc: 'Productos y servicios', Icon: Layers },
+                  { type: 'products' as OfferType, labelKey: 'register.step2.products', descKey: 'register.step2.productsDesc', Icon: Package },
+                  { type: 'services' as OfferType, labelKey: 'register.step2.services', descKey: 'register.step2.servicesDesc', Icon: Wrench },
+                  { type: 'both' as OfferType, labelKey: 'register.step2.both', descKey: 'register.step2.bothDesc', Icon: Layers },
                 ]).map(opt => (
                   <button
                     key={opt.type}
@@ -319,13 +281,13 @@ export default function RegisterPage() {
                     className="text-left p-5 rounded-xl border-2 border-gray-200 hover:border-indigo-400 hover:bg-indigo-50 transition-all group"
                   >
                     <opt.Icon className="w-7 h-7 text-gray-400 group-hover:text-indigo-600 transition-colors" />
-                    <p className="text-sm font-bold text-gray-900 mt-2">{opt.label}</p>
-                    <p className="text-xs text-gray-500 mt-1">{opt.desc}</p>
+                    <p className="text-sm font-bold text-gray-900 mt-2">{t(opt.labelKey)}</p>
+                    <p className="text-xs text-gray-500 mt-1">{t(opt.descKey)}</p>
                   </button>
                 ))}
               </div>
               <button onClick={() => setStep(1)} className="w-full mt-4 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-50 border border-gray-200">
-                <ArrowLeft className="w-4 h-4 inline mr-1" /> Atrás
+                <ArrowLeft className="w-4 h-4 inline mr-1" /> {t('register.back')}
               </button>
             </div>
           )}
@@ -333,30 +295,30 @@ export default function RegisterPage() {
           {/* ─── Step 3: Business category ─── */}
           {step === 3 && offerType && (
             <div>
-              <h2 className="text-lg font-bold text-gray-900 mb-1">¿Qué tipo de negocio?</h2>
-              <p className="text-sm text-gray-500 mb-4">Elegí el rubro que mejor te represente. Podés cambiarlo después.</p>
+              <h2 className="text-lg font-bold text-gray-900 mb-1">{t('register.step3.title')}</h2>
+              <p className="text-sm text-gray-500 mb-4">{t('register.step3.subtitle')}</p>
               <div className="relative mb-4">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input type="text" value={categorySearch} onChange={e => setCategorySearch(e.target.value)} placeholder="Buscar rubro..." className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                <input type="text" value={categorySearch} onChange={e => setCategorySearch(e.target.value)} placeholder={t('register.step3.searchPlaceholder')} className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-[260px] overflow-y-auto pr-1">
                 {filteredCategories.map(cat => (
                   <button key={cat.id} onClick={() => setSelectedCategory(cat.id)} className={`text-left p-3 rounded-xl border-2 transition-all ${selectedCategory === cat.id ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 hover:border-gray-300'}`}>
-                    <p className={`text-sm font-semibold ${selectedCategory === cat.id ? 'text-indigo-700' : 'text-gray-900'}`}>{cat.label}</p>
+                    <p className={`text-sm font-semibold ${selectedCategory === cat.id ? 'text-indigo-700' : 'text-gray-900'}`}>{t(`register.categories.${cat.id}`)}</p>
                     <p className="text-[10px] text-gray-400 mt-0.5 flex items-center gap-1">
                       <ChevronRight className="w-3 h-3" />
-                      {getDashboardPreview(cat.functionalType)}
+                      {t(`register.dashboardPreview.${cat.functionalType}`)}
                     </p>
                   </button>
                 ))}
               </div>
-              {filteredCategories.length === 0 && <p className="text-center text-sm text-gray-400 py-6">No encontramos ese rubro.</p>}
+              {filteredCategories.length === 0 && <p className="text-center text-sm text-gray-400 py-6">{t('register.step3.notFound')}</p>}
               <div className="flex gap-3 mt-4">
                 <button onClick={() => setStep(2)} className="flex-1 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-50 border border-gray-200">
-                  <ArrowLeft className="w-4 h-4 inline mr-1" /> Atrás
+                  <ArrowLeft className="w-4 h-4 inline mr-1" /> {t('register.back')}
                 </button>
                 <button onClick={() => { if (!selectedCategory) return; setStep(4) }} disabled={!selectedCategory} className="flex-1 bg-indigo-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50">
-                  Siguiente
+                  {t('register.next')}
                 </button>
               </div>
             </div>
@@ -365,22 +327,22 @@ export default function RegisterPage() {
           {/* ─── Step 4: Operation type ─── */}
           {step === 4 && (
             <div>
-              <h2 className="text-lg font-bold text-gray-900 mb-1">¿Cómo operás?</h2>
-              <p className="text-sm text-gray-500 mb-5">Esto adapta tu experiencia y los planes disponibles. Podés cambiarlo después.</p>
+              <h2 className="text-lg font-bold text-gray-900 mb-1">{t('register.step4.title')}</h2>
+              <p className="text-sm text-gray-500 mb-5">{t('register.step4.subtitle')}</p>
               <div className="grid grid-cols-2 gap-4">
                 {([
                   {
                     type: 'independent' as OperationType,
-                    label: 'Independiente',
-                    desc: 'Trabajo solo, sin empleados ni local fijo',
-                    examples: 'Conductor, freelancer, profesor particular, autónomo',
+                    labelKey: 'register.step4.independent',
+                    descKey: 'register.step4.independentDesc',
+                    examplesKey: 'register.step4.independentExamples',
                     Icon: User,
                   },
                   {
                     type: 'business' as OperationType,
-                    label: 'Negocio / Empresa',
-                    desc: 'Tengo un negocio, local, marca o equipo',
-                    examples: 'Tienda, restaurante, agencia, consultora, salón',
+                    labelKey: 'register.step4.business',
+                    descKey: 'register.step4.businessDesc',
+                    examplesKey: 'register.step4.businessExamples',
                     Icon: Store,
                   },
                 ]).map(opt => (
@@ -390,14 +352,14 @@ export default function RegisterPage() {
                     className="text-left p-5 rounded-xl border-2 border-gray-200 hover:border-indigo-400 hover:bg-indigo-50 transition-all group"
                   >
                     <opt.Icon className="w-8 h-8 text-gray-400 group-hover:text-indigo-600 transition-colors" />
-                    <p className="text-sm font-bold text-gray-900 mt-3">{opt.label}</p>
-                    <p className="text-xs text-gray-500 mt-1">{opt.desc}</p>
-                    <p className="text-[10px] text-gray-400 mt-2">{opt.examples}</p>
+                    <p className="text-sm font-bold text-gray-900 mt-3">{t(opt.labelKey)}</p>
+                    <p className="text-xs text-gray-500 mt-1">{t(opt.descKey)}</p>
+                    <p className="text-[10px] text-gray-400 mt-2">{t(opt.examplesKey)}</p>
                   </button>
                 ))}
               </div>
               <button onClick={() => setStep(3)} className="w-full mt-4 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-50 border border-gray-200">
-                <ArrowLeft className="w-4 h-4 inline mr-1" /> Atrás
+                <ArrowLeft className="w-4 h-4 inline mr-1" /> {t('register.back')}
               </button>
             </div>
           )}
@@ -405,52 +367,57 @@ export default function RegisterPage() {
           {/* ─── Step 5: Plan selection ─── */}
           {step === 5 && operationType && (
             <div>
-              <h2 className="text-lg font-bold text-gray-900 mb-1">Elegí tu plan</h2>
+              <h2 className="text-lg font-bold text-gray-900 mb-1">{t('register.step5.title')}</h2>
               <p className="text-sm text-gray-500 mb-5">
-                Todos los planes incluyen 14 días gratis. Sin tarjeta de crédito. Podés cambiar de plan después.
+                {t('register.step5.subtitle')}
               </p>
               <div className="space-y-3">
-                {PLANS.map(plan => (
-                  <button
-                    key={plan.id}
-                    onClick={() => setSelectedPlan(plan.id)}
-                    className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-center gap-4 ${
-                      selectedPlan === plan.id
-                        ? 'border-indigo-500 bg-indigo-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                      selectedPlan === plan.id ? 'border-indigo-500 bg-indigo-500' : 'border-gray-300'
-                    }`}>
-                      {selectedPlan === plan.id && <Check className="w-3 h-3 text-white" />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-gray-900">{plan.label}</span>
-                        {(plan as any).popular && <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-semibold">Popular</span>}
-                        <span className="text-sm font-bold text-gray-900 ml-auto">
-                          {plan.price === 0 ? 'Gratis' : `USD $${plan.price}/mes`}
-                        </span>
+                {PLAN_IDS.map(planId => {
+                  const price = PLAN_PRICES[planId]
+                  const featureCount = PLAN_FEATURE_COUNT[planId]
+                  const isPopular = PLAN_POPULAR[planId]
+                  return (
+                    <button
+                      key={planId}
+                      onClick={() => setSelectedPlan(planId)}
+                      className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-center gap-4 ${
+                        selectedPlan === planId
+                          ? 'border-indigo-500 bg-indigo-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                        selectedPlan === planId ? 'border-indigo-500 bg-indigo-500' : 'border-gray-300'
+                      }`}>
+                        {selectedPlan === planId && <Check className="w-3 h-3 text-white" />}
                       </div>
-                      <p className="text-xs text-gray-500 mt-0.5">{plan.description}</p>
-                      <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1.5">
-                        {plan.features.map(f => (
-                          <span key={f} className="text-[10px] text-gray-400 flex items-center gap-1">
-                            <Check className="w-3 h-3 text-indigo-400" /> {f}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-bold text-gray-900">{t(`register.plans.${planId}.name`)}</span>
+                          {isPopular && <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-semibold">{t('register.step5.popular')}</span>}
+                          <span className="text-sm font-bold text-gray-900 ml-auto">
+                            {price === 0 ? t('register.step5.free') : `USD $${price}${t('register.step5.perMonth')}`}
                           </span>
-                        ))}
+                        </div>
+                        <p className="text-xs text-gray-500 mt-0.5">{t(`register.plans.${planId}.desc`)}</p>
+                        <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1.5">
+                          {Array.from({ length: featureCount }, (_, i) => (
+                            <span key={i} className="text-[10px] text-gray-400 flex items-center gap-1">
+                              <Check className="w-3 h-3 text-indigo-400" /> {t(`register.plans.${planId}.f${i + 1}`)}
+                            </span>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  )
+                })}
               </div>
               <div className="flex gap-3 mt-5">
                 <button onClick={() => setStep(4)} className="flex-1 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-50 border border-gray-200">
-                  <ArrowLeft className="w-4 h-4 inline mr-1" /> Atrás
+                  <ArrowLeft className="w-4 h-4 inline mr-1" /> {t('register.back')}
                 </button>
                 <button onClick={() => setStep(6)} className="flex-1 bg-indigo-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-indigo-700">
-                  Siguiente
+                  {t('register.next')}
                 </button>
               </div>
             </div>
@@ -460,37 +427,37 @@ export default function RegisterPage() {
           {step === 6 && (
             <div>
               <h2 className="text-lg font-bold text-gray-900 mb-1">
-                {operationType === 'independent' ? 'Tu perfil' : 'Tu negocio'}
+                {operationType === 'independent' ? t('register.summary.titleProfile') : t('register.summary.titleBusiness')}
               </h2>
-              <p className="text-sm text-gray-500 mb-5">Último paso. Podés cambiarlo después.</p>
+              <p className="text-sm text-gray-500 mb-5">{t('register.lastStep')}</p>
               {error && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">{error}</div>}
               <div className="space-y-4">
                 <div className="bg-gray-50 rounded-xl p-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-semibold text-gray-900">{chosenCategory?.label}</p>
+                      <p className="text-sm font-semibold text-gray-900">{chosenCategory ? t(`register.categories.${chosenCategory.id}`) : ''}</p>
                       <p className="text-xs text-gray-500">
-                        {operationType === 'independent' ? 'Independiente' : 'Negocio'} — Plan {PLANS.find(p => p.id === selectedPlan)?.label}
-                        {selectedPlan !== 'free' ? ` (USD $${PLANS.find(p => p.id === selectedPlan)?.price}/mes)` : ' (Gratis)'}
+                        {operationType === 'independent' ? t('register.summary.independent') : t('register.summary.business')} — Plan {t(`register.plans.${selectedPlan}.name`)}
+                        {selectedPlan !== 'free' ? ` (USD $${PLAN_PRICES[selectedPlan]}${t('register.step5.perMonth')})` : ` (${t('register.step5.free')})`}
                       </p>
                     </div>
                   </div>
                 </div>
                 <div>
                   <label className="text-xs font-semibold text-gray-600 mb-1 block">
-                    {operationType === 'independent' ? 'Nombre para tu perfil *' : 'Nombre del negocio *'}
+                    {operationType === 'independent' ? t('register.summary.profileNameLabel') : t('register.summary.businessNameLabel')}
                   </label>
                   <input className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" value={businessName} onChange={e => setBusinessName(e.target.value)}
-                    placeholder={operationType === 'independent' ? 'Ej: Juan Pérez Electricista, Ana Diseño' : 'Ej: La Burguesa, Pet Shop Luna, Dr. García'}
+                    placeholder={operationType === 'independent' ? t('register.summary.profileNamePlaceholder') : t('register.summary.businessNamePlaceholder')}
                   />
                 </div>
               </div>
               <div className="flex gap-3 mt-6">
                 <button onClick={() => setStep(5)} className="flex-1 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-50 border border-gray-200">
-                  <ArrowLeft className="w-4 h-4 inline mr-1" /> Atrás
+                  <ArrowLeft className="w-4 h-4 inline mr-1" /> {t('register.back')}
                 </button>
                 <button onClick={handleRegister} disabled={loading || !businessName} className="flex-1 bg-indigo-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50">
-                  {loading ? 'Creando...' : operationType === 'independent' ? 'Crear mi perfil' : 'Crear mi negocio'}
+                  {loading ? t('register.creating') : operationType === 'independent' ? t('register.createProfile') : t('register.createBusiness')}
                 </button>
               </div>
             </div>
@@ -498,7 +465,7 @@ export default function RegisterPage() {
         </div>
 
         <p className="text-center mt-6 text-sm text-gray-500">
-          ¿Ya tenés cuenta? <Link href="/login" className="text-indigo-600 font-medium hover:underline">Iniciar sesión</Link>
+          {t('register.alreadyHaveAccount')} <Link href="/login" className="text-indigo-600 font-medium hover:underline">{t('register.login')}</Link>
         </p>
       </div>
     </main>

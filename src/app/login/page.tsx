@@ -68,7 +68,7 @@ export default function LoginPage() {
         body: JSON.stringify({ id_token: response.credential }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Error con Google')
+      if (!res.ok) throw new Error(data.error || t('login.errorGoogleFailed'))
       if (data.requires2FA) {
         setNeeds2FA(true)
         setTempToken(data.tempToken)
@@ -114,7 +114,7 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || data.message || 'Error al iniciar sesión')
+      if (!res.ok) throw new Error(data.error || data.message || t('login.errorGeneric'))
       if (data.requires2FA) {
         setNeeds2FA(true)
         setTempToken(data.tempToken)
@@ -125,7 +125,7 @@ export default function LoginPage() {
       if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken)
       router.push('/dashboard')
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Error al iniciar sesión'
+      const msg = err instanceof Error ? err.message : t('login.errorGeneric')
       if (msg.includes('google') || msg.includes('Google')) {
         setError(t('login.errorGoogleHint'))
       } else {
@@ -150,7 +150,7 @@ export default function LoginPage() {
         body: JSON.stringify({ tempToken, code: totpCode }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Código incorrecto')
+      if (!res.ok) throw new Error(data.error || t('login.errorInvalidCode'))
       localStorage.setItem('token', data.token)
       if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken)
       router.push('/dashboard')
