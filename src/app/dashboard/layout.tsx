@@ -168,7 +168,10 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
   const dynamicStoreNav = businessType ? getNavForBusinessType(businessType) : storeNav
   const nav = isSuperAdmin ? adminNav : (isAdminSection ? adminNav : dynamicStoreNav)
 
-  const isImpersonating = typeof window !== 'undefined' && !!localStorage.getItem('originalToken')
+  const [isImpersonating, setIsImpersonating] = useState(false)
+  useEffect(() => {
+    setIsImpersonating(!!localStorage.getItem('originalToken'))
+  }, [user])
 
   return (
     <div className="min-h-screen bg-slate-50">
