@@ -1,0 +1,74 @@
+{
+  "nav": {
+    "features": "Funcionalidades",
+    "howItWorks": "Cómo funciona",
+    "pricing": "Planes",
+    "contact": "Contacto",
+    "about": "Nosotros",
+    "login": "Iniciar sesión",
+    "register": "Registrar comercio"
+  },
+  "hero": {
+    "title1": "Tu negocio,",
+    "title2": "tu plataforma.",
+    "subtitle": "Empezá gratis, crecé sin límites, vendé sin comisiones. Tu tienda digital con pedidos, pagos y clientes — todo bajo tu control.",
+    "cta": "Registrar mi comercio",
+    "ctaSecondary": "Ver demo"
+  },
+  "login": {
+    "title": "Ingresar a Runbits",
+    "email": "Email",
+    "password": "Contraseña",
+    "forgotPassword": "Olvidé mi contraseña",
+    "submit": "Iniciar sesión",
+    "noAccount": "¿No tenés cuenta?",
+    "createAccount": "Crear cuenta",
+    "or": "o",
+    "continueWith": "continuar con",
+    "errorFacebookDenied": "Cancelaste el login con Facebook",
+    "errorFacebookFailed": "Error al autenticar con Facebook",
+    "errorAccountInactive": "Tu cuenta está inactiva",
+    "errorAuth": "Error de autenticación"
+  },
+  "register": {
+    "title": "Registrar comercio",
+    "subtitle": "Creá tu cuenta gratis y empezá a vender",
+    "name": "Nombre",
+    "email": "Email",
+    "password": "Contraseña",
+    "submit": "Crear cuenta",
+    "alreadyHaveAccount": "¿Ya tenés cuenta?",
+    "login": "Iniciá sesión"
+  },
+  "dashboard": {
+    "home": "Inicio",
+    "catalog": "Catálogo",
+    "orders": "Pedidos",
+    "stats": "Estadísticas",
+    "marketing": "Marketing",
+    "modules": "Módulos",
+    "subscription": "Suscripción",
+    "settings": "Configuración"
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "loading": "Cargando...",
+    "back": "Volver",
+    "next": "Siguiente",
+    "confirm": "Confirmar",
+    "search": "Buscar",
+    "close": "Cerrar",
+    "yes": "Sí",
+    "no": "No"
+  },
+  "footer": {
+    "tagline": "Tu negocio, tu plataforma.",
+    "rights": "Todos los derechos reservados.",
+    "privacy": "Privacidad",
+    "terms": "Términos",
+    "contact": "Contacto"
+  }
+}

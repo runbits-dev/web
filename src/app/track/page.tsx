@@ -3,16 +3,17 @@
 import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { ClipboardList, CheckCircle, ChefHat, Package, Bike, PartyPopper, LucideIcon } from 'lucide-react'
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'https://api.runbits.dev'
 
 const STATUS_STEPS = [
-  { key: 'PENDING', label: 'Pedido recibido', icon: '📋' },
-  { key: 'CONFIRMED', label: 'Confirmado por el local', icon: '✅' },
-  { key: 'PREPARING', label: 'En preparación', icon: '👨‍🍳' },
-  { key: 'PICKED_UP', label: 'Recogido por el repartidor', icon: '📦' },
-  { key: 'IN_TRANSIT', label: 'En camino', icon: '🛵' },
-  { key: 'DELIVERED', label: 'Entregado', icon: '🎉' },
+  { key: 'PENDING', label: 'Pedido recibido', Icon: ClipboardList },
+  { key: 'CONFIRMED', label: 'Confirmado por el local', Icon: CheckCircle },
+  { key: 'PREPARING', label: 'En preparación', Icon: ChefHat },
+  { key: 'PICKED_UP', label: 'Recogido por el repartidor', Icon: Package },
+  { key: 'IN_TRANSIT', label: 'En camino', Icon: Bike },
+  { key: 'DELIVERED', label: 'Entregado', Icon: PartyPopper },
 ]
 
 const STATUS_INDEX: Record<string, number> = {}
@@ -25,6 +26,7 @@ function TrackContent() {
   const [riderPos, setRiderPos] = useState<{ lat: number; lng: number } | null>(null)
   const [error, setError] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [whiteLabel, setWhiteLabel] = useState(false)
 
   useEffect(() => {
     if (!orderId) { setError(true); setLoading(false); return }
@@ -35,6 +37,13 @@ function TrackContent() {
         if (!res.ok) { setError(true); return }
         const data = await res.json()
         setOrder(data)
+
+        if (data.restaurant_id) {
+          fetch(`${API}/api/subscriptions/${data.restaurant_id}/limits`)
+            .then(r => r.ok ? r.json() : null)
+            .then(limitsData => { if (limitsData?.limits?.whiteLabel) setWhiteLabel(true) })
+            .catch(() => {})
+        }
 
         if (data.rider_id && ['PICKED_UP', 'IN_TRANSIT'].includes(data.status)) {
           try {
@@ -56,7 +65,7 @@ function TrackContent() {
 
   if (loading) return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600" />
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
     </div>
   )
 
@@ -94,7 +103,7 @@ function TrackContent() {
 
         {/* ETA card */}
         {!isCancelled && !isCompleted && (
-          <div className="bg-emerald-600 text-white rounded-2xl p-6 text-center">
+          <div className="bg-indigo-600 text-white rounded-2xl p-6 text-center">
             <p className="text-sm opacity-80">Tiempo estimado de entrega</p>
             <p className="text-4xl font-bold mt-1">{etaMin} min</p>
             <p className="text-sm mt-2 opacity-70">Actualiza automáticamente cada 15s</p>
@@ -102,10 +111,10 @@ function TrackContent() {
         )}
 
         {isCompleted && (
-          <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 text-center">
-            <span className="text-4xl">🎉</span>
-            <p className="text-lg font-bold text-emerald-800 mt-2">¡Pedido entregado!</p>
-            <p className="text-sm text-emerald-600 mt-1">Gracias por tu compra</p>
+          <div className="bg-indigo-50 border border-indigo-200 rounded-2xl p-6 text-center">
+            <PartyPopper className="w-10 h-10 text-indigo-600 mx-auto" />
+            <p className="text-lg font-bold text-indigo-800 mt-2">¡Pedido entregado!</p>
+            <p className="text-sm text-indigo-600 mt-1">Gracias por tu compra</p>
           </div>
         )}
 
@@ -129,13 +138,13 @@ function TrackContent() {
                     <div className="flex flex-col items-center">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
                         isDone
-                          ? 'bg-emerald-600 text-white'
+                          ? 'bg-indigo-600 text-white'
                           : 'bg-gray-100 text-gray-400'
-                      } ${isCurrent ? 'ring-4 ring-emerald-100' : ''}`}>
-                        {step.icon}
+                      } ${isCurrent ? 'ring-4 ring-indigo-100' : ''}`}>
+                        <step.Icon className="w-4 h-4" />
                       </div>
                       {!isLast && (
-                        <div className={`w-0.5 h-8 ${isDone ? 'bg-emerald-300' : 'bg-gray-200'}`} />
+                        <div className={`w-0.5 h-8 ${isDone ? 'bg-indigo-300' : 'bg-gray-200'}`} />
                       )}
                     </div>
                     <div className="pt-1">
@@ -143,7 +152,7 @@ function TrackContent() {
                         {step.label}
                       </p>
                       {isCurrent && (
-                        <p className="text-xs text-emerald-600 mt-0.5">Estado actual</p>
+                        <p className="text-xs text-indigo-600 mt-0.5">Estado actual</p>
                       )}
                     </div>
                   </div>
@@ -181,11 +190,14 @@ function TrackContent() {
           </div>
         </div>
 
-        <footer className="text-center py-4">
-          <p className="text-xs text-gray-400">
-            Powered by <Link href="https://runbits.io" className="text-emerald-600 hover:underline">Runbits</Link>
-          </p>
-        </footer>
+        {/* Footer — hidden for white-label */}
+        {!whiteLabel && (
+          <footer className="text-center py-4">
+            <p className="text-xs text-gray-400">
+              Powered by <Link href="https://runbits.io" className="text-indigo-600 hover:underline">Runbits</Link>
+            </p>
+          </footer>
+        )}
       </div>
     </div>
   )
@@ -195,7 +207,7 @@ export default function TrackPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
       </div>
     }>
       <TrackContent />

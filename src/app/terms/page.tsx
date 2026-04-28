@@ -112,8 +112,9 @@ export default function TermsPage() {
 
           <h2 className="text-2xl font-bold text-gray-900 mt-10 mb-4">6. Limitación de Responsabilidad</h2>
           <p className="text-gray-700 leading-relaxed">
-            Runbits actúa como intermediario entre comercios, clientes y repartidores. En la máxima medida
-            permitida por la ley:
+            Runbits provee infraestructura tecnológica para que los comercios operen de forma independiente.
+            Runbits no participa en las transacciones entre comercios y sus clientes, ni es responsable por
+            los productos o servicios ofrecidos por los comercios. En la máxima medida permitida por la ley:
           </p>
           <ul className="text-gray-700 space-y-2 list-disc pl-6">
             <li>Runbits no será responsable por la calidad de los productos ofrecidos por los comercios.</li>

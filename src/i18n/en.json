@@ -1,0 +1,74 @@
+{
+  "nav": {
+    "features": "Features",
+    "howItWorks": "How it works",
+    "pricing": "Pricing",
+    "contact": "Contact",
+    "about": "About",
+    "login": "Sign in",
+    "register": "Register your store"
+  },
+  "hero": {
+    "title1": "Your business,",
+    "title2": "your platform.",
+    "subtitle": "Start free, grow without limits, sell without commissions. Your digital store with orders, payments and customers — all under your control.",
+    "cta": "Register my store",
+    "ctaSecondary": "View demo"
+  },
+  "login": {
+    "title": "Sign in to Runbits",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot my password",
+    "submit": "Sign in",
+    "noAccount": "Don't have an account?",
+    "createAccount": "Create account",
+    "or": "or",
+    "continueWith": "continue with",
+    "errorFacebookDenied": "You cancelled the Facebook login",
+    "errorFacebookFailed": "Error authenticating with Facebook",
+    "errorAccountInactive": "Your account is inactive",
+    "errorAuth": "Authentication error"
+  },
+  "register": {
+    "title": "Register your store",
+    "subtitle": "Create your free account and start selling",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Create account",
+    "alreadyHaveAccount": "Already have an account?",
+    "login": "Sign in"
+  },
+  "dashboard": {
+    "home": "Home",
+    "catalog": "Catalog",
+    "orders": "Orders",
+    "stats": "Statistics",
+    "marketing": "Marketing",
+    "modules": "Modules",
+    "subscription": "Subscription",
+    "settings": "Settings"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "loading": "Loading...",
+    "back": "Back",
+    "next": "Next",
+    "confirm": "Confirm",
+    "search": "Search",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "footer": {
+    "tagline": "Your business, your platform.",
+    "rights": "All rights reserved.",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "contact": "Contact"
+  }
+}

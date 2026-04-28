@@ -2,59 +2,51 @@
 
 import { useEffect, useState } from 'react'
 import { api } from '@/lib/api'
+import { useProfile } from '@/context/ProfileContext'
+import { Check, Receipt } from 'lucide-react'
 
 type Subscription = {
   id: string
   plan: string
   status: string
+  restaurant_id: string
   current_period_start: number
   current_period_end: number
   order_count: number
   order_limit: number
   price_usd_cents: number
   trial_end: number | null
-  grace_period_end: number | null
-  cancel_at_period_end: number
 }
 
 const PLANS = [
   {
-    name: 'starter',
-    label: 'Starter',
-    price: 49,
-    orders: -1,
-    features: ['Pedidos ilimitados', 'Menú ilimitado', 'Tienda online', 'Push notifications', 'QR verificación', '2 cupones', '1 promo', 'Soporte email 48h'],
+    name: 'free', label: 'Free', price: 0,
+    description: 'Operá tu negocio sin costo',
+    features: ['Catálogo ilimitado', 'Pedidos ilimitados', 'Tienda online', 'Chat con clientes', '3 cupones', '1 promo activa', 'Estadísticas básicas'],
   },
   {
-    name: 'growth',
-    label: 'Growth',
-    price: 129,
-    orders: -1,
-    features: ['Todo de Starter', 'Dominio propio', 'Colores personalizados', '10 cupones', '5 promos', '3 campañas push/mes', '5 generaciones IA/mes', 'Verificación de clientes', 'Analytics con gráficos', 'Soporte email 24h'],
+    name: 'pro', label: 'Pro', price: 29,
+    description: 'Herramientas para crecer',
+    features: ['Todo de Free', 'Cupones y promos ilimitados', 'Dominio propio', 'Marca personalizada', 'Analytics con gráficos', '5 campañas push/mes', 'Perfiles ilimitados'],
     popular: true,
   },
   {
-    name: 'pro',
-    label: 'Pro',
-    price: 299,
-    orders: -1,
-    features: ['Todo de Growth', 'Cupones y promos ilimitados', '20 campañas push/mes', '50 generaciones IA/mes', 'White-label (sin marca Runbits)', '3 sucursales', '5 usuarios staff', '3 webhooks', 'Chat prioritario'],
+    name: 'business', label: 'Business', price: 99,
+    description: 'Para escalar tu operación',
+    features: ['Todo de Pro', 'White-label', 'Multi-sucursal (5)', '5 usuarios staff', 'Webhooks', 'Email marketing', 'Verificación de clientes'],
   },
   {
-    name: 'enterprise',
-    label: 'Enterprise',
-    price: 499,
-    orders: -1,
-    features: ['Todo ilimitado', 'API REST completa', 'Webhooks ilimitados', 'Sucursales ilimitadas', 'Staff ilimitado', 'Verificación ilimitada', 'Facturación electrónica AFIP', 'Soporte dedicado', 'Onboarding personalizado'],
+    name: 'enterprise', label: 'Enterprise', price: 249,
+    description: 'Todo ilimitado + IA',
+    features: ['Todo de Business', 'Asistente IA 24/7', 'WhatsApp bot', 'GPS tracking', 'API REST', 'Sucursales ilimitadas', 'Soporte dedicado'],
   },
 ]
 
 const statusLabel: Record<string, { text: string; color: string }> = {
-  active: { text: 'Activo', color: 'bg-emerald-50 text-emerald-700 ring-emerald-200' },
-  trialing: { text: 'Período de prueba', color: 'bg-blue-50 text-blue-700 ring-blue-200' },
+  active: { text: 'Activo', color: 'bg-indigo-50 text-indigo-700 ring-indigo-200' },
+  trialing: { text: 'Prueba', color: 'bg-blue-50 text-blue-700 ring-blue-200' },
   past_due: { text: 'Pago pendiente', color: 'bg-amber-50 text-amber-700 ring-amber-200' },
   canceled: { text: 'Cancelado', color: 'bg-red-50 text-red-700 ring-red-200' },
-  grace_period: { text: 'Período de gracia', color: 'bg-orange-50 text-orange-700 ring-orange-200' },
 }
 
 function formatDate(ts: number) {
@@ -62,30 +54,52 @@ function formatDate(ts: number) {
 }
 
 export default function SubscriptionPage() {
+  const { activeProfile, profiles } = useProfile()
   const [sub, setSub] = useState<Subscription | null>(null)
+  const [consolidated, setConsolidated] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  const [restaurantId, setRestaurantId] = useState<string | null>(null)
   const [upgrading, setUpgrading] = useState(false)
   const [canceling, setCanceling] = useState(false)
 
+  const storeId = activeProfile?.store_id
+
   useEffect(() => {
-    api.me().then(u => {
-      if (u.restaurant_id) {
-        setRestaurantId(u.restaurant_id)
-        fetch(`/api/subscriptions/${u.restaurant_id}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        })
-          .then(r => r.ok ? r.json() : null)
-          .then(setSub)
-          .finally(() => setLoading(false))
-      } else {
-        setLoading(false)
-      }
-    })
-  }, [])
+    if (!activeProfile) { setLoading(false); return }
+
+    const loadData = async () => {
+      try {
+        const user = await api.me()
+        // Load current profile's subscription
+        if (storeId) {
+          try {
+            const s = await api.getSubscriptionLimits(storeId)
+            if (s.active) {
+              const fullSub = await fetch(`/api/subscriptions/${storeId}`, {
+                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+              }).then(r => r.ok ? r.json() : null)
+              setSub(fullSub)
+            }
+          } catch {}
+        }
+
+        // Load consolidated billing for all profiles
+        if (profiles.length > 0 && user.id) {
+          const storeIds = profiles.map(p => p.store_id).filter(Boolean) as string[]
+          if (storeIds.length > 0) {
+            try {
+              const c = await api.getConsolidatedBilling(user.id, storeIds)
+              setConsolidated(c)
+            } catch {}
+          }
+        }
+      } catch {}
+      setLoading(false)
+    }
+    loadData()
+  }, [activeProfile, profiles, storeId])
 
   async function handleSubscribe(plan: string) {
-    if (!restaurantId) return
+    if (!storeId) return
     setUpgrading(true)
     try {
       const res = await fetch('/api/subscriptions', {
@@ -94,12 +108,9 @@ export default function SubscriptionPage() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
-        body: JSON.stringify({ restaurantId, plan, trialDays: 14 }),
+        body: JSON.stringify({ restaurantId: storeId, plan, trialDays: 14 }),
       })
-      if (res.ok) {
-        const data = await res.json()
-        setSub(data)
-      }
+      if (res.ok) setSub(await res.json())
     } catch {}
     setUpgrading(false)
   }
@@ -112,40 +123,29 @@ export default function SubscriptionPage() {
         method: 'POST',
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       })
-      if (res.ok) {
-        const data = await res.json()
-        setSub(data)
-      }
+      if (res.ok) setSub(await res.json())
     } catch {}
     setCanceling(false)
   }
 
-  if (loading) {
-    return (
-      <div className="p-8 text-center text-slate-400 text-sm">Cargando...</div>
-    )
-  }
+  if (loading) return <div className="p-8 text-center text-slate-400 text-sm">Cargando...</div>
 
-  if (!restaurantId) {
-    return (
-      <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 text-center">
-        <p className="text-amber-700 text-sm">Tu cuenta no tiene un restaurante asociado aún.</p>
-      </div>
-    )
+  if (!activeProfile) {
+    return <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 text-center"><p className="text-amber-700 text-sm">No hay perfil activo.</p></div>
   }
 
   return (
     <div>
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-slate-900">Suscripción</h1>
-        <p className="text-slate-500 text-sm mt-1">Gestioná tu plan y facturación</p>
+        <p className="text-slate-500 text-sm mt-1">Plan de <span className="font-medium text-slate-700">{activeProfile.display_name}</span></p>
       </div>
 
-      {/* Current subscription */}
+      {/* Current profile subscription */}
       {sub && (
         <div className="bg-white rounded-2xl border border-slate-200 p-6 mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-slate-900">Plan actual</h2>
+            <h2 className="font-semibold text-slate-900">Plan actual — {activeProfile.display_name}</h2>
             <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold ring-1 ${statusLabel[sub.status]?.color || 'bg-slate-100 text-slate-600'}`}>
               {statusLabel[sub.status]?.text || sub.status}
             </span>
@@ -161,9 +161,7 @@ export default function SubscriptionPage() {
             </div>
             <div>
               <p className="text-xs text-slate-500">Pedidos usados</p>
-              <p className="font-bold text-slate-900">
-                {sub.order_count} / {sub.order_limit === -1 ? '∞' : sub.order_limit}
-              </p>
+              <p className="font-bold text-slate-900">{sub.order_count} / {sub.order_limit === -1 ? 'Ilimitados' : sub.order_limit}</p>
             </div>
             <div>
               <p className="text-xs text-slate-500">Próxima renovación</p>
@@ -172,36 +170,12 @@ export default function SubscriptionPage() {
           </div>
           {sub.trial_end && sub.status === 'trialing' && (
             <div className="mt-4 bg-blue-50 border border-blue-200 rounded-xl p-3">
-              <p className="text-sm text-blue-700">
-                Período de prueba hasta {formatDate(sub.trial_end)}. No se te cobrará hasta esa fecha.
-              </p>
-            </div>
-          )}
-          {/* Usage bar */}
-          {sub.order_limit > 0 && (
-            <div className="mt-4">
-              <div className="flex justify-between text-xs text-slate-500 mb-1">
-                <span>Uso de pedidos</span>
-                <span>{Math.round((sub.order_count / sub.order_limit) * 100)}%</span>
-              </div>
-              <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div
-                  className={`h-full rounded-full transition-all ${
-                    sub.order_count / sub.order_limit > 0.9 ? 'bg-red-500' :
-                    sub.order_count / sub.order_limit > 0.7 ? 'bg-amber-500' : 'bg-emerald-500'
-                  }`}
-                  style={{ width: `${Math.min(100, (sub.order_count / sub.order_limit) * 100)}%` }}
-                />
-              </div>
+              <p className="text-sm text-blue-700">Período de prueba hasta {formatDate(sub.trial_end)}.</p>
             </div>
           )}
           {sub.status === 'active' && (
             <div className="mt-4 pt-4 border-t border-slate-100">
-              <button
-                onClick={handleCancel}
-                disabled={canceling}
-                className="text-sm text-red-500 hover:text-red-700 font-medium"
-              >
+              <button onClick={handleCancel} disabled={canceling} className="text-sm text-red-500 hover:text-red-700 font-medium">
                 {canceling ? 'Cancelando...' : 'Cancelar suscripción'}
               </button>
             </div>
@@ -209,52 +183,70 @@ export default function SubscriptionPage() {
         </div>
       )}
 
+      {/* Consolidated billing */}
+      {profiles.length > 1 && consolidated && (
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <Receipt className="w-5 h-5 text-slate-600" />
+            <h2 className="font-semibold text-slate-900">Factura consolidada</h2>
+          </div>
+          <p className="text-xs text-slate-500 mb-4">Total mensual por todos tus perfiles y módulos activos.</p>
+          {consolidated.invoiceLines?.length > 0 ? (
+            <div className="space-y-2 mb-4">
+              {consolidated.invoiceLines.map((line: any, i: number) => {
+                const profile = profiles.find(p => p.store_id === line.profileId)
+                return (
+                  <div key={i} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
+                    <div>
+                      <p className="text-sm text-slate-900">{line.name}</p>
+                      <p className="text-xs text-slate-400">{profile?.display_name || line.profileId}</p>
+                    </div>
+                    <p className="text-sm font-semibold text-slate-900">USD ${(line.amountUsdCents / 100).toFixed(2)}</p>
+                  </div>
+                )
+              })}
+            </div>
+          ) : (
+            <p className="text-sm text-slate-400 mb-4">No hay suscripciones activas.</p>
+          )}
+          <div className="flex items-center justify-between pt-3 border-t border-slate-200">
+            <p className="text-sm font-bold text-slate-900">Total mensual</p>
+            <p className="text-lg font-extrabold text-slate-900">USD ${consolidated.totalMonthlyUsd}</p>
+          </div>
+        </div>
+      )}
+
       {/* Plans grid */}
       <h2 className="font-semibold text-slate-900 mb-4">{sub ? 'Cambiar plan' : 'Elegí tu plan'}</h2>
       <p className="text-sm text-slate-500 mb-6">
-        Tarifa fija mensual. Sin comisiones por venta. 14 días de prueba gratis.
+        Cada perfil tiene su propio plan. 14 días de prueba gratis. Sin tarjeta.
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {PLANS.map(plan => {
           const isCurrent = sub?.plan === plan.name
           return (
-            <div
-              key={plan.name}
-              className={`bg-white rounded-2xl border-2 p-6 relative ${
-                plan.popular ? 'border-slate-900' : 'border-slate-200'
-              } ${isCurrent ? 'ring-2 ring-emerald-500' : ''}`}
-            >
-              {plan.popular && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                  Popular
-                </span>
+            <div key={plan.name} className={`bg-white rounded-2xl border-2 p-6 relative ${(plan as any).popular ? 'border-slate-900' : 'border-slate-200'} ${isCurrent ? 'ring-2 ring-indigo-500' : ''}`}>
+              {(plan as any).popular && (
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs font-semibold px-3 py-1 rounded-full">Popular</span>
               )}
               <h3 className="text-lg font-bold text-slate-900">{plan.label}</h3>
               <div className="mt-2 mb-4">
-                <span className="text-3xl font-extrabold text-slate-900">${plan.price}</span>
-                <span className="text-sm text-slate-500">/mes USD</span>
+                <span className="text-3xl font-extrabold text-slate-900">{plan.price === 0 ? 'Gratis' : `$${plan.price}`}</span>
+                {plan.price > 0 && <span className="text-sm text-slate-500">/mes USD</span>}
               </div>
-              <p className="text-xs text-slate-500 mb-4">Hasta {plan.orders.toLocaleString()} pedidos/mes</p>
               <ul className="space-y-2 mb-6">
                 {plan.features.map(f => (
                   <li key={f} className="text-sm text-slate-600 flex items-start gap-2">
-                    <span className="text-emerald-500 mt-0.5">✓</span>
+                    <Check className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
                     {f}
                   </li>
                 ))}
               </ul>
               {isCurrent ? (
-                <div className="text-center text-sm font-semibold text-emerald-600 py-2">Plan actual</div>
+                <div className="text-center text-sm font-semibold text-indigo-600 py-2">Plan actual</div>
               ) : (
-                <button
-                  onClick={() => handleSubscribe(plan.name)}
-                  disabled={upgrading}
-                  className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-colors ${
-                    plan.popular
-                      ? 'bg-slate-900 text-white hover:bg-slate-700'
-                      : 'bg-slate-100 text-slate-900 hover:bg-slate-200'
-                  }`}
-                >
+                <button onClick={() => handleSubscribe(plan.name)} disabled={upgrading}
+                  className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-colors ${(plan as any).popular ? 'bg-slate-900 text-white hover:bg-slate-700' : 'bg-slate-100 text-slate-900 hover:bg-slate-200'}`}>
                   {upgrading ? 'Procesando...' : sub ? 'Cambiar plan' : 'Comenzar prueba gratis'}
                 </button>
               )}

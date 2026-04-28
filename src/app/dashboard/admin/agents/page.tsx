@@ -31,11 +31,11 @@ export default function AdminAgentsPage() {
               <div><p className="font-semibold text-slate-900">{a.name}</p><p className="text-sm text-slate-500">{a.email}</p></div>
               <div className="flex items-center gap-2">
                 <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${
-                  a.status === 'active' ? 'bg-emerald-50 text-emerald-700' :
+                  a.status === 'active' ? 'bg-indigo-50 text-indigo-700' :
                   a.status === 'pending' ? 'bg-amber-50 text-amber-700' : 'bg-red-50 text-red-700'
                 }`}>{a.status}</span>
                 {a.status === 'pending' && <button onClick={() => handleAction(a.id, 'approve')} className="px-3 py-1 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700">Aprobar</button>}
-                {a.status === 'approved' && <button onClick={() => handleAction(a.id, 'activate')} className="px-3 py-1 bg-emerald-600 text-white rounded-lg text-xs font-semibold hover:bg-emerald-700">Activar</button>}
+                {a.status === 'approved' && <button onClick={() => handleAction(a.id, 'activate')} className="px-3 py-1 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700">Activar</button>}
                 {a.status === 'active' && <button onClick={() => handleAction(a.id, 'suspend')} className="px-3 py-1 bg-red-50 text-red-600 rounded-lg text-xs font-semibold hover:bg-red-100">Suspender</button>}
               </div>
             </div>

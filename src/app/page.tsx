@@ -1,72 +1,25 @@
 import Link from 'next/link'
-
-function Navbar() {
-  return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <Link href="/" className="logo-runbits logo-runbits-dark text-2xl">
-            RunBits
-          </Link>
-          <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm text-gray-600 hover:text-brand-700 transition-colors">
-              Funcionalidades
-            </a>
-            <a href="#how-it-works" className="text-sm text-gray-600 hover:text-brand-700 transition-colors">
-              Cómo funciona
-            </a>
-            <a href="#pricing" className="text-sm text-gray-600 hover:text-brand-700 transition-colors">
-              Planes
-            </a>
-            <a href="#contact" className="text-sm text-gray-600 hover:text-brand-700 transition-colors">
-              Contacto
-            </a>
-            <Link href="/about" className="text-sm text-gray-600 hover:text-brand-700 transition-colors">
-              Nosotros
-            </Link>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link
-              href="/login"
-              className="text-sm font-medium text-gray-700 hover:text-brand-700 transition-colors"
-            >
-              Iniciar sesión
-            </Link>
-            <Link
-              href="/register"
-              className="text-sm font-medium bg-brand-600 text-white px-4 py-2 rounded-lg hover:bg-brand-700 transition-colors"
-            >
-              Registrar comercio
-            </Link>
-          </div>
-        </div>
-      </div>
-    </nav>
-  )
-}
+import { Users, DollarSign, Store, KeyRound, Smartphone, LayoutDashboard, Truck, BarChart3, Check, BriefcaseBusiness, Bell, MessageSquare, ShieldCheck } from 'lucide-react'
+import { LandingNavbar } from '@/components/LandingNavbar'
+import { FooterLocaleBar } from '@/components/FooterLocaleBar'
 
 function Hero() {
   return (
     <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 overflow-hidden">
       {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-brand-50 via-white to-emerald-50" />
+      <div className="absolute inset-0 bg-gradient-to-br from-brand-50 via-white to-indigo-50" />
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-brand-200/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-100/40 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-100/40 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div className="inline-flex items-center gap-2 bg-brand-100 text-brand-800 text-sm font-medium px-4 py-1.5 rounded-full mb-8">
-          <span className="w-2 h-2 bg-brand-500 rounded-full animate-pulse" />
-          La plataforma que pone a tu negocio primero
-        </div>
-
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 tracking-tight max-w-4xl mx-auto leading-tight">
-          Tus clientes son tuyos.{' '}
-          <span className="text-brand-600">Siempre.</span>
+          Tu negocio,{' '}
+          <span className="text-brand-600">tu plataforma.</span>
         </h1>
 
         <p className="mt-6 text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-          A diferencia de las apps de delivery tradicionales, en Runbits los datos de tus clientes
-          te pertenecen. No somos intermediarios — somos tu infraestructura. Tarifa fija, sin comisiones por venta.
+          Empezá gratis, crecé sin límites, vendé sin comisiones.
+          Tu tienda digital con pedidos, pagos y clientes — todo bajo tu control.
         </p>
 
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -87,19 +40,19 @@ function Hero() {
           </Link>
         </div>
 
-        {/* Stats */}
+        {/* Value props */}
         <div className="mt-16 grid grid-cols-3 gap-8 max-w-lg mx-auto">
           <div>
-            <div className="text-2xl sm:text-3xl font-bold text-gray-900">100+</div>
-            <div className="text-sm text-gray-500 mt-1">Comercios</div>
+            <div className="text-2xl sm:text-3xl font-bold text-gray-900">$0</div>
+            <div className="text-sm text-gray-500 mt-1">Para empezar</div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-bold text-gray-900">5K+</div>
-            <div className="text-sm text-gray-500 mt-1">Pedidos</div>
+            <div className="text-2xl sm:text-3xl font-bold text-gray-900">0%</div>
+            <div className="text-sm text-gray-500 mt-1">Comisión por venta</div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-bold text-gray-900">50+</div>
-            <div className="text-sm text-gray-500 mt-1">Repartidores</div>
+            <div className="text-2xl sm:text-3xl font-bold text-gray-900">100%</div>
+            <div className="text-sm text-gray-500 mt-1">Tus clientes</div>
           </div>
         </div>
       </div>
@@ -108,26 +61,26 @@ function Hero() {
 }
 
 function WhyRunbits() {
-  const comparisons = [
+  const benefits = [
     {
-      them: 'En PedidosYa / Rappi, tus clientes son de la plataforma',
-      us: 'En Runbits, tus clientes son tuyos — vos tenés sus datos',
-      icon: '👥',
+      title: 'Tus clientes son tuyos',
+      desc: 'Vos tenés sus datos, su historial y la relación directa. Exportá tu base de clientes cuando quieras, sin restricciones.',
+      Icon: Users,
     },
     {
-      them: 'Te cobran 15-35% de comisión por cada venta',
-      us: 'Tarifa fija mensual desde USD $49. Sin comisiones. Nunca.',
-      icon: '💰',
+      title: 'Sin comisiones por venta',
+      desc: 'Pagás una tarifa fija mensual y te quedás con el 100% de tus ingresos. Gratis para empezar. Pro desde $29/mes.',
+      Icon: DollarSign,
     },
     {
-      them: 'Tu negocio compite con miles en el mismo feed',
-      us: 'Tu negocio tiene su propia tienda digital, sin competencia',
-      icon: '🏪',
+      title: 'Tu marca, tu tienda',
+      desc: 'Dominio propio, colores y logo. Tu tienda digital sin compartir pantalla con otros comercios.',
+      Icon: Store,
     },
     {
-      them: 'Si te vas de la plataforma, perdés todo',
-      us: 'Si te vas de Runbits, te llevás tu base de clientes',
-      icon: '🔓',
+      title: 'Control total, sin dependencia',
+      desc: 'Tu negocio, tus reglas. Si algún día te vas, te llevás tu base de clientes. Sin lock-in de ningún tipo.',
+      Icon: KeyRound,
     },
   ]
 
@@ -139,22 +92,23 @@ function WhyRunbits() {
             ¿Por qué Runbits?
           </h2>
           <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-            Somos como Shopify, pero para negocios que venden y entregan. No somos dueños de tus clientes — solo te damos la infraestructura para que conectes con ellos directamente.
+            Tu infraestructura digital propia — para conectar con tus clientes directamente, crecer con tu marca, y quedarte con todo lo que ganás.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-          {comparisons.map((c, i) => (
+          {benefits.map((b, i) => (
             <div key={i} className="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
-              <span className="text-2xl">{c.icon}</span>
-              <div className="mt-4 space-y-3">
+              <div className="w-10 h-10 bg-brand-100 rounded-lg flex items-center justify-center">
+                <b.Icon className="w-5 h-5 text-brand-700" />
+              </div>
+              <div className="mt-4">
                 <div className="flex items-start gap-2">
-                  <span className="text-red-400 mt-0.5 text-sm">✗</span>
-                  <p className="text-sm text-gray-500 line-through">{c.them}</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-emerald-500 mt-0.5 text-sm">✓</span>
-                  <p className="text-sm font-medium text-gray-900">{c.us}</p>
+                  <Check className="w-4 h-4 text-brand-500 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">{b.title}</p>
+                    <p className="text-sm text-gray-600 mt-1">{b.desc}</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -163,7 +117,7 @@ function WhyRunbits() {
 
         <div className="mt-12 text-center">
           <p className="text-base text-gray-700 font-medium max-w-xl mx-auto">
-            Runbits no es un marketplace. Es <span className="text-brand-600 font-bold">tu plataforma</span> — donde vos controlás la relación con tus clientes, tus datos y tu marca.
+            <span className="text-brand-600 font-bold">Tu plataforma</span> — donde vos controlás la relación con tus clientes, tus datos y tu marca.
           </p>
         </div>
       </div>
@@ -174,44 +128,52 @@ function WhyRunbits() {
 function Features() {
   const features = [
     {
-      icon: (
-        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
-        </svg>
-      ),
-      title: 'App para clientes',
+      Icon: BriefcaseBusiness,
+      title: 'Multi-tipo de negocio',
       description:
-        'Tus clientes piden desde su celular. Catálogo digital con fotos, seguimiento en tiempo real y múltiples medios de pago.',
+        'Vendé productos, servicios, o ambos. Creá perfiles múltiples bajo una misma cuenta — ideal para negocios con distintas líneas.',
     },
     {
-      icon: (
-        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016A3.001 3.001 0 0021 9.349m-18 0a2.999 2.999 0 00.97-1.599L5.49 3h13.02l1.52 4.75A2.999 2.999 0 0021 9.349" />
-        </svg>
-      ),
+      Icon: Smartphone,
+      title: 'Tienda online + checkout',
+      description:
+        'Tu tienda digital lista para recibir pedidos. Catálogo con fotos, variantes, y múltiples métodos de pago integrados.',
+    },
+    {
+      Icon: MessageSquare,
+      title: 'Chat con IA de soporte',
+      description:
+        'Tus clientes reciben respuestas al instante desde tu tienda. El asistente IA gestiona consultas y pedidos 24/7.',
+    },
+    {
+      Icon: ShieldCheck,
+      title: 'Múltiples métodos de acceso',
+      description:
+        'Login con email, Google, Apple o Magic Link. Tus clientes entran fácil desde cualquier dispositivo.',
+    },
+    {
+      Icon: Bell,
+      title: 'Push notifications',
+      description:
+        'Enviá campañas push directamente a tus clientes. Avisales de promos, novedades o recordatorios con un clic.',
+    },
+    {
+      Icon: LayoutDashboard,
       title: 'Panel de comercio',
       description:
-        'Gestioná tu catálogo, controlá pedidos en tiempo real y accedé a estadísticas detalladas de tu negocio.',
+        'Gestioná catálogo, pedidos, cupones y estadísticas desde un dashboard centralizado. Todo en tiempo real.',
     },
     {
-      icon: (
-        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
-        </svg>
-      ),
+      Icon: Truck,
       title: 'Delivery flexible',
       description:
-        'Usá tus propios repartidores o conectá con servicios de envío externos. Tracking GPS y verificación QR incluidos.',
+        'Usá tus propios repartidores o conectá con servicios externos. Tracking GPS y verificación QR disponibles.',
     },
     {
-      icon: (
-        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
-        </svg>
-      ),
-      title: 'Analytics en tiempo real',
+      Icon: BarChart3,
+      title: 'Analytics',
       description:
-        'Datos y métricas de tu negocio al instante. Ventas, productos más pedidos, horarios pico y más.',
+        'Métricas de ventas, productos más pedidos y horarios pico. Gráficos y tendencias en planes Pro+.',
     },
   ]
 
@@ -223,7 +185,7 @@ function Features() {
             Todo lo que necesitás para vender más
           </h2>
           <p className="mt-4 text-lg text-gray-600">
-            Herramientas diseñadas para que tu comercio crezca con entregas eficientes.
+            Infraestructura real para comercios locales — no solo delivery.
           </p>
         </div>
 
@@ -234,7 +196,7 @@ function Features() {
               className="group relative bg-gray-50 rounded-2xl p-6 hover:bg-brand-50 transition-colors duration-300"
             >
               <div className="w-12 h-12 bg-brand-100 text-brand-700 rounded-xl flex items-center justify-center mb-4 group-hover:bg-brand-200 transition-colors">
-                {feature.icon}
+                <feature.Icon className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">{feature.title}</h3>
               <p className="text-sm text-gray-600 leading-relaxed">{feature.description}</p>
@@ -250,21 +212,21 @@ function HowItWorks() {
   const steps = [
     {
       number: '01',
-      title: 'Registrá tu comercio',
+      title: 'Registrate gratis',
       description:
-        'Creá tu cuenta en minutos. Completá los datos de tu negocio y elegí el plan que mejor se adapte.',
+        'Creá tu cuenta en minutos. Elegí el tipo de negocio — productos, servicios, o ambos — y configurá tu perfil.',
     },
     {
       number: '02',
       title: 'Cargá tu catálogo',
       description:
-        'Subí tus productos con fotos, precios y descripciones. Organizalos por categorías para que tus clientes encuentren todo fácil.',
+        'Subí tus productos o servicios con fotos, precios y descripciones. Organizalos por categorías para que tus clientes encuentren todo fácil.',
     },
     {
       number: '03',
-      title: 'Empezá a recibir pedidos',
+      title: 'Recibí pedidos',
       description:
-        'Tu tienda online está lista. Compartí el link con tus clientes, recibí pedidos y gestioná todo desde el dashboard.',
+        'Tu tienda online está lista. Tus clientes piden desde su celular — vos gestionás todo desde el dashboard.',
     },
   ]
 
@@ -300,84 +262,83 @@ function HowItWorks() {
 }
 
 function Pricing() {
-  const checkIcon = (
-    <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-    </svg>
-  )
+  const checkIcon = <Check className="w-5 h-5 shrink-0 mt-0.5" />
 
   const plans = [
     {
-      name: 'Starter',
-      description: 'Para negocios que recién arrancan',
-      billing: 'Tarifa fija — sin comisiones, nunca',
-      price: '49',
+      name: 'Free',
+      description: 'Operá tu negocio sin costo',
+      billing: 'Gratis para siempre — sin tarjeta',
+      price: '0',
       popular: false,
       highlighted: false,
       features: [
+        'Catálogo ilimitado',
         'Pedidos ilimitados',
-        'Catálogo ilimitado con variantes',
         'Tienda online propia',
-        'Push notifications',
-        'QR de verificación de entrega',
+        'Chat con clientes',
+        '3 cupones',
+        '1 promo activa',
         'Estadísticas básicas',
-        '14 días de prueba gratis',
+        '1 perfil',
+        'Soporte email',
       ],
-      cta: 'Probar 14 días gratis',
-    },
-    {
-      name: 'Growth',
-      description: 'Para negocios en crecimiento',
-      billing: 'Todo de Starter + herramientas de crecimiento',
-      price: '129',
-      popular: true,
-      highlighted: true,
-      features: [
-        'Todo de Starter',
-        'Dominio propio (tu-negocio.com)',
-        'Colores y marca personalizados',
-        '10 cupones + 5 promos activas',
-        '3 campañas push/mes a tus clientes',
-        'Analytics con gráficos y tendencias',
-        'Verificación de clientes',
-        'Soporte email 24h',
-      ],
-      cta: 'Elegir Growth',
+      cta: 'Empezar gratis',
     },
     {
       name: 'Pro',
-      description: 'Para negocios que necesitan escalar',
-      billing: 'Todo de Growth + escala y automatización',
-      price: '299',
-      popular: false,
-      highlighted: false,
+      description: 'Herramientas para crecer',
+      billing: 'Todo de Free + herramientas de crecimiento',
+      price: '29',
+      popular: true,
+      highlighted: true,
       features: [
-        'Todo de Growth',
+        'Todo de Free',
         'Cupones y promos ilimitados',
-        'White-label (sin marca Runbits)',
-        'Hasta 3 sucursales',
-        '5 usuarios staff con roles',
-        '50 generaciones IA/mes',
-        'Webhooks + integraciones',
-        'Chat prioritario',
+        'Dominio propio',
+        'Colores y marca personalizados',
+        'Analytics con gráficos y tendencias',
+        '5 campañas push/mes',
+        'Perfiles ilimitados',
+        'Soporte prioritario',
       ],
       cta: 'Elegir Pro',
     },
     {
-      name: 'Enterprise',
-      description: 'Para cadenas y franquicias',
-      billing: 'Todo ilimitado + soporte dedicado',
-      price: '499',
+      name: 'Business',
+      description: 'Para escalar tu operación',
+      billing: 'Todo de Pro + multi-sucursal',
+      price: '99',
       popular: false,
       highlighted: false,
       features: [
-        'Todo de Pro, sin límites',
+        'Todo de Pro',
+        'White-label (sin marca Runbits)',
+        'Multi-sucursal (hasta 5)',
+        '5 usuarios staff con roles',
+        'Webhooks + integraciones',
+        'Email marketing a clientes',
+        'Verificación de clientes',
+        'Soporte chat',
+      ],
+      cta: 'Elegir Business',
+    },
+    {
+      name: 'Enterprise',
+      description: 'Todo ilimitado + IA',
+      billing: 'Todo de Business + IA y API',
+      price: '249',
+      popular: false,
+      highlighted: false,
+      features: [
+        'Todo de Business',
+        'Asistente IA 24/7',
+        'Generaciones IA ilimitadas',
+        'WhatsApp bot',
+        'GPS tracking en vivo',
         'API REST completa',
         'Sucursales y staff ilimitados',
-        'Facturación electrónica AFIP',
-        'Verificación de clientes ilimitada',
-        'Onboarding personalizado',
-        'Account manager dedicado',
+        'Soporte dedicado',
       ],
       cta: 'Elegir Enterprise',
     },
@@ -388,10 +349,10 @@ function Pricing() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
-            Tarifa fija. Sin comisiones. Nunca.
+            Gratis para empezar. Sin comisiones. Nunca.
           </h2>
           <p className="mt-4 text-lg text-gray-600">
-            Todos los planes incluyen pedidos y catálogo ilimitados. Pagás una tarifa fija mensual y te quedás con el 100% de tus ventas.
+            Empezá sin costo. Todos los planes incluyen pedidos y catálogo ilimitados. Pagás una tarifa fija mensual y te quedás con el 100% de tus ventas.
           </p>
         </div>
 
@@ -481,12 +442,73 @@ function Pricing() {
         </div>
 
         <p className="mt-10 text-center text-sm text-gray-500">
-          Todos los planes incluyen 14 días de prueba gratis. Sin tarjeta de crédito requerida.
+          El plan Free no requiere tarjeta de crédito. Podés upgradearlo en cualquier momento.
           <br />
           ¿Necesitás algo diferente?{' '}
-          <a href="mailto:sales@runbits.io" className="text-brand-600 hover:underline font-medium">
+          <a href="mailto:soporte@runbits.io" className="text-brand-600 hover:underline font-medium">
             Hablemos
           </a>
+        </p>
+      </div>
+    </section>
+  )
+}
+
+function Modules() {
+  const modules = [
+    { category: 'Ventas', items: [
+      { name: 'Programa de fidelidad', price: '$15/mes', desc: 'Puntos y recompensas para clientes frecuentes' },
+      { name: 'Tarjetas de regalo', price: '$10/mes', desc: 'Gift cards digitales canjeables en tu tienda' },
+    ]},
+    { category: 'Logística', items: [
+      { name: 'Tracking GPS en vivo', price: '$20/mes', desc: 'Tus clientes ven el repartidor en tiempo real' },
+      { name: 'Multi-sucursal', price: '$25/mes', desc: 'Gestioná varias sucursales desde un solo dashboard' },
+      { name: 'Optimización de rutas', price: '$30/mes', desc: 'Rutas automáticas para múltiples entregas' },
+    ]},
+    { category: 'Comunicación', items: [
+      { name: 'Bot de WhatsApp', price: '$25/mes', desc: 'Pedidos y consultas por WhatsApp automático' },
+      { name: 'Asistente IA', price: '$20/mes', desc: 'IA que responde consultas 24/7' },
+      { name: 'Email marketing', price: '$15/mes', desc: 'Campañas de email a tu base de clientes' },
+    ]},
+    { category: 'Operaciones', items: [
+      { name: 'Control de stock', price: '$15/mes', desc: 'Inventario con alertas de stock bajo' },
+      { name: 'Facturación AFIP', price: '$15/mes', desc: 'Facturación electrónica automática' },
+    ]},
+  ]
+
+  return (
+    <section className="py-20 sm:py-28 bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-2xl mx-auto mb-16">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
+            Armá tu plataforma a medida
+          </h2>
+          <p className="mt-4 text-lg text-gray-600">
+            Todos los planes se pueden ampliar con módulos adicionales. Activá solo lo que necesitás.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {modules.map(group => (
+            <div key={group.category}>
+              <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide">{group.category}</h3>
+              <div className="space-y-3">
+                {group.items.map(item => (
+                  <div key={item.name} className="bg-white rounded-xl p-4 border border-gray-100 hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-semibold text-gray-900">{item.name}</span>
+                      <span className="text-xs font-bold text-brand-600">{item.price}</span>
+                    </div>
+                    <p className="text-xs text-gray-500">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <p className="mt-10 text-center text-sm text-gray-500">
+          Muchas funcionalidades ya están incluidas en los planes base. Los módulos son para expandir aún más.
         </p>
       </div>
     </section>
@@ -515,14 +537,14 @@ function Contact() {
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">Escribinos por email</h3>
                 <a
-                  href="mailto:support@runbits.io"
+                  href="mailto:soporte@runbits.io"
                   className="mt-1 text-brand-600 hover:text-brand-700 font-medium text-lg"
                 >
-                  support@runbits.io
+                  soporte@runbits.io
                 </a>
               </div>
               <p className="text-sm text-gray-500 max-w-md">
-                Respondemos en menos de 24 horas hábiles. Contanos sobre tu negocio y te ayudamos a elegir el mejor plan.
+                Respondemos en menos de 24 horas hábiles. O usá el chat de soporte con IA en tu dashboard — disponible en todos los planes.
               </p>
             </div>
           </div>
@@ -556,7 +578,7 @@ function Footer() {
           <div className="md:col-span-1">
             <span className="logo-runbits logo-runbits-light text-2xl">RunBits</span>
             <p className="mt-3 text-sm leading-relaxed">
-              La plataforma de delivery que conecta comercios con clientes a través de entregas rápidas y confiables.
+              La plataforma para comercios locales. Vendé productos, servicios, o ambos — sin comisiones, con control total.
             </p>
           </div>
 
@@ -614,8 +636,8 @@ function Footer() {
             <h4 className="text-sm font-semibold text-white mb-4">Contacto</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="mailto:support@runbits.io" className="hover:text-white transition-colors">
-                  support@runbits.io
+                <a href="mailto:soporte@runbits.io" className="hover:text-white transition-colors">
+                  soporte@runbits.io
                 </a>
               </li>
               <li>
@@ -644,9 +666,12 @@ function Footer() {
           <p className="text-sm">
             &copy; {new Date().getFullYear()} Runbits LLC. Todos los derechos reservados.
           </p>
-          <p className="text-xs text-gray-500">
-            Runbits LLC &mdash; Argentina
-          </p>
+          <div className="flex items-center gap-4">
+            <FooterLocaleBar />
+            <p className="text-xs text-gray-500">
+              Runbits LLC &mdash; Argentina
+            </p>
+          </div>
         </div>
       </div>
     </footer>
@@ -656,12 +681,13 @@ function Footer() {
 export default function Home() {
   return (
     <main>
-      <Navbar />
+      <LandingNavbar />
       <Hero />
       <WhyRunbits />
       <Features />
       <HowItWorks />
       <Pricing />
+      <Modules />
       <Contact />
       <Footer />
     </main>

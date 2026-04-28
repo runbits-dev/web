@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Política de Reembolsos',
-  description: 'Política de reembolsos y disputas de Runbits.',
+  description: 'Política de reembolsos de suscripciones de Runbits.',
 }
 
 function LegalNav() {
@@ -30,87 +30,38 @@ export default function RefundPage() {
       <main className="pt-28 pb-20">
         <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 prose prose-gray prose-headings:text-gray-900 prose-a:text-brand-600 max-w-none">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Política de Reembolsos</h1>
-          <p className="text-sm text-gray-500 mb-8">Última actualización: 1 de abril de 2026</p>
+          <p className="text-sm text-gray-500 mb-8">Última actualización: 19 de abril de 2026</p>
 
           <p className="text-gray-700 leading-relaxed">
-            En Runbits nos esforzamos por brindar un servicio de calidad. Esta política describe cómo manejamos
-            los reembolsos para los diferentes tipos de transacciones en nuestra plataforma.
+            Esta política cubre exclusivamente los reembolsos de suscripciones y módulos contratados directamente con Runbits.
+            Runbits es una plataforma SaaS — no procesamos pagos entre comercios y sus clientes, y no somos responsables
+            de las transacciones que ocurren dentro de cada comercio.
           </p>
 
-          <h2 className="text-2xl font-bold text-gray-900 mt-10 mb-4">1. Naturaleza del Servicio</h2>
-          <p className="text-gray-700 leading-relaxed">
-            Runbits es una plataforma digital de servicios (SaaS). No vendemos productos físicos directamente.
-            Actuamos como intermediario entre comercios, clientes y repartidores. Por lo tanto, las políticas
-            de reembolso varían según el tipo de transacción.
-          </p>
-
-          <h2 className="text-2xl font-bold text-gray-900 mt-10 mb-4">2. Reembolsos de Suscripciones (Comercios)</h2>
-          <p className="text-gray-700 leading-relaxed">
-            Para comercios con suscripción mensual (Plan Premium):
-          </p>
+          <h2 className="text-2xl font-bold text-gray-900 mt-10 mb-4">1. Reembolsos de Suscripciones</h2>
           <ul className="text-gray-700 space-y-2 list-disc pl-6">
-            <li><strong>Cancelación dentro de los primeros 7 días:</strong> Reembolso completo del monto de la suscripción si no se procesaron pedidos durante ese período.</li>
-            <li><strong>Cancelación después de 7 días:</strong> Reembolso proporcional (prorrateado) por los días restantes del período de facturación, descontando cualquier comisión reducida ya aplicada.</li>
-            <li><strong>Renovación automática:</strong> Si se cobró una renovación automática no deseada, podés solicitar un reembolso completo dentro de las 48 horas posteriores al cobro.</li>
+            <li><strong>Primeros 14 días:</strong> Reembolso completo si cancelás dentro de los primeros 14 días desde la activación del plan.</li>
+            <li><strong>Después de 14 días:</strong> Reembolso prorrateado por los días restantes del período de facturación.</li>
           </ul>
 
-          <h2 className="text-2xl font-bold text-gray-900 mt-10 mb-4">3. Disputas de Pedidos (Clientes)</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mt-10 mb-4">2. Reembolsos de Módulos Add-on</h2>
           <p className="text-gray-700 leading-relaxed">
-            Las disputas relacionadas con pedidos se manejan caso por caso. Situaciones que pueden dar lugar a un reembolso:
-          </p>
-          <ul className="text-gray-700 space-y-2 list-disc pl-6">
-            <li><strong>Pedido no entregado:</strong> Si el pedido no fue entregado y no se puede resolver con una nueva entrega, se emitirá un reembolso completo.</li>
-            <li><strong>Productos incorrectos:</strong> Si recibiste productos diferentes a los pedidos, podés solicitar un reembolso parcial o total según la situación.</li>
-            <li><strong>Productos en mal estado:</strong> Si los productos llegaron en condiciones inaceptables, se evaluará un reembolso parcial o total.</li>
-            <li><strong>Cobro duplicado:</strong> Los cobros duplicados se reembolsan automáticamente al ser detectados, o inmediatamente al ser reportados.</li>
-          </ul>
-
-          <h2 className="text-2xl font-bold text-gray-900 mt-10 mb-4">4. Comisiones (Comercios)</h2>
-          <p className="text-gray-700 leading-relaxed">
-            Las comisiones cobradas por pedidos completados exitosamente no son reembolsables. Sin embargo:
-          </p>
-          <ul className="text-gray-700 space-y-2 list-disc pl-6">
-            <li>Si un pedido fue cancelado antes de la preparación, la comisión no se cobra.</li>
-            <li>Si un pedido fue reembolsado al cliente por un problema atribuible a la plataforma, la comisión se revierte al comercio.</li>
-          </ul>
-
-          <h2 className="text-2xl font-bold text-gray-900 mt-10 mb-4">5. Cómo Solicitar un Reembolso</h2>
-          <p className="text-gray-700 leading-relaxed">Para solicitar un reembolso:</p>
-          <ol className="text-gray-700 space-y-2 list-decimal pl-6">
-            <li>Enviá un email a <a href="mailto:support@runbits.io" className="text-brand-600 hover:underline">support@runbits.io</a> con el asunto &quot;Solicitud de Reembolso&quot;.</li>
-            <li>Incluí tu nombre, email de la cuenta, número de pedido o referencia de la transacción.</li>
-            <li>Describí el motivo de la solicitud con el mayor detalle posible.</li>
-            <li>Si aplica, adjuntá fotos o evidencia que respalden tu solicitud.</li>
-          </ol>
-
-          <h2 className="text-2xl font-bold text-gray-900 mt-10 mb-4">6. Plazos de Procesamiento</h2>
-          <ul className="text-gray-700 space-y-2 list-disc pl-6">
-            <li><strong>Revisión de la solicitud:</strong> Dentro de 3 días hábiles.</li>
-            <li><strong>Procesamiento del reembolso:</strong> Una vez aprobado, el reembolso se procesa dentro de 5-10 días hábiles.</li>
-            <li><strong>Acreditación:</strong> El tiempo de acreditación depende de tu banco o emisor de tarjeta, generalmente entre 5 y 15 días hábiles adicionales.</li>
-          </ul>
-          <p className="text-gray-700 leading-relaxed">
-            Los reembolsos se realizan al mismo método de pago utilizado en la transacción original.
+            Los módulos adicionales siguen la misma política que las suscripciones: reembolso completo dentro de los 14 días
+            de activación, prorrateado a partir de entonces.
           </p>
 
-          <h2 className="text-2xl font-bold text-gray-900 mt-10 mb-4">7. Excepciones</h2>
-          <p className="text-gray-700 leading-relaxed">No se otorgarán reembolsos en los siguientes casos:</p>
+          <h2 className="text-2xl font-bold text-gray-900 mt-10 mb-4">3. Cómo Solicitar un Reembolso</h2>
+          <p className="text-gray-700 leading-relaxed">Tenés dos opciones:</p>
           <ul className="text-gray-700 space-y-2 list-disc pl-6">
-            <li>Pedidos completados y entregados satisfactoriamente.</li>
-            <li>Solicitudes realizadas más de 30 días después de la transacción.</li>
-            <li>Situaciones causadas por información incorrecta proporcionada por el usuario (dirección errónea, datos de contacto incorrectos).</li>
-            <li>Uso fraudulento o abusivo de la política de reembolsos.</li>
+            <li><strong>Por email:</strong> Escribí a <a href="mailto:soporte@runbits.io" className="text-brand-600 hover:underline">soporte@runbits.io</a> con el asunto &quot;Solicitud de Reembolso&quot; e indicá el email de tu cuenta.</li>
+            <li><strong>Desde el dashboard:</strong> Ingresá a Configuración → Suscripción → Cancelar y seguí los pasos. El reembolso aplicable se procesa automáticamente.</li>
           </ul>
 
-          <h2 className="text-2xl font-bold text-gray-900 mt-10 mb-4">8. Contacto</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mt-10 mb-4">4. Plazo de Procesamiento</h2>
           <p className="text-gray-700 leading-relaxed">
-            Para cualquier consulta sobre reembolsos:
+            Los reembolsos se acreditan en el método de pago original dentro de los <strong>5 a 10 días hábiles</strong>
+            contados desde la aprobación de la solicitud.
           </p>
-          <ul className="text-gray-700 space-y-1 list-none pl-0">
-            <li><strong>Email:</strong> <a href="mailto:support@runbits.io" className="text-brand-600 hover:underline">support@runbits.io</a></li>
-            <li><strong>Asunto:</strong> Solicitud de Reembolso</li>
-            <li><strong>Horario de atención:</strong> Lunes a viernes, 9:00 a 18:00 (hora Argentina, GMT-3)</li>
-          </ul>
         </article>
       </main>
 

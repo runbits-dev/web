@@ -46,8 +46,8 @@ const statsRestaurant = {
 
 const adminRestaurants = {
   data: [
-    { id: 'rest-001', name: 'La Burguesa', slug: 'la-burguesa', is_open: true, onboarding_status: 'live', subscription_plan: 'growth', zone_id: 'zone-001' },
-    { id: 'rest-002', name: 'Sushi Zen', slug: 'sushi-zen', is_open: false, onboarding_status: 'menu_added', subscription_plan: 'starter', zone_id: 'zone-001' },
+    { id: 'rest-001', name: 'La Burguesa', slug: 'la-burguesa', is_open: true, onboarding_status: 'live', subscription_plan: 'pro', zone_id: 'zone-001' },
+    { id: 'rest-002', name: 'Sushi Zen', slug: 'sushi-zen', is_open: false, onboarding_status: 'menu_added', subscription_plan: 'free', zone_id: 'zone-001' },
   ],
   total: 2,
 }

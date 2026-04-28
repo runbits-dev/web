@@ -13,10 +13,21 @@ const userRestaurant = {
   id: 'usr-restaurant-001',
   email: 'owner@laburguesa.com',
   name: 'Carlos Pérez',
-  role: 'restaurant_owner',
-  restaurant_id: 'rest-001',
-  store_name: 'La Burguesa',
   phone: '+54 9 11 1234-5678',
+  status: 'active',
+}
+
+const restaurantProfile = {
+  id: 'profile-001',
+  account_id: 'usr-restaurant-001',
+  store_id: 'rest-001',
+  business_type: 'food',
+  business_category: 'hamburgueseria',
+  operation_type: 'business',
+  display_name: 'La Burguesa',
+  is_default: true,
+  tutorial_completed: true,
+  tutorial_step: 8,
 }
 
 const userSuperadmin = {
@@ -170,7 +181,14 @@ export async function setupApiRoutes(page: Page) {
   await page.route(`${API}/api/auth/login`, async (route) => {
     const body = await route.request().postDataJSON()
     if (body.email === 'owner@laburguesa.com' && body.password === 'password123') {
-      await route.fulfill({ json: { token: 'mock-token-restaurant', user: userRestaurant } })
+      await route.fulfill({ json: {
+        token: 'mock-token-restaurant',
+        refreshToken: 'mock-refresh-token',
+        account: userRestaurant,
+        roles: [{ role: 'restaurant_owner', entityId: 'rest-001', isPrimary: true }],
+        profiles: [restaurantProfile],
+        activeProfile: restaurantProfile,
+      }})
     } else if (body.email === 'admin@runbits.dev' && body.password === 'password123') {
       await route.fulfill({ json: { token: 'mock-token-superadmin', user: userSuperadmin } })
     } else {
@@ -183,12 +201,41 @@ export async function setupApiRoutes(page: Page) {
     const auth = route.request().headers()['authorization'] || ''
     const token = auth.replace('Bearer ', '')
     if (token === 'mock-token-restaurant') {
-      await route.fulfill({ json: userRestaurant })
+      await route.fulfill({ json: {
+        account: { ...userRestaurant },
+        roles: [{ role: 'restaurant_owner', entityId: 'rest-001', isPrimary: true }],
+        activeRole: 'restaurant_owner',
+        entityId: 'rest-001',
+        profileId: 'profile-001',
+        storeId: 'rest-001',
+        profiles: [restaurantProfile],
+        activeProfile: restaurantProfile,
+      }})
     } else if (token === 'mock-token-superadmin') {
       await route.fulfill({ json: userSuperadmin })
     } else {
       await route.fulfill({ status: 401, json: { error: 'No autorizado' } })
     }
+  })
+
+  // Profiles
+  await page.route(`${API}/api/profiles`, async (route) => {
+    await route.fulfill({ json: [restaurantProfile] })
+  })
+
+  // Connect status
+  await page.route(`${API}/api/connect/status/**`, async (route) => {
+    await route.fulfill({ json: { connected: false, chargesEnabled: false, payoutsEnabled: false } })
+  })
+
+  // Subscription limits
+  await page.route(`${API}/api/subscriptions/rest-001/limits`, async (route) => {
+    await route.fulfill({ json: { plan: 'growth', limits: {}, active: true } })
+  })
+
+  // Subscription modules
+  await page.route(`${API}/api/subscriptions/rest-001/modules`, async (route) => {
+    await route.fulfill({ json: [] })
   })
 
   // Auth — profile update
@@ -296,10 +343,8 @@ export async function loginAsRestaurantOwner(page: Page) {
       id: 'usr-restaurant-001',
       email: 'owner@laburguesa.com',
       name: 'Carlos Pérez',
-      role: 'restaurant_owner',
-      restaurant_id: 'rest-001',
-      store_name: 'La Burguesa',
       phone: '+54 9 11 1234-5678',
+      status: 'active',
     }))
   })
 }

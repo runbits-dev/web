@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { api } from '@/lib/api'
+import { ImagePlus, Sparkles, Loader2 } from 'lucide-react'
+import { useProfile } from '@/context/ProfileContext'
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.runbits.dev'
 
 type VariantOption = { name: string; priceDelta?: number }
 type Variant = { name: string; required?: boolean; options: VariantOption[] }
@@ -15,6 +19,7 @@ type MenuItem = {
   available?: number
   category?: string
   variants_json?: string | null
+  image_key?: string | null
 }
 
 function parseVariants(item: MenuItem): Variant[] {
@@ -48,16 +53,21 @@ const CATEGORY_PRESETS: Record<string, string[]> = {
 const EMPTY_FORM = { name: '', description: '', price: '', category: '', is_available: true, imagePreview: '' }
 
 export default function MenuPage() {
+  const { activeProfile } = useProfile()
+  const storeId = activeProfile?.store_id
+  const businessType = activeProfile?.business_type
   const [items, setItems] = useState<MenuItem[]>([])
   const [loading, setLoading] = useState(true)
   const [restaurantId, setRestaurantId] = useState<string | null>(null)
   const [modal, setModal] = useState<ModalState>({ mode: 'closed' })
   const [form, setForm] = useState(EMPTY_FORM)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [saving, setSaving] = useState(false)
+  const [generating, setGenerating] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
 
-  const bt = typeof window !== 'undefined' ? localStorage.getItem('business_type') || 'other' : 'other'
+  const bt = activeProfile?.business_type ?? 'other'
   const presetCats = CATEGORY_PRESETS[bt] || CATEGORY_PRESETS.other
   const existingCats = [...new Set(items.map(i => i.category).filter(Boolean))]
   const allCategories = [...new Set([...presetCats, ...existingCats])]
@@ -75,6 +85,7 @@ export default function MenuPage() {
 
   function openCreate() {
     setForm(EMPTY_FORM)
+    setSelectedFile(null)
     setError(null)
     setModal({ mode: 'create' })
   }
@@ -86,8 +97,9 @@ export default function MenuPage() {
       price: (item.price / 100).toFixed(2),
       category: item.category || '',
       is_available: isItemAvailable(item),
-      imagePreview: '',
+      imagePreview: item.image_key ? `https://runbit-storage.r2.dev/${item.image_key}` : '',
     })
+    setSelectedFile(null)
     setError(null)
     setModal({ mode: 'edit', item })
   }
@@ -101,12 +113,29 @@ export default function MenuPage() {
     setSaving(true)
     setError(null)
     try {
+      let imageKey = (modal.mode === 'edit' ? modal.item.image_key : null) ?? null
+      if (selectedFile && storeId) {
+        const formData = new FormData()
+        formData.append('file', selectedFile)
+        const token = localStorage.getItem('token')
+        const uploadRes = await fetch(`${API_BASE}/api/stores/${storeId}/upload`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData,
+        })
+        if (uploadRes.ok) {
+          const { key } = await uploadRes.json()
+          imageKey = key
+        }
+      }
+
       const payload = {
         name: form.name.trim(),
         description: form.description.trim(),
         price: Math.round(priceNum * 100),
         category: form.category.trim() || undefined,
         is_available: form.is_available,
+        image_key: imageKey ?? undefined,
       }
       if (modal.mode === 'create') {
         const created = await api.createMenuItem(restaurantId, payload)
@@ -121,6 +150,22 @@ export default function MenuPage() {
     } finally {
       setSaving(false)
     }
+  }
+
+  async function generateDescription() {
+    if (!form.name) return
+    setGenerating(true)
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch(`${API_BASE}/api/stores/${storeId}/ai/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ name: form.name, category: form.category, type: businessType }),
+      })
+      const data = await res.json()
+      if (data.description) setForm(f => ({ ...f, description: data.description }))
+    } catch {}
+    setGenerating(false)
   }
 
   async function handleToggle(item: MenuItem) {
@@ -174,6 +219,9 @@ export default function MenuPage() {
         <div className="grid gap-3">
           {items.map(item => (
             <div key={item.id} className="bg-white rounded-2xl border border-slate-200 p-5 flex items-center justify-between gap-4">
+              {item.image_key ? (
+                <img src={`https://runbit-storage.r2.dev/${item.image_key}`} alt={item.name} className="w-12 h-12 rounded-lg object-cover shrink-0" />
+              ) : null}
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-slate-900">{item.name}</p>
                 {item.description && <p className="text-sm text-slate-500 mt-0.5 truncate">{item.description}</p>}
@@ -185,7 +233,7 @@ export default function MenuPage() {
                   onClick={() => handleToggle(item)}
                   className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors ${
                     isItemAvailable(item)
-                      ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                      ? 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
                       : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
                   }`}
                 >
@@ -227,7 +275,14 @@ export default function MenuPage() {
                 />
               </div>
               <div>
-                <label className="text-xs font-semibold text-slate-600 mb-1 block">Descripción</label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs font-semibold text-slate-600">Descripción</label>
+                  <button type="button" onClick={generateDescription} disabled={generating || !form.name}
+                    className="text-xs text-indigo-600 font-medium hover:underline disabled:opacity-50 flex items-center gap-1">
+                    {generating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                    {generating ? 'Generando...' : 'Generar con IA'}
+                  </button>
+                </div>
                 <textarea
                   className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 resize-none"
                   rows={2}
@@ -276,7 +331,7 @@ export default function MenuPage() {
                   {form.imagePreview ? (
                     <img src={form.imagePreview} alt="Preview" className="w-16 h-16 rounded-xl object-cover border border-slate-200" />
                   ) : (
-                    <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center text-2xl border border-slate-200">📷</div>
+                    <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center border border-slate-200 text-slate-400"><ImagePlus className="w-6 h-6" /></div>
                   )}
                   <div className="flex-1">
                     <input
@@ -286,6 +341,7 @@ export default function MenuPage() {
                       onChange={e => {
                         const file = e.target.files?.[0]
                         if (file) {
+                          setSelectedFile(file)
                           const reader = new FileReader()
                           reader.onload = () => setForm(f => ({ ...f, imagePreview: reader.result as string }))
                           reader.readAsDataURL(file)

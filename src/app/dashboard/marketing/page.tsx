@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { api } from '@/lib/api'
+import { Info } from 'lucide-react'
 
 type Coupon = { id: string; code: string; discount_type: string; discount_value: number; min_order: number; max_uses: number; used_count: number; expires_at: string | null; restaurant_id: string }
 type Promotion = { id: string; name?: string; title?: string; description?: string; type?: string; config?: string | Record<string, any>; discount_type?: string; discount_value?: number; starts_at: string | number; ends_at: string | number; restaurant_id: string; active?: number; is_active?: boolean }
@@ -139,7 +140,7 @@ export default function MarketingPage() {
       {showForm && tab === 'coupons' && (
         <div className="bg-white rounded-2xl border border-slate-200 p-5 mb-6 space-y-4">
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-sm text-blue-700">
-            💡 Un <strong>cupón</strong> es un código que tus clientes ingresan al hacer un pedido para obtener un descuento. Ej: "BIENVENIDO" para un 10% off en la primera compra.
+            <Info className="w-4 h-4 inline-block mr-1 align-text-bottom" /> Un <strong>cupón</strong> es un código que tus clientes ingresan al hacer un pedido para obtener un descuento. Ej: "BIENVENIDO" para un 10% off en la primera compra.
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -178,7 +179,7 @@ export default function MarketingPage() {
       {showForm && tab === 'promotions' && (
         <div className="bg-white rounded-2xl border border-slate-200 p-5 mb-6 space-y-4">
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-sm text-blue-700">
-            💡 Una <strong>promoción</strong> es una oferta visible en tu tienda con fecha de inicio y fin. Los clientes la ven automáticamente sin necesidad de ingresar un código. Ideal para happy hour, ofertas del día, o temporadas.
+            <Info className="w-4 h-4 inline-block mr-1 align-text-bottom" /> Una <strong>promoción</strong> es una oferta visible en tu tienda con fecha de inicio y fin. Los clientes la ven automáticamente sin necesidad de ingresar un código. Ideal para happy hour, ofertas del día, o temporadas.
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="col-span-2">

@@ -44,8 +44,8 @@ export default function AdminRidersPage() {
                     r.tier === 'pro' ? 'bg-violet-50 text-violet-700' : 'bg-slate-100 text-slate-600'
                   }`}>{r.tier}</span></td>
                   <td className="px-6 py-4"><span className={`flex items-center gap-1.5 text-xs font-medium ${
-                    r.is_available ? 'text-emerald-600' : 'text-slate-400'
-                  }`}><span className={`w-2 h-2 rounded-full ${r.is_available ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'}`} />{r.is_available ? 'Disponible' : 'No disponible'}</span></td>
+                    r.is_available ? 'text-indigo-600' : 'text-slate-400'
+                  }`}><span className={`w-2 h-2 rounded-full ${r.is_available ? 'bg-indigo-500 animate-pulse' : 'bg-slate-300'}`} />{r.is_available ? 'Disponible' : 'No disponible'}</span></td>
                 </tr>
               ))}
             </tbody>

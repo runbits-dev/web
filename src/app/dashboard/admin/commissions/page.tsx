@@ -27,7 +27,7 @@ export default function AdminCommissionsPage() {
         <div className="grid grid-cols-3 gap-4 mb-8">
           <div className="bg-white rounded-2xl border border-slate-200 p-5"><p className="text-2xl font-bold text-slate-900">${((summary.total_amount || 0) / 100).toFixed(2)}</p><p className="text-sm text-slate-500 mt-0.5">Total</p></div>
           <div className="bg-white rounded-2xl border border-slate-200 p-5"><p className="text-2xl font-bold text-amber-600">${((summary.pending_amount || 0) / 100).toFixed(2)}</p><p className="text-sm text-slate-500 mt-0.5">Pendientes</p></div>
-          <div className="bg-white rounded-2xl border border-slate-200 p-5"><p className="text-2xl font-bold text-emerald-600">${((summary.paid_amount || 0) / 100).toFixed(2)}</p><p className="text-sm text-slate-500 mt-0.5">Pagadas</p></div>
+          <div className="bg-white rounded-2xl border border-slate-200 p-5"><p className="text-2xl font-bold text-indigo-600">${((summary.paid_amount || 0) / 100).toFixed(2)}</p><p className="text-sm text-slate-500 mt-0.5">Pagadas</p></div>
         </div>
       )}
       {loading ? <div className="p-8 text-center text-slate-400 text-sm">Cargando...</div> : (
@@ -45,12 +45,12 @@ export default function AdminCommissionsPage() {
                   <td className="px-6 py-4 font-medium text-slate-900">{c.agent_name || c.agent_id?.slice(0,8)}</td>
                   <td className="px-6 py-4 text-right font-semibold text-slate-900">${(c.amount / 100).toFixed(2)}</td>
                   <td className="px-6 py-4"><span className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${
-                    c.status === 'approved' ? 'bg-emerald-50 text-emerald-700' :
+                    c.status === 'approved' ? 'bg-indigo-50 text-indigo-700' :
                     c.status === 'pending' ? 'bg-amber-50 text-amber-700' : 'bg-red-50 text-red-700'
                   }`}>{c.status}</span></td>
                   <td className="px-6 py-4">{c.status === 'pending' && (
                     <div className="flex gap-2">
-                      <button onClick={() => handleAction(c.id, 'approve')} className="px-3 py-1 bg-emerald-600 text-white rounded-lg text-xs font-semibold hover:bg-emerald-700">Aprobar</button>
+                      <button onClick={() => handleAction(c.id, 'approve')} className="px-3 py-1 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700">Aprobar</button>
                       <button onClick={() => handleAction(c.id, 'reject')} className="px-3 py-1 bg-red-50 text-red-600 rounded-lg text-xs font-semibold hover:bg-red-100">Rechazar</button>
                     </div>
                   )}</td>

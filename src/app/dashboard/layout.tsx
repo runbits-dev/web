@@ -4,10 +4,16 @@ import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { api, type User } from '@/lib/api'
+import { ProfileProvider, useProfile } from '@/context/ProfileContext'
+import { UserProvider, useUser } from '@/context/UserContext'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { ToastProvider } from '@/components/Toast'
 import { Tutorial } from '@/components/Tutorial'
-import { HelpWidget } from '@/components/HelpWidget'
-import { BusinessSetup, getNavForBusinessType } from '@/components/BusinessSetup'
-import { Home, ShoppingBag, PackageCheck, BarChart3, Megaphone, CreditCard, Settings, LayoutDashboard, MapPin, Store, Bike, ClipboardList, Users, DollarSign, Wallet, Receipt, Map } from 'lucide-react'
+// HelpWidget removed — replaced by /dashboard/support page
+import { InitialOnboarding, getNavForBusinessType } from '@/components/InitialOnboarding'
+import { ProfileSelector } from '@/components/ProfileSelector'
+import { ProfileSwitcher } from '@/components/ProfileSwitcher'
+import { Home, ShoppingBag, PackageCheck, BarChart3, Megaphone, CreditCard, Settings, LayoutDashboard, MapPin, Store, Bike, ClipboardList, Users, DollarSign, Wallet, Receipt, Map, CalendarCheck, Puzzle, Menu, MessageSquare } from 'lucide-react'
 
 const storeNav = [
   { href: '/dashboard', label: 'Inicio', Icon: Home, exact: true, tour: 'home' },
@@ -15,48 +21,57 @@ const storeNav = [
   { href: '/dashboard/orders', label: 'Pedidos', Icon: PackageCheck, tour: 'orders' },
   { href: '/dashboard/stats', label: 'Estadísticas', Icon: BarChart3, tour: 'stats' },
   { href: '/dashboard/marketing', label: 'Marketing', Icon: Megaphone, tour: 'marketing' },
+  { href: '/dashboard/modules', label: 'Módulos', Icon: Puzzle, tour: 'modules' },
+  { href: '/dashboard/support', label: 'Soporte', Icon: MessageSquare, tour: 'support' },
   { href: '/dashboard/subscription', label: 'Suscripción', Icon: CreditCard, tour: 'subscription' },
   { href: '/dashboard/settings', label: 'Configuración', Icon: Settings, tour: 'settings' },
 ]
 
 const adminNav = [
   { href: '/dashboard/admin', label: 'Overview', Icon: LayoutDashboard, exact: true },
-  { href: '/dashboard/roadmap', label: 'Roadmap', Icon: Map },
-  { href: '/dashboard/admin/zones', label: 'Zonas', Icon: MapPin },
-  { href: '/dashboard/admin/restaurants', label: 'Restaurantes', Icon: Store },
-  { href: '/dashboard/admin/riders', label: 'Repartidores', Icon: Bike },
+  { href: '/dashboard/admin/users', label: 'Usuarios', Icon: Users },
+  { href: '/dashboard/admin/restaurants', label: 'Comercios', Icon: Store },
   { href: '/dashboard/admin/orders', label: 'Pedidos', Icon: ClipboardList },
-  { href: '/dashboard/admin/agents', label: 'Agentes', Icon: Users },
-  { href: '/dashboard/admin/commissions', label: 'Comisiones', Icon: DollarSign },
-  { href: '/dashboard/admin/payouts', label: 'Pagos', Icon: Wallet },
-  { href: '/dashboard/admin/subscriptions', label: 'Subscripciones', Icon: Receipt },
+  { href: '/dashboard/admin/subscriptions', label: 'Suscripciones', Icon: Receipt },
+  { href: '/dashboard/admin/flags', label: 'Feature Flags', Icon: Settings },
+  { href: '/dashboard/admin/sales', label: 'Sales Agent', Icon: Megaphone },
+  { href: '/dashboard/roadmap', label: 'Roadmap', Icon: Map },
+  { href: '/dashboard/settings', label: 'Mi cuenta', Icon: Settings },
 ]
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [businessType, setBusinessType] = useState<string | null>(null)
-  const [showSetup, setShowSetup] = useState(false)
+  const { user, loading: userLoading } = useUser()
+  const [showSetupNew, setShowSetupNew] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  const { activeProfile, profiles, loading: profileLoading, switchProfile, refreshProfiles } = useProfile()
 
   useEffect(() => {
     const token = localStorage.getItem('token')
     if (!token) { router.push('/login'); return }
-    const bt = localStorage.getItem('business_type')
-    if (bt) setBusinessType(bt)
-    else setShowSetup(true)
-    api.me()
-      .then(setUser)
-      .catch(() => { localStorage.removeItem('token'); router.push('/login') })
-      .finally(() => setLoading(false))
-  }, [])
+    if (!userLoading && !user) {
+      localStorage.removeItem('token')
+      router.push('/login')
+    }
+  }, [userLoading, user])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('new-profile') === '1') {
+      setShowSetupNew(true)
+      window.history.replaceState({}, '', pathname)
+    }
+  }, [pathname])
 
   function logout() {
     localStorage.removeItem('token')
+    localStorage.removeItem('refreshToken')
     localStorage.removeItem('user')
     router.push('/login')
   }
+
+  const loading = userLoading || profileLoading || !user
 
   if (loading) {
     return (
@@ -67,17 +82,75 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   const isSuperAdmin = user?.role === 'superadmin'
-  const isAdminSection = pathname.startsWith('/dashboard/admin')
-  const dynamicStoreNav = businessType ? getNavForBusinessType(businessType) : storeNav
-  const nav = isAdminSection ? adminNav : dynamicStoreNav
 
-  if (showSetup && !businessType) {
-    return <BusinessSetup onComplete={(type) => { setBusinessType(type); setShowSetup(false) }} />
+  // Superadmin: skip onboarding, redirect to admin if on store pages
+  if (isSuperAdmin) {
+    if (!pathname.startsWith('/dashboard/admin') && !pathname.startsWith('/dashboard/roadmap') && !pathname.startsWith('/dashboard/settings')) {
+      router.push('/dashboard/admin')
+      return null
+    }
   }
+
+  // No profiles at all → show initial onboarding (5 steps with plan + name)
+  if (!isSuperAdmin && !activeProfile && profiles.length === 0 && !showSetupNew) {
+    return (
+      <InitialOnboarding
+        isFirstProfile={true}
+        onComplete={() => {
+          window.location.reload()
+        }}
+      />
+    )
+  }
+
+  // Has profiles but none active → show ProfileSelector
+  if (!activeProfile && profiles.length > 0 && !showSetupNew) {
+    return (
+      <ProfileSelector
+        profiles={profiles}
+        onSelect={(id) => switchProfile(id)}
+        onCreateNew={() => setShowSetupNew(true)}
+      />
+    )
+  }
+
+  // User triggered "create new profile" from ProfileSelector (3 steps, no plan/name)
+  if (showSetupNew) {
+    return (
+      <InitialOnboarding
+        isFirstProfile={false}
+        onComplete={() => {
+          window.location.reload()
+        }}
+      />
+    )
+  }
+
+  const isAdminSection = pathname.startsWith('/dashboard/admin') || pathname.startsWith('/dashboard/roadmap')
+  const businessType = activeProfile?.business_type ?? null
+  const dynamicStoreNav = businessType ? getNavForBusinessType(businessType) : storeNav
+  const nav = isSuperAdmin ? adminNav : (isAdminSection ? adminNav : dynamicStoreNav)
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <aside className="fixed left-0 top-0 bottom-0 w-64 bg-white border-r border-slate-200 flex flex-col">
+      {/* Hamburger button — mobile only */}
+      <button
+        className="lg:hidden fixed top-4 left-4 z-50 bg-white rounded-lg p-2 shadow-md border border-slate-200"
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        aria-label="Abrir menú"
+      >
+        <Menu className="w-5 h-5" />
+      </button>
+
+      {/* Overlay — mobile only, when sidebar is open */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-30 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      <aside className={`fixed left-0 top-0 bottom-0 w-64 bg-white border-r border-slate-200 flex flex-col z-40 transition-transform lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-6 border-b border-slate-100">
           <span className="logo-runbits logo-runbits-dark text-lg">RunBits</span>
           {(isSuperAdmin || user?.store_name) && (
@@ -87,34 +160,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           )}
         </div>
 
-        {isSuperAdmin && (
-          <div className="px-4 pt-4 flex gap-2">
-            <Link href="/dashboard"
-              className={`flex-1 text-center text-xs py-2 rounded-lg font-medium transition-colors ${
-                !isAdminSection ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-              }`}>
-              Mi comercio
-            </Link>
-            <Link href="/dashboard/admin"
-              className={`flex-1 text-center text-xs py-2 rounded-lg font-medium transition-colors ${
-                isAdminSection ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-              }`}>
-              Admin
-            </Link>
-          </div>
+        {!isSuperAdmin && (
+          <ProfileSwitcher />
         )}
 
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {nav.map(item => {
-            const active = item.exact ? pathname === item.href : pathname.startsWith(item.href)
+            const active = (item as any).exact ? pathname === item.href : pathname.startsWith(item.href)
             return (
               <Link key={item.href} href={item.href}
                 data-tour={(item as any).tour || undefined}
+                onClick={() => setSidebarOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                   active ? 'bg-blue-50 text-blue-700 shadow-sm' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                 }`}>
                 {(() => {
-                  const iconMap: Record<string, any> = { Home, ShoppingBag, PackageCheck, BarChart3, Megaphone, CreditCard, Settings, LayoutDashboard, MapPin, Store, Bike, ClipboardList, Users, DollarSign, Wallet, Receipt, Map }
+                  const iconMap: Record<string, any> = { Home, ShoppingBag, PackageCheck, BarChart3, Megaphone, CreditCard, Settings, LayoutDashboard, MapPin, Store, Bike, ClipboardList, Users, DollarSign, Wallet, Receipt, Map, CalendarCheck, Puzzle, MessageSquare }
                   const IconComp = ('Icon' in item && (item as any).Icon) ? (item as any).Icon : ('iconName' in item ? iconMap[(item as any).iconName] : null)
                   return IconComp ? <IconComp className="w-5 h-5" /> : null
                 })()}
@@ -139,11 +200,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </aside>
 
-      <main className="ml-64 p-8">
-        <div className="max-w-6xl">{children}</div>
+      <main className="lg:ml-64 pt-16 lg:pt-8 px-4 pb-4 lg:px-8 lg:pb-8">
+        <ErrorBoundary>
+          <div className="max-w-6xl">{children}</div>
+        </ErrorBoundary>
       </main>
       <Tutorial />
-      <HelpWidget />
+      {/* HelpWidget removed — support is now at /dashboard/support */}
     </div>
+  )
+}
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <UserProvider>
+      <ProfileProvider>
+        <ToastProvider>
+          <DashboardLayoutInner>{children}</DashboardLayoutInner>
+        </ToastProvider>
+      </ProfileProvider>
+    </UserProvider>
   )
 }
