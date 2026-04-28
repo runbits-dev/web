@@ -168,11 +168,6 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
   const dynamicStoreNav = businessType ? getNavForBusinessType(businessType) : storeNav
   const nav = isSuperAdmin ? adminNav : (isAdminSection ? adminNav : dynamicStoreNav)
 
-  const [isImpersonating, setIsImpersonating] = useState(false)
-  useEffect(() => {
-    setIsImpersonating(!!localStorage.getItem('originalToken'))
-  }, [user])
-
   return (
     <div className="min-h-screen bg-slate-50">
       <ImpersonationBanner />
@@ -243,7 +238,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      <main className={`lg:ml-64 pt-16 lg:pt-8 px-4 pb-4 lg:px-8 lg:pb-8 ${isImpersonating ? 'mt-10' : ''}`}>
+      <main className="lg:ml-64 pt-16 lg:pt-8 px-4 pb-4 lg:px-8 lg:pb-8">
         <ErrorBoundary>
           <div className="max-w-6xl">{children}</div>
         </ErrorBoundary>
