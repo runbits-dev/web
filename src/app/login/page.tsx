@@ -22,6 +22,7 @@ export default function LoginPage() {
   const [tempToken, setTempToken] = useState('')
   const [totpCode, setTotpCode] = useState('')
   const googleInitialized = useRef(false)
+  const [googleReady, setGoogleReady] = useState(false)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -49,22 +50,27 @@ export default function LoginPage() {
         callback: handleGoogleCallback,
         auto_select: false,
       })
-      const container = document.getElementById('g_id_signin')
-      if (container) {
-        ;(window as any).google.accounts.id.renderButton(container, {
-          type: 'standard',
-          theme: 'outline',
-          size: 'large',
-          text: 'signin_with',
-          shape: 'rectangular',
-          width: 380,
-          logo_alignment: 'left',
-        })
-      }
       googleInitialized.current = true
+      setGoogleReady(true)
     }
     document.head.appendChild(script)
   }, [])
+
+  useEffect(() => {
+    if (!googleReady) return
+    const container = document.getElementById('google-signin-btn')
+    if (container && (window as any).google) {
+      ;(window as any).google.accounts.id.renderButton(container, {
+        type: 'standard',
+        theme: 'outline',
+        size: 'large',
+        text: 'signin_with',
+        shape: 'rectangular',
+        width: 380,
+        logo_alignment: 'left',
+      })
+    }
+  }, [googleReady, needs2FA])
 
   async function handleGoogleCallback(response: { credential: string }) {
     setSocialLoading(true)
@@ -93,7 +99,9 @@ export default function LoginPage() {
   }
 
   function triggerGoogle() {
-    if ((window as any).google) (window as any).google.accounts.id.prompt()
+    if ((window as any).google) {
+      ;(window as any).google.accounts.id.prompt()
+    }
   }
 
   function handleFacebook() {
@@ -192,8 +200,8 @@ export default function LoginPage() {
             </div>
           ) : (
           <>
-          {/* Google Sign-In button (rendered by Google SDK) */}
-          <div id="g_id_signin" className="flex justify-center mb-4" />
+          {/* Google Sign-In — rendered by Google SDK */}
+          <div id="google-signin-btn" className="flex justify-center mb-4" />
 
           {/* Other social buttons */}
           <div className="flex gap-3 mb-6">
