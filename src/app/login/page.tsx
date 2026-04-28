@@ -63,7 +63,7 @@ export default function LoginPage() {
         size: 'large',
         text: 'signin_with',
         shape: 'rectangular',
-        width: '100%',
+        width: 380,
         logo_alignment: 'left',
       })
     }
