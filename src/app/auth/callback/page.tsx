@@ -27,6 +27,15 @@ export default function AuthCallbackPage() {
       return
     }
 
+    const requires2FA = params.get('requires2FA')
+    const tempToken = params.get('tempToken')
+    const refreshToken = params.get('refreshToken')
+
+    if (requires2FA === 'true' && tempToken) {
+      router.replace(`/login?needs2FA=true&tempToken=${encodeURIComponent(tempToken)}`)
+      return
+    }
+
     if (!token) {
       setStatus('error')
       setErrorMsg('No se recibió el token de autenticación')
@@ -34,6 +43,7 @@ export default function AuthCallbackPage() {
     }
 
     localStorage.setItem('token', token)
+    if (refreshToken) localStorage.setItem('refreshToken', refreshToken)
     setStatus('success')
     setTimeout(() => router.push('/dashboard'), 1000)
   }, [router])
