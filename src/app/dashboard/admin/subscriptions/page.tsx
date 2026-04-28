@@ -39,6 +39,10 @@ export default function AdminSubscriptionsPage() {
   const [expanded, setExpanded] = useState<string | null>(null)
   const [expandedData, setExpandedData] = useState<Record<string, ExpandedData>>({})
   const [planChanging, setPlanChanging] = useState<string | null>(null)
+  const [extendingTrial, setExtendingTrial] = useState<string | null>(null)
+  const [extendDays, setExtendDays] = useState(14)
+  const [extendLoading, setExtendLoading] = useState(false)
+  const [extendSuccess, setExtendSuccess] = useState<string | null>(null)
 
   useEffect(() => {
     api.getSubscriptions().then(setSubscriptions).finally(() => setLoading(false))
@@ -110,6 +114,30 @@ export default function AdminSubscriptionsPage() {
       console.error('Failed to change plan', e)
     }
     setPlanChanging(null)
+  }
+
+  async function extendTrial(subId: string) {
+    setExtendLoading(true)
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/subscriptions/${subId}/extend-trial`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ days: extendDays }),
+      })
+      if (res.ok) {
+        const fresh = await api.getSubscriptions()
+        setSubscriptions(fresh)
+        setExtendingTrial(null)
+        setExtendSuccess(subId)
+        setTimeout(() => setExtendSuccess(null), 3000)
+      } else {
+        const err = await res.json().catch(() => ({ error: 'Error desconocido' }))
+        alert(err.error || 'Error al extender trial')
+      }
+    } catch {
+      alert('Error al extender trial')
+    }
+    setExtendLoading(false)
   }
 
   const byPlan = subscriptions.reduce((acc: Record<string, number>, s) => {
@@ -231,19 +259,46 @@ export default function AdminSubscriptionsPage() {
                       </td>
                       {/* Extend trial */}
                       <td className="px-4 py-4" onClick={e => e.stopPropagation()}>
-                        <div className="relative group">
-                          <button
-                            disabled
-                            className="text-xs text-slate-400 border border-slate-200 px-2 py-1 rounded-lg cursor-not-allowed opacity-60"
-                          >
-                            Extender trial
-                          </button>
-                          <div className="absolute bottom-full left-0 mb-1.5 hidden group-hover:block z-10 pointer-events-none">
-                            <div className="bg-slate-800 text-white text-[10px] px-2 py-1 rounded-lg whitespace-nowrap shadow-lg">
-                              Próximamente
+                        {s.status === 'trialing' ? (
+                          extendingTrial === s.id ? (
+                            <div className="flex items-center gap-1.5">
+                              <input
+                                type="number"
+                                min={1}
+                                max={365}
+                                value={extendDays}
+                                onChange={e => setExtendDays(Number(e.target.value))}
+                                className="w-16 border border-slate-200 rounded-lg px-2 py-1 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                              />
+                              <span className="text-[10px] text-slate-400">días</span>
+                              <button
+                                onClick={() => extendTrial(s.id)}
+                                disabled={extendLoading}
+                                className="text-xs bg-indigo-600 text-white px-2 py-1 rounded-lg font-semibold hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-1"
+                              >
+                                {extendLoading && <Loader2 className="w-3 h-3 animate-spin" />}
+                                Confirmar
+                              </button>
+                              <button
+                                onClick={() => setExtendingTrial(null)}
+                                className="text-slate-400 hover:text-slate-600"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
                             </div>
-                          </div>
-                        </div>
+                          ) : extendSuccess === s.id ? (
+                            <span className="text-xs text-green-600 font-semibold">Trial extendido</span>
+                          ) : (
+                            <button
+                              onClick={() => { setExtendingTrial(s.id); setExtendDays(14) }}
+                              className="text-xs text-indigo-600 border border-indigo-200 px-2 py-1 rounded-lg hover:bg-indigo-50 font-semibold transition-colors"
+                            >
+                              Extender trial
+                            </button>
+                          )
+                        ) : (
+                          <span className="text-xs text-slate-300">—</span>
+                        )}
                       </td>
                     </tr>
 

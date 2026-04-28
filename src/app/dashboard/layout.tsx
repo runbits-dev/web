@@ -39,6 +39,43 @@ const adminNav = [
   { href: '/dashboard/settings', label: 'Mi cuenta', Icon: Settings },
 ]
 
+function ImpersonationBanner() {
+  const [visible, setVisible] = useState(false)
+  const [email, setEmail] = useState('')
+  const { user } = useUser()
+
+  useEffect(() => {
+    const originalToken = localStorage.getItem('originalToken')
+    setVisible(!!originalToken)
+    if (originalToken && user?.email) {
+      setEmail(user.email)
+    }
+  }, [user])
+
+  if (!visible) return null
+
+  function returnToAdmin() {
+    const originalToken = localStorage.getItem('originalToken')
+    if (originalToken) {
+      localStorage.setItem('token', originalToken)
+      localStorage.removeItem('originalToken')
+      window.location.href = '/dashboard/admin/users'
+    }
+  }
+
+  return (
+    <div className="fixed top-0 left-0 right-0 z-50 bg-amber-400 text-amber-900 text-sm font-semibold flex items-center justify-center gap-3 py-2 px-4 shadow-md">
+      <span>Estás viendo como {email || 'otro usuario'}</span>
+      <button
+        onClick={returnToAdmin}
+        className="bg-amber-800 text-white text-xs px-3 py-1 rounded-lg hover:bg-amber-900 transition-colors font-semibold"
+      >
+        Volver a admin
+      </button>
+    </div>
+  )
+}
+
 function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
@@ -131,8 +168,11 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
   const dynamicStoreNav = businessType ? getNavForBusinessType(businessType) : storeNav
   const nav = isSuperAdmin ? adminNav : (isAdminSection ? adminNav : dynamicStoreNav)
 
+  const isImpersonating = typeof window !== 'undefined' && !!localStorage.getItem('originalToken')
+
   return (
     <div className="min-h-screen bg-slate-50">
+      <ImpersonationBanner />
       {/* Hamburger button — mobile only */}
       <button
         className="lg:hidden fixed top-4 left-4 z-50 bg-white rounded-lg p-2 shadow-md border border-slate-200"
@@ -200,7 +240,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      <main className="lg:ml-64 pt-16 lg:pt-8 px-4 pb-4 lg:px-8 lg:pb-8">
+      <main className={`lg:ml-64 pt-16 lg:pt-8 px-4 pb-4 lg:px-8 lg:pb-8 ${isImpersonating ? 'mt-10' : ''}`}>
         <ErrorBoundary>
           <div className="max-w-6xl">{children}</div>
         </ErrorBoundary>

@@ -3,12 +3,29 @@
 import { useEffect, useState } from 'react'
 import { Search, ShieldCheck, ShieldX, Mail, Phone, Calendar, Loader2, Download, CheckSquare, Square } from 'lucide-react'
 
-const API = 'https://api.runbits.dev'
+const API = process.env.NEXT_PUBLIC_API_URL || 'https://api.runbits.dev'
 
 type User = {
   id: string; email: string; name: string; phone: string; auth_provider: string
-  status: string; email_verified: number; created_at: number
+  status: string; email_verified: number; created_at: number; last_login_at: string | null
   roles: Array<{ role: string; entity_id: string; is_primary: number }>
+}
+
+function timeAgo(dateStr: string): string {
+  const now = Date.now()
+  const then = new Date(dateStr).getTime()
+  const diffMs = now - then
+  const diffSec = Math.floor(diffMs / 1000)
+  const diffMin = Math.floor(diffSec / 60)
+  const diffHr = Math.floor(diffMin / 60)
+  const diffDay = Math.floor(diffHr / 24)
+  const diffMonth = Math.floor(diffDay / 30)
+
+  if (diffMin < 1) return 'hace unos segundos'
+  if (diffMin < 60) return `hace ${diffMin} minuto${diffMin === 1 ? '' : 's'}`
+  if (diffHr < 24) return `hace ${diffHr} hora${diffHr === 1 ? '' : 's'}`
+  if (diffDay < 30) return `hace ${diffDay} día${diffDay === 1 ? '' : 's'}`
+  return `hace ${diffMonth} mes${diffMonth === 1 ? '' : 'es'}`
 }
 
 const roleColors: Record<string, string> = {
@@ -44,6 +61,7 @@ export default function AdminUsersPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set())
   const [bulkLoading, setBulkLoading] = useState(false)
+  const [impersonating, setImpersonating] = useState(false)
 
   useEffect(() => { loadUsers() }, [roleFilter, verifiedFilter, dateFrom, dateTo])
 
@@ -129,6 +147,29 @@ export default function AdminUsersPage() {
     setCheckedIds(new Set())
     loadUsers()
     setBulkLoading(false)
+  }
+
+  async function impersonateUser(userId: string) {
+    if (!confirm('¿Impersonar este usuario? Serás redirigido a su dashboard.')) return
+    setImpersonating(true)
+    try {
+      const currentToken = localStorage.getItem('token')
+      const res = await fetch(`${API}/api/admin/users/${userId}/impersonate`, {
+        method: 'POST',
+        headers: getHeaders(),
+      })
+      if (res.ok) {
+        const data = await res.json()
+        if (currentToken) localStorage.setItem('originalToken', currentToken)
+        localStorage.setItem('token', data.token)
+        window.location.href = '/dashboard'
+      } else {
+        alert('Error al impersonar usuario')
+      }
+    } catch {
+      alert('Error al impersonar usuario')
+    }
+    setImpersonating(false)
   }
 
   function exportCSV() {
@@ -302,8 +343,10 @@ export default function AdminUsersPage() {
                     </div>
                     <div className="flex items-center gap-2 text-sm text-slate-500">
                       <Calendar className="w-4 h-4 text-slate-300" />
-                      <span>Último acceso: <span className="text-slate-400 italic">No disponible</span></span>
-                      <span className="text-[10px] text-slate-300">(próximamente)</span>
+                      <span>Último acceso: {selected.account.last_login_at
+                        ? <span className="text-slate-700">{timeAgo(selected.account.last_login_at)}</span>
+                        : <span className="text-slate-400 italic">Nunca</span>}
+                      </span>
                     </div>
                     <div className="text-xs text-slate-400">
                       Provider: {selected.account.auth_provider}
@@ -351,7 +394,7 @@ export default function AdminUsersPage() {
                   )}
 
                   {/* Actions */}
-                  <div className="border-t border-slate-100 pt-4 flex gap-2">
+                  <div className="border-t border-slate-100 pt-4 flex flex-wrap gap-2">
                     {selected.account.status === 'active' ? (
                       <button onClick={() => updateUser(selected.account.id, { status: 'inactive' })}
                         disabled={actionLoading === selected.account.id}
@@ -372,6 +415,11 @@ export default function AdminUsersPage() {
                         Verificar email
                       </button>
                     )}
+                    <button onClick={() => impersonateUser(selected.account.id)}
+                      disabled={impersonating}
+                      className="text-xs bg-amber-500 text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-amber-600 disabled:opacity-50 transition-colors">
+                      {impersonating ? 'Impersonando...' : 'Impersonar'}
+                    </button>
                   </div>
                 </>
               )}

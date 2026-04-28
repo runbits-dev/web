@@ -46,6 +46,7 @@ export default function AdminRestaurantsPage() {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<'' | 'open' | 'closed'>('')
   const [planFilter, setPlanFilter] = useState('')
+  const [businessTypeFilter, setBusinessTypeFilter] = useState('')
   const [detail, setDetail] = useState<DetailState | null>(null)
   const [toggling, setToggling] = useState(false)
 
@@ -64,9 +65,10 @@ export default function AdminRestaurantsPage() {
         const plan = (r.subscription_plan ?? r.plan ?? 'free').toLowerCase()
         if (plan !== planFilter) return false
       }
+      if (businessTypeFilter && (r.business_type ?? '').toLowerCase() !== businessTypeFilter) return false
       return true
     })
-  }, [restaurants, search, statusFilter, planFilter])
+  }, [restaurants, search, statusFilter, planFilter, businessTypeFilter])
 
   function openDetail(r: any) {
     setDetail({ id: r.id, data: r, loading: true })
@@ -130,6 +132,17 @@ export default function AdminRestaurantsPage() {
             {PLAN_OPTIONS.filter(Boolean).map(p => (
               <option key={p} value={p} className="capitalize">{p.charAt(0).toUpperCase() + p.slice(1)}</option>
             ))}
+          </select>
+          <select
+            value={businessTypeFilter}
+            onChange={e => setBusinessTypeFilter(e.target.value)}
+            className="bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-400 text-slate-700"
+          >
+            <option value="">Tipo: todos</option>
+            <option value="food_delivery">Food Delivery</option>
+            <option value="services">Services</option>
+            <option value="retail">Retail</option>
+            <option value="professional">Professional</option>
           </select>
         </div>
 
