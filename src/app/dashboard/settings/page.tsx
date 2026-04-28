@@ -41,7 +41,7 @@ export default function SettingsPage() {
 
   // 2FA
   const [twoFAEnabled, setTwoFAEnabled] = useState(!!user?.totp_enabled)
-  const [twoFASetup, setTwoFASetup] = useState<{ secret: string; qrCodeUrl: string; otpAuthUrl: string } | null>(null)
+  const [twoFASetup, setTwoFASetup] = useState<{ secret: string; otpAuthUrl: string } | null>(null)
   const [twoFACode, setTwoFACode] = useState('')
   const [twoFALoading, setTwoFALoading] = useState(false)
   const [twoFAError, setTwoFAError] = useState('')
@@ -510,9 +510,8 @@ export default function SettingsPage() {
             </button>
           ) : (
             <div className="space-y-4">
-              <p className="text-sm text-slate-700">Escaneá este código QR con tu app authenticator:</p>
-              <img src={twoFASetup.qrCodeUrl} alt="QR Code" className="mx-auto w-48 h-48 rounded-xl border" />
-              <p className="text-xs text-slate-400 text-center">O ingresá manualmente: <code className="bg-slate-100 px-2 py-0.5 rounded text-xs">{twoFASetup.secret}</code></p>
+              <p className="text-sm text-slate-700 text-center py-4">Ingresá este código en tu app authenticator:</p>
+              <code className="block text-center bg-slate-100 px-4 py-3 rounded-xl text-lg font-mono tracking-wider">{twoFASetup.secret}</code>
               <div>
                 <label className="text-xs font-semibold text-slate-600 mb-1 block">Código de verificación</label>
                 <input type="text" inputMode="numeric" maxLength={6} value={twoFACode} onChange={e => setTwoFACode(e.target.value.replace(/\D/g, ''))}

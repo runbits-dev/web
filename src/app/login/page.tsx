@@ -85,10 +85,17 @@ export default function LoginPage() {
     ;(window as any).google.accounts.id.prompt()
   }
 
-  function handleFacebook() {
+  async function handleFacebook() {
     setSocialLoading(true)
-    const redirectUri = encodeURIComponent(`${API_BASE}/api/auth/facebook/callback`)
-    window.location.href = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${FACEBOOK_APP_ID}&redirect_uri=${redirectUri}&scope=email,public_profile&response_type=code`
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/oauth-state`, { method: 'POST' })
+      const { state } = await res.json()
+      const redirectUri = encodeURIComponent(`${API_BASE}/api/auth/facebook/callback`)
+      window.location.href = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${FACEBOOK_APP_ID}&redirect_uri=${redirectUri}&scope=email,public_profile&response_type=code&state=${encodeURIComponent(state)}`
+    } catch {
+      setError('Error al conectar con Facebook')
+      setSocialLoading(false)
+    }
   }
 
   async function handleLogin(e: React.FormEvent) {
