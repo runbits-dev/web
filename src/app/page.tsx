@@ -1,9 +1,14 @@
+"use client"
+
 import Link from 'next/link'
 import { Users, DollarSign, Store, KeyRound, Smartphone, LayoutDashboard, Truck, BarChart3, Check, BriefcaseBusiness, Bell, MessageSquare, ShieldCheck } from 'lucide-react'
 import { LandingNavbar } from '@/components/LandingNavbar'
 import { FooterLocaleBar } from '@/components/FooterLocaleBar'
+import { useI18n } from '@/i18n'
 
 function Hero() {
+  const { t } = useI18n()
+
   return (
     <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 overflow-hidden">
       {/* Background gradient */}
@@ -13,13 +18,12 @@ function Hero() {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 tracking-tight max-w-4xl mx-auto leading-tight">
-          Tu negocio,{' '}
-          <span className="text-brand-600">tu plataforma.</span>
+          {t('hero.title1')}{' '}
+          <span className="text-brand-600">{t('hero.title2')}</span>
         </h1>
 
         <p className="mt-6 text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-          Empezá gratis, crecé sin límites, vendé sin comisiones.
-          Tu tienda digital con pedidos, pagos y clientes — todo bajo tu control.
+          {t('hero.subtitle')}
         </p>
 
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -27,7 +31,7 @@ function Hero() {
             href="/register"
             className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 text-base font-semibold text-white bg-brand-600 rounded-xl hover:bg-brand-700 shadow-lg shadow-brand-600/25 transition-all hover:shadow-xl hover:shadow-brand-600/30 hover:-translate-y-0.5"
           >
-            Registrar mi comercio
+            {t('hero.cta')}
             <svg className="ml-2 w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
             </svg>
@@ -36,7 +40,7 @@ function Hero() {
             href="/login"
             className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 text-base font-semibold text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all hover:-translate-y-0.5"
           >
-            Iniciar sesión
+            {t('nav.login')}
           </Link>
         </div>
 
@@ -44,15 +48,15 @@ function Hero() {
         <div className="mt-16 grid grid-cols-3 gap-8 max-w-lg mx-auto">
           <div>
             <div className="text-2xl sm:text-3xl font-bold text-gray-900">$0</div>
-            <div className="text-sm text-gray-500 mt-1">Para empezar</div>
+            <div className="text-sm text-gray-500 mt-1">{t('valueProp.free')}</div>
           </div>
           <div>
             <div className="text-2xl sm:text-3xl font-bold text-gray-900">0%</div>
-            <div className="text-sm text-gray-500 mt-1">Comisión por venta</div>
+            <div className="text-sm text-gray-500 mt-1">{t('valueProp.commission')}</div>
           </div>
           <div>
             <div className="text-2xl sm:text-3xl font-bold text-gray-900">100%</div>
-            <div className="text-sm text-gray-500 mt-1">Tus clientes</div>
+            <div className="text-sm text-gray-500 mt-1">{t('valueProp.clients')}</div>
           </div>
         </div>
       </div>
@@ -61,27 +65,13 @@ function Hero() {
 }
 
 function WhyRunbits() {
+  const { t } = useI18n()
+
   const benefits = [
-    {
-      title: 'Tus clientes son tuyos',
-      desc: 'Vos tenés sus datos, su historial y la relación directa. Exportá tu base de clientes cuando quieras, sin restricciones.',
-      Icon: Users,
-    },
-    {
-      title: 'Sin comisiones por venta',
-      desc: 'Pagás una tarifa fija mensual y te quedás con el 100% de tus ingresos. Gratis para empezar. Pro desde $29/mes.',
-      Icon: DollarSign,
-    },
-    {
-      title: 'Tu marca, tu tienda',
-      desc: 'Dominio propio, colores y logo. Tu tienda digital sin compartir pantalla con otros comercios.',
-      Icon: Store,
-    },
-    {
-      title: 'Control total, sin dependencia',
-      desc: 'Tu negocio, tus reglas. Si algún día te vas, te llevás tu base de clientes. Sin lock-in de ningún tipo.',
-      Icon: KeyRound,
-    },
+    { key: 'benefit1', Icon: Users },
+    { key: 'benefit2', Icon: DollarSign },
+    { key: 'benefit3', Icon: Store },
+    { key: 'benefit4', Icon: KeyRound },
   ]
 
   return (
@@ -89,10 +79,10 @@ function WhyRunbits() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
-            ¿Por qué Runbits?
+            {t('whyRunbits.title')}
           </h2>
           <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-            Tu infraestructura digital propia — para conectar con tus clientes directamente, crecer con tu marca, y quedarte con todo lo que ganás.
+            {t('whyRunbits.subtitle')}
           </p>
         </div>
 
@@ -106,8 +96,8 @@ function WhyRunbits() {
                 <div className="flex items-start gap-2">
                   <Check className="w-4 h-4 text-brand-500 mt-0.5 shrink-0" />
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">{b.title}</p>
-                    <p className="text-sm text-gray-600 mt-1">{b.desc}</p>
+                    <p className="text-sm font-semibold text-gray-900">{t(`whyRunbits.${b.key}.title`)}</p>
+                    <p className="text-sm text-gray-600 mt-1">{t(`whyRunbits.${b.key}.desc`)}</p>
                   </div>
                 </div>
               </div>
@@ -117,7 +107,7 @@ function WhyRunbits() {
 
         <div className="mt-12 text-center">
           <p className="text-base text-gray-700 font-medium max-w-xl mx-auto">
-            <span className="text-brand-600 font-bold">Tu plataforma</span> — donde vos controlás la relación con tus clientes, tus datos y tu marca.
+            <span className="text-brand-600 font-bold">{t('whyRunbits.footer')}</span>
           </p>
         </div>
       </div>
@@ -126,55 +116,17 @@ function WhyRunbits() {
 }
 
 function Features() {
+  const { t } = useI18n()
+
   const features = [
-    {
-      Icon: BriefcaseBusiness,
-      title: 'Multi-tipo de negocio',
-      description:
-        'Vendé productos, servicios, o ambos. Creá perfiles múltiples bajo una misma cuenta — ideal para negocios con distintas líneas.',
-    },
-    {
-      Icon: Smartphone,
-      title: 'Tienda online + checkout',
-      description:
-        'Tu tienda digital lista para recibir pedidos. Catálogo con fotos, variantes, y múltiples métodos de pago integrados.',
-    },
-    {
-      Icon: MessageSquare,
-      title: 'Chat con IA de soporte',
-      description:
-        'Tus clientes reciben respuestas al instante desde tu tienda. El asistente IA gestiona consultas y pedidos 24/7.',
-    },
-    {
-      Icon: ShieldCheck,
-      title: 'Múltiples métodos de acceso',
-      description:
-        'Login con email, Google, Apple o Magic Link. Tus clientes entran fácil desde cualquier dispositivo.',
-    },
-    {
-      Icon: Bell,
-      title: 'Push notifications',
-      description:
-        'Enviá campañas push directamente a tus clientes. Avisales de promos, novedades o recordatorios con un clic.',
-    },
-    {
-      Icon: LayoutDashboard,
-      title: 'Panel de comercio',
-      description:
-        'Gestioná catálogo, pedidos, cupones y estadísticas desde un dashboard centralizado. Todo en tiempo real.',
-    },
-    {
-      Icon: Truck,
-      title: 'Delivery flexible',
-      description:
-        'Usá tus propios repartidores o conectá con servicios externos. Tracking GPS y verificación QR disponibles.',
-    },
-    {
-      Icon: BarChart3,
-      title: 'Analytics',
-      description:
-        'Métricas de ventas, productos más pedidos y horarios pico. Gráficos y tendencias en planes Pro+.',
-    },
+    { key: 'multiType', Icon: BriefcaseBusiness },
+    { key: 'store', Icon: Smartphone },
+    { key: 'aiChat', Icon: MessageSquare },
+    { key: 'auth', Icon: ShieldCheck },
+    { key: 'push', Icon: Bell },
+    { key: 'dashboard', Icon: LayoutDashboard },
+    { key: 'delivery', Icon: Truck },
+    { key: 'analytics', Icon: BarChart3 },
   ]
 
   return (
@@ -182,24 +134,24 @@ function Features() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
-            Todo lo que necesitás para vender más
+            {t('features.title')}
           </h2>
           <p className="mt-4 text-lg text-gray-600">
-            Infraestructura real para comercios locales — no solo delivery.
+            {t('features.subtitle')}
           </p>
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature) => (
             <div
-              key={feature.title}
+              key={feature.key}
               className="group relative bg-gray-50 rounded-2xl p-6 hover:bg-brand-50 transition-colors duration-300"
             >
               <div className="w-12 h-12 bg-brand-100 text-brand-700 rounded-xl flex items-center justify-center mb-4 group-hover:bg-brand-200 transition-colors">
                 <feature.Icon className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">{feature.title}</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">{feature.description}</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">{t(`features.${feature.key}.title`)}</h3>
+              <p className="text-sm text-gray-600 leading-relaxed">{t(`features.${feature.key}.desc`)}</p>
             </div>
           ))}
         </div>
@@ -209,25 +161,12 @@ function Features() {
 }
 
 function HowItWorks() {
+  const { t } = useI18n()
+
   const steps = [
-    {
-      number: '01',
-      title: 'Registrate gratis',
-      description:
-        'Creá tu cuenta en minutos. Elegí el tipo de negocio — productos, servicios, o ambos — y configurá tu perfil.',
-    },
-    {
-      number: '02',
-      title: 'Cargá tu catálogo',
-      description:
-        'Subí tus productos o servicios con fotos, precios y descripciones. Organizalos por categorías para que tus clientes encuentren todo fácil.',
-    },
-    {
-      number: '03',
-      title: 'Recibí pedidos',
-      description:
-        'Tu tienda online está lista. Tus clientes piden desde su celular — vos gestionás todo desde el dashboard.',
-    },
+    { number: '01', key: 'step1' },
+    { number: '02', key: 'step2' },
+    { number: '03', key: 'step3' },
   ]
 
   return (
@@ -235,10 +174,10 @@ function HowItWorks() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
-            Empezá en 3 simples pasos
+            {t('howItWorks.title')}
           </h2>
           <p className="mt-4 text-lg text-gray-600">
-            Ponemos tu negocio online en minutos, sin complicaciones.
+            {t('howItWorks.subtitle')}
           </p>
         </div>
 
@@ -250,8 +189,8 @@ function HowItWorks() {
               )}
               <div className="relative bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
                 <span className="text-5xl font-bold text-brand-100">{step.number}</span>
-                <h3 className="mt-4 text-xl font-semibold text-gray-900">{step.title}</h3>
-                <p className="mt-3 text-gray-600 leading-relaxed">{step.description}</p>
+                <h3 className="mt-4 text-xl font-semibold text-gray-900">{t(`howItWorks.${step.key}.title`)}</h3>
+                <p className="mt-3 text-gray-600 leading-relaxed">{t(`howItWorks.${step.key}.desc`)}</p>
               </div>
             </div>
           ))}
@@ -262,85 +201,37 @@ function HowItWorks() {
 }
 
 function Pricing() {
+  const { t } = useI18n()
   const checkIcon = <Check className="w-5 h-5 shrink-0 mt-0.5" />
 
   const plans = [
     {
-      name: 'Free',
-      description: 'Operá tu negocio sin costo',
-      billing: 'Gratis para siempre — sin tarjeta',
+      key: 'free',
       price: '0',
       popular: false,
       highlighted: false,
-      features: [
-        'Catálogo ilimitado',
-        'Pedidos ilimitados',
-        'Tienda online propia',
-        'Chat con clientes',
-        '3 cupones',
-        '1 promo activa',
-        'Estadísticas básicas',
-        '1 perfil',
-        'Soporte email',
-      ],
-      cta: 'Empezar gratis',
+      featureKeys: ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7'],
     },
     {
-      name: 'Pro',
-      description: 'Herramientas para crecer',
-      billing: 'Todo de Free + herramientas de crecimiento',
+      key: 'pro',
       price: '29',
       popular: true,
       highlighted: true,
-      features: [
-        'Todo de Free',
-        'Cupones y promos ilimitados',
-        'Dominio propio',
-        'Colores y marca personalizados',
-        'Analytics con gráficos y tendencias',
-        '5 campañas push/mes',
-        'Perfiles ilimitados',
-        'Soporte prioritario',
-      ],
-      cta: 'Elegir Pro',
+      featureKeys: ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8'],
     },
     {
-      name: 'Business',
-      description: 'Para escalar tu operación',
-      billing: 'Todo de Pro + multi-sucursal',
+      key: 'business',
       price: '99',
       popular: false,
       highlighted: false,
-      features: [
-        'Todo de Pro',
-        'White-label (sin marca Runbits)',
-        'Multi-sucursal (hasta 5)',
-        '5 usuarios staff con roles',
-        'Webhooks + integraciones',
-        'Email marketing a clientes',
-        'Verificación de clientes',
-        'Soporte chat',
-      ],
-      cta: 'Elegir Business',
+      featureKeys: ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9'],
     },
     {
-      name: 'Enterprise',
-      description: 'Todo ilimitado + IA',
-      billing: 'Todo de Business + IA y API',
+      key: 'enterprise',
       price: '249',
       popular: false,
       highlighted: false,
-      features: [
-        'Todo de Business',
-        'Asistente IA 24/7',
-        'Generaciones IA ilimitadas',
-        'WhatsApp bot',
-        'GPS tracking en vivo',
-        'API REST completa',
-        'Sucursales y staff ilimitados',
-        'Soporte dedicado',
-      ],
-      cta: 'Elegir Enterprise',
+      featureKeys: ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9'],
     },
   ]
 
@@ -349,17 +240,17 @@ function Pricing() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
-            Gratis para empezar. Sin comisiones. Nunca.
+            {t('pricing.title')}
           </h2>
           <p className="mt-4 text-lg text-gray-600">
-            Empezá sin costo. Todos los planes incluyen pedidos y catálogo ilimitados. Pagás una tarifa fija mensual y te quedás con el 100% de tus ventas.
+            {t('pricing.subtitle')}
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
           {plans.map((plan) => (
             <div
-              key={plan.name}
+              key={plan.key}
               className={`relative rounded-2xl p-7 flex flex-col ${
                 plan.highlighted
                   ? 'bg-brand-600 text-white shadow-xl shadow-brand-600/20 ring-2 ring-brand-600'
@@ -368,15 +259,15 @@ function Pricing() {
             >
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-400 text-amber-900 text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap">
-                  Más elegido
+                  {t('pricing.popular')}
                 </div>
               )}
               <div>
                 <h3 className={`text-lg font-semibold ${plan.highlighted ? 'text-white' : 'text-gray-900'}`}>
-                  {plan.name}
+                  {t(`pricing.plans.${plan.key}.name`)}
                 </h3>
                 <p className={`mt-1 text-sm ${plan.highlighted ? 'text-brand-100' : 'text-gray-500'}`}>
-                  {plan.description}
+                  {t(`pricing.plans.${plan.key}.desc`)}
                 </p>
               </div>
               <div className="mt-6">
@@ -384,38 +275,38 @@ function Pricing() {
                   <>
                     <div className="flex items-baseline gap-1">
                       <span className={`text-4xl font-bold ${plan.highlighted ? 'text-white' : 'text-gray-900'}`}>
-                        USD ${plan.price}
+                        {t('pricing.currency')}{plan.price}
                       </span>
-                      <span className={`text-sm ${plan.highlighted ? 'text-brand-200' : 'text-gray-500'}`}>/mes</span>
+                      <span className={`text-sm ${plan.highlighted ? 'text-brand-200' : 'text-gray-500'}`}>{t('pricing.perMonth')}</span>
                     </div>
                     <p className={`mt-1 text-xs ${plan.highlighted ? 'text-brand-200' : 'text-gray-400'}`}>
-                      {plan.billing}
+                      {t(`pricing.plans.${plan.key}.billing`)}
                     </p>
                   </>
                 ) : plan.price === '0' ? (
                   <>
                     <span className="text-4xl font-bold text-blue-600">
-                      Gratis
+                      {t('pricing.free')}
                     </span>
                     <p className="mt-1 text-xs text-blue-500">
-                      {plan.billing}
+                      {t(`pricing.plans.${plan.key}.billing`)}
                     </p>
                   </>
                 ) : (
                   <>
                     <span className={`text-3xl font-bold ${plan.highlighted ? 'text-white' : 'text-gray-900'}`}>
-                      A medida
+                      {t('pricing.custom')}
                     </span>
                     <p className={`mt-1 text-xs ${plan.highlighted ? 'text-brand-200' : 'text-gray-400'}`}>
-                      {plan.billing}
+                      {t(`pricing.plans.${plan.key}.billing`)}
                     </p>
                   </>
                 )}
               </div>
               <ul className="mt-8 space-y-3 flex-1">
-                {plan.features.map((item) => (
+                {plan.featureKeys.map((fk) => (
                   <li
-                    key={item}
+                    key={fk}
                     className={`flex items-start gap-3 text-sm ${
                       plan.highlighted ? 'text-brand-50' : 'text-gray-700'
                     }`}
@@ -423,7 +314,7 @@ function Pricing() {
                     <span className={plan.highlighted ? 'text-brand-300' : 'text-brand-500'}>
                       {checkIcon}
                     </span>
-                    {item}
+                    {t(`pricing.plans.${plan.key}.${fk}`)}
                   </li>
                 ))}
               </ul>
@@ -435,18 +326,18 @@ function Pricing() {
                     : 'border-2 border-brand-600 text-brand-700 hover:bg-brand-50'
                 }`}
               >
-                {plan.cta}
+                {t(`pricing.plans.${plan.key}.cta`)}
               </Link>
             </div>
           ))}
         </div>
 
         <p className="mt-10 text-center text-sm text-gray-500">
-          El plan Free no requiere tarjeta de crédito. Podés upgradearlo en cualquier momento.
+          {t('pricing.footnote1')}
           <br />
-          ¿Necesitás algo diferente?{' '}
+          {t('pricing.footnote2')}{' '}
           <a href="mailto:soporte@runbits.io" className="text-brand-600 hover:underline font-medium">
-            Hablemos
+            {t('pricing.footnoteLink')}
           </a>
         </p>
       </div>
@@ -455,25 +346,13 @@ function Pricing() {
 }
 
 function Modules() {
+  const { t } = useI18n()
+
   const modules = [
-    { category: 'Ventas', items: [
-      { name: 'Programa de fidelidad', price: '$15/mes', desc: 'Puntos y recompensas para clientes frecuentes' },
-      { name: 'Tarjetas de regalo', price: '$10/mes', desc: 'Gift cards digitales canjeables en tu tienda' },
-    ]},
-    { category: 'Logística', items: [
-      { name: 'Tracking GPS en vivo', price: '$20/mes', desc: 'Tus clientes ven el repartidor en tiempo real' },
-      { name: 'Multi-sucursal', price: '$25/mes', desc: 'Gestioná varias sucursales desde un solo dashboard' },
-      { name: 'Optimización de rutas', price: '$30/mes', desc: 'Rutas automáticas para múltiples entregas' },
-    ]},
-    { category: 'Comunicación', items: [
-      { name: 'Bot de WhatsApp', price: '$25/mes', desc: 'Pedidos y consultas por WhatsApp automático' },
-      { name: 'Asistente IA', price: '$20/mes', desc: 'IA que responde consultas 24/7' },
-      { name: 'Email marketing', price: '$15/mes', desc: 'Campañas de email a tu base de clientes' },
-    ]},
-    { category: 'Operaciones', items: [
-      { name: 'Control de stock', price: '$15/mes', desc: 'Inventario con alertas de stock bajo' },
-      { name: 'Facturación AFIP', price: '$15/mes', desc: 'Facturación electrónica automática' },
-    ]},
+    { categoryKey: 'sales', items: ['loyalty', 'giftCards'] },
+    { categoryKey: 'logistics', items: ['gps', 'inventory'] },
+    { categoryKey: 'communication', items: ['whatsapp', 'emailMarketing'] },
+    { categoryKey: 'operations', items: ['afip', 'verification'] },
   ]
 
   return (
@@ -481,25 +360,25 @@ function Modules() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
-            Armá tu plataforma a medida
+            {t('modules.title')}
           </h2>
           <p className="mt-4 text-lg text-gray-600">
-            Todos los planes se pueden ampliar con módulos adicionales. Activá solo lo que necesitás.
+            {t('modules.subtitle')}
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {modules.map(group => (
-            <div key={group.category}>
-              <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide">{group.category}</h3>
+            <div key={group.categoryKey}>
+              <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide">{t(`modules.categories.${group.categoryKey}`)}</h3>
               <div className="space-y-3">
-                {group.items.map(item => (
-                  <div key={item.name} className="bg-white rounded-xl p-4 border border-gray-100 hover:shadow-md transition-shadow">
+                {group.items.map(itemKey => (
+                  <div key={itemKey} className="bg-white rounded-xl p-4 border border-gray-100 hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-semibold text-gray-900">{item.name}</span>
-                      <span className="text-xs font-bold text-brand-600">{item.price}</span>
+                      <span className="text-sm font-semibold text-gray-900">{t(`modules.items.${itemKey}.name`)}</span>
+                      <span className="text-xs font-bold text-brand-600">{t(`modules.items.${itemKey}.price`)}</span>
                     </div>
-                    <p className="text-xs text-gray-500">{item.desc}</p>
+                    <p className="text-xs text-gray-500">{t(`modules.items.${itemKey}.desc`)}</p>
                   </div>
                 ))}
               </div>
@@ -508,7 +387,7 @@ function Modules() {
         </div>
 
         <p className="mt-10 text-center text-sm text-gray-500">
-          Muchas funcionalidades ya están incluidas en los planes base. Los módulos son para expandir aún más.
+          {t('modules.footnote')}
         </p>
       </div>
     </section>
@@ -516,15 +395,17 @@ function Modules() {
 }
 
 function Contact() {
+  const { t } = useI18n()
+
   return (
     <section id="contact" className="py-20 sm:py-28 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
-            ¿Tenés preguntas?
+            {t('contact.title')}
           </h2>
           <p className="mt-4 text-lg text-gray-600">
-            Nuestro equipo está listo para ayudarte a empezar.
+            {t('contact.subtitle')}
           </p>
 
           <div className="mt-10 bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
@@ -535,7 +416,7 @@ function Contact() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Escribinos por email</h3>
+                <h3 className="text-lg font-semibold text-gray-900">{t('contact.emailTitle')}</h3>
                 <a
                   href="mailto:soporte@runbits.io"
                   className="mt-1 text-brand-600 hover:text-brand-700 font-medium text-lg"
@@ -544,7 +425,7 @@ function Contact() {
                 </a>
               </div>
               <p className="text-sm text-gray-500 max-w-md">
-                Respondemos en menos de 24 horas hábiles. O usá el chat de soporte con IA en tu dashboard — disponible en todos los planes.
+                {t('contact.footnote')}
               </p>
             </div>
           </div>
@@ -554,13 +435,13 @@ function Contact() {
               <svg className="w-4 h-4 text-brand-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              Respuesta en &lt;24hs
+              {t('contact.badge1')}
             </div>
             <div className="flex items-center gap-2">
               <svg className="w-4 h-4 text-brand-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              Sin compromiso
+              {t('contact.badge2')}
             </div>
           </div>
         </div>
@@ -570,6 +451,8 @@ function Contact() {
 }
 
 function Footer() {
+  const { t } = useI18n()
+
   return (
     <footer className="bg-gray-900 text-gray-400">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -578,27 +461,27 @@ function Footer() {
           <div className="md:col-span-1">
             <span className="logo-runbits logo-runbits-light text-2xl">RunBits</span>
             <p className="mt-3 text-sm leading-relaxed">
-              La plataforma para comercios locales. Vendé productos, servicios, o ambos — sin comisiones, con control total.
+              {t('footer.desc')}
             </p>
           </div>
 
           {/* Product */}
           <div>
-            <h4 className="text-sm font-semibold text-white mb-4">Producto</h4>
+            <h4 className="text-sm font-semibold text-white mb-4">{t('footer.product')}</h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <a href="#features" className="hover:text-white transition-colors">
-                  Funcionalidades
+                  {t('nav.features')}
                 </a>
               </li>
               <li>
                 <a href="#pricing" className="hover:text-white transition-colors">
-                  Planes
+                  {t('nav.pricing')}
                 </a>
               </li>
               <li>
                 <a href="#how-it-works" className="hover:text-white transition-colors">
-                  Cómo funciona
+                  {t('nav.howItWorks')}
                 </a>
               </li>
             </ul>
@@ -606,26 +489,26 @@ function Footer() {
 
           {/* Legal */}
           <div>
-            <h4 className="text-sm font-semibold text-white mb-4">Legal</h4>
+            <h4 className="text-sm font-semibold text-white mb-4">{t('footer.legal')}</h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/terms" className="hover:text-white transition-colors">
-                  Términos y Condiciones
+                  {t('footer.termsAndConditions')}
                 </Link>
               </li>
               <li>
                 <Link href="/privacy" className="hover:text-white transition-colors">
-                  Política de Privacidad
+                  {t('footer.privacyPolicy')}
                 </Link>
               </li>
               <li>
                 <Link href="/refund" className="hover:text-white transition-colors">
-                  Política de Reembolsos
+                  {t('footer.refundPolicy')}
                 </Link>
               </li>
               <li>
                 <Link href="/cancellation" className="hover:text-white transition-colors">
-                  Política de Cancelación
+                  {t('footer.cancellationPolicy')}
                 </Link>
               </li>
             </ul>
@@ -633,7 +516,7 @@ function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="text-sm font-semibold text-white mb-4">Contacto</h4>
+            <h4 className="text-sm font-semibold text-white mb-4">{t('footer.contactTitle')}</h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <a href="mailto:soporte@runbits.io" className="hover:text-white transition-colors">
@@ -664,7 +547,7 @@ function Footer() {
 
         <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm">
-            &copy; {new Date().getFullYear()} Runbits LLC. Todos los derechos reservados.
+            &copy; {new Date().getFullYear()} Runbits LLC. {t('footer.rights')}
           </p>
           <div className="flex items-center gap-4">
             <FooterLocaleBar />

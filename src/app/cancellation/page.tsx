@@ -1,12 +1,10 @@
-import type { Metadata } from 'next'
-import Link from 'next/link'
+'use client'
 
-export const metadata: Metadata = {
-  title: 'Política de Cancelación',
-  description: 'Política de cancelación de cuentas y suscripciones de Runbits.',
-}
+import Link from 'next/link'
+import { useI18n } from '@/i18n'
 
 function LegalNav() {
+  const { t } = useI18n()
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -15,7 +13,7 @@ function LegalNav() {
             runbits
           </Link>
           <Link href="/" className="text-sm text-gray-600 hover:text-brand-700 transition-colors">
-            &larr; Volver al inicio
+            {t('legal.backToHome')}
           </Link>
         </div>
       </div>
@@ -24,13 +22,15 @@ function LegalNav() {
 }
 
 export default function CancellationPage() {
+  const { t } = useI18n()
+
   return (
     <>
       <LegalNav />
       <main className="pt-28 pb-20">
         <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 prose prose-gray prose-headings:text-gray-900 prose-a:text-brand-600 max-w-none">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Política de Cancelación</h1>
-          <p className="text-sm text-gray-500 mb-8">Última actualización: 19 de abril de 2026</p>
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">{t('legal.cancellationTitle')}</h1>
+          <p className="text-sm text-gray-500 mb-8">{t('legal.lastUpdated')}: 19 de abril de 2026</p>
 
           <h2 className="text-2xl font-bold text-gray-900 mt-10 mb-4">1. Eliminar tu cuenta</h2>
           <p className="text-gray-700 leading-relaxed">
@@ -69,11 +69,11 @@ export default function CancellationPage() {
 
       <footer className="bg-gray-900 text-gray-400 py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm">&copy; {new Date().getFullYear()} Runbits LLC. Todos los derechos reservados.</p>
+          <p className="text-sm">&copy; {new Date().getFullYear()} Runbits LLC. {t('legal.footerRights')}</p>
           <div className="flex gap-4 text-sm">
-            <Link href="/terms" className="hover:text-white transition-colors">Términos</Link>
-            <Link href="/privacy" className="hover:text-white transition-colors">Privacidad</Link>
-            <Link href="/refund" className="hover:text-white transition-colors">Reembolsos</Link>
+            <Link href="/terms" className="hover:text-white transition-colors">{t('legal.footerTerms')}</Link>
+            <Link href="/privacy" className="hover:text-white transition-colors">{t('legal.footerPrivacy')}</Link>
+            <Link href="/refund" className="hover:text-white transition-colors">{t('legal.footerRefund')}</Link>
           </div>
         </div>
       </footer>

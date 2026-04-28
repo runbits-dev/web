@@ -2,8 +2,11 @@
 
 import Link from 'next/link'
 import { LocaleSwitcher } from '@/components/LocaleSwitcher'
+import { useI18n } from '@/i18n'
 
 export function LandingNavbar() {
+  const { t } = useI18n()
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -13,19 +16,19 @@ export function LandingNavbar() {
           </Link>
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm text-gray-600 hover:text-brand-700 transition-colors">
-              Funcionalidades
+              {t('nav.features')}
             </a>
             <a href="#how-it-works" className="text-sm text-gray-600 hover:text-brand-700 transition-colors">
-              Cómo funciona
+              {t('nav.howItWorks')}
             </a>
             <a href="#pricing" className="text-sm text-gray-600 hover:text-brand-700 transition-colors">
-              Planes
+              {t('nav.pricing')}
             </a>
             <a href="#contact" className="text-sm text-gray-600 hover:text-brand-700 transition-colors">
-              Contacto
+              {t('nav.contact')}
             </a>
             <Link href="/about" className="text-sm text-gray-600 hover:text-brand-700 transition-colors">
-              Nosotros
+              {t('nav.about')}
             </Link>
           </div>
           <div className="flex items-center gap-3">
@@ -34,13 +37,13 @@ export function LandingNavbar() {
               href="/login"
               className="text-sm font-medium text-gray-700 hover:text-brand-700 transition-colors"
             >
-              Iniciar sesión
+              {t('nav.login')}
             </Link>
             <Link
               href="/register"
               className="text-sm font-medium bg-brand-600 text-white px-4 py-2 rounded-lg hover:bg-brand-700 transition-colors"
             >
-              Registrar comercio
+              {t('nav.register')}
             </Link>
           </div>
         </div>
