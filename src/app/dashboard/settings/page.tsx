@@ -46,6 +46,8 @@ export default function SettingsPage() {
   const [twoFALoading, setTwoFALoading] = useState(false)
   const [twoFAError, setTwoFAError] = useState('')
   const [disableCode, setDisableCode] = useState('')
+  const [disablePassword, setDisablePassword] = useState('')
+  const [disableError, setDisableError] = useState('')
 
   // Stripe Connect
   const [connectStatus, setConnectStatus] = useState<{ connected: boolean; chargesEnabled: boolean; payoutsEnabled: boolean; accountId?: string } | null>(null)
@@ -116,14 +118,18 @@ export default function SettingsPage() {
 
   async function disable2FA() {
     setTwoFALoading(true)
+    setDisableError('')
     try {
       const token = localStorage.getItem('token')
+      const payload: { code: string; password?: string } = { code: disableCode }
+      if (disablePassword) payload.password = disablePassword
       const res = await fetch(`${API_BASE}/api/auth/2fa/disable`, {
         method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ code: disableCode }),
+        body: JSON.stringify(payload),
       })
-      if (res.ok) { setTwoFAEnabled(false); setDisableCode('') }
-    } catch {}
+      if (res.ok) { setTwoFAEnabled(false); setDisableCode(''); setDisablePassword('') }
+      else { const d = await res.json(); setDisableError(d.error || 'Error al desactivar') }
+    } catch { setDisableError('Error de conexión') }
     setTwoFALoading(false)
   }
 
@@ -489,7 +495,10 @@ export default function SettingsPage() {
           </div>
           <div className="space-y-3">
             <input type="text" inputMode="numeric" maxLength={6} value={disableCode} onChange={e => setDisableCode(e.target.value.replace(/\D/g, ''))}
-              placeholder="Código para desactivar" className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+              placeholder="Código authenticator" className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+            <input type="password" value={disablePassword} onChange={e => setDisablePassword(e.target.value)}
+              placeholder="Contraseña" className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+            {disableError && <p className="text-sm text-red-500">{disableError}</p>}
             <button onClick={disable2FA} disabled={twoFALoading || disableCode.length !== 6}
               className="text-sm text-red-500 hover:text-red-700 font-medium disabled:opacity-50">
               Desactivar 2FA
