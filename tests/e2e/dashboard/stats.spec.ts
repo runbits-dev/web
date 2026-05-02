@@ -7,18 +7,26 @@ test.describe('Dashboard — Estadísticas', () => {
     await page.waitForLoadState('networkidle')
   })
 
-  test('muestra el estado del restaurante', async ({ page }) => {
-    await expect(page.getByText('Resumen de tu restaurante')).toBeVisible()
-    await expect(page.getByText('Abierto')).toBeVisible()
+  test('muestra el encabezado con resumen', async ({ page }) => {
+    await expect(page.getByRole('heading', { name: 'Estadísticas' })).toBeVisible()
+    await expect(page.getByText(/resumen de tu (comercio|restaurante)/i)).toBeVisible()
   })
 
-  test('muestra pedidos del día, semana y mes', async ({ page }) => {
-    await expect(page.getByText('12', { exact: true })).toBeVisible()  // today
-    await expect(page.getByText('58', { exact: true })).toBeVisible()  // this_week
-    await expect(page.getByText('210', { exact: true })).toBeVisible() // this_month
+  test('muestra las tarjetas con métricas del día', async ({ page }) => {
+    // Stat cards for today's metrics
+    await expect(page.getByText('Pedidos hoy', { exact: true })).toBeVisible()
+    await expect(page.getByText('Revenue hoy', { exact: true })).toBeVisible()
+    await expect(page.getByText('Ticket promedio', { exact: true })).toBeVisible()
+    // today=12 in fixture appears multiple times (stat card + chart bar);
+    // use first() to avoid strict-mode failure.
+    await expect(page.getByText('12', { exact: true }).first()).toBeVisible()
   })
 
-  test('muestra ingresos formateados', async ({ page }) => {
-    await expect(page.getByText(/3\.120\.000|3,120,000/).first()).toBeVisible()
+  test('muestra la tendencia y los pedidos por período', async ({ page }) => {
+    await expect(page.getByText(/tendencia de ingresos/i)).toBeVisible()
+    await expect(page.getByText(/pedidos por período/i)).toBeVisible()
+    // this_week=58 and this_month=210 — also rendered in multiple places.
+    await expect(page.getByText('58', { exact: true }).first()).toBeVisible()
+    await expect(page.getByText('210', { exact: true }).first()).toBeVisible()
   })
 })

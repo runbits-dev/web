@@ -23,14 +23,16 @@ test.describe('Admin — Agentes', () => {
     await expect(martinRow.getByRole('button', { name: 'Suspender' })).toBeVisible()
   })
 
-  test('aprobar agente actualiza su estado', async ({ page }) => {
+  test('aprobar agente lo deja en estado approved con botón Activar', async ({ page }) => {
     const lauraRow = page.locator('.bg-white.rounded-2xl').filter({ hasText: 'Laura García' })
     await lauraRow.getByRole('button', { name: 'Aprobar' }).click()
     await page.waitForLoadState('networkidle')
+    // After approve the UI state machine moves agent to "approved" → button "Activar"
     await expect(lauraRow.getByRole('button', { name: 'Activar' })).toBeVisible()
+    await expect(lauraRow.getByText('approved')).toBeVisible()
   })
 
-  test('suspender agente actualiza su estado', async ({ page }) => {
+  test('suspender agente actualiza su estado a suspended', async ({ page }) => {
     const martinRow = page.locator('.bg-white.rounded-2xl').filter({ hasText: 'Martín López' })
     await martinRow.getByRole('button', { name: 'Suspender' }).click()
     await page.waitForLoadState('networkidle')

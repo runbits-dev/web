@@ -91,10 +91,21 @@ export const handlers = [
     return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }),
 
+  // PATCH /api/auth/me — settings page uses this to update name/phone.
+  http.patch(`${API}/api/auth/me`, async ({ request }) => {
+    const body = await request.json().catch(() => ({})) as Record<string, string>
+    return HttpResponse.json({ ...userRestaurant, ...body })
+  }),
+
   http.patch(`${API}/api/auth/profile`, async ({ request }) => {
     const body = await request.json() as Record<string, string>
     return HttpResponse.json({ ...userRestaurant, ...body })
   }),
+
+  // Sessions / audit / WebAuthn — settings security section calls these.
+  http.get(`${API}/api/auth/sessions`, () => HttpResponse.json({ sessions: [] })),
+  http.get(`${API}/api/auth/audit-log`, () => HttpResponse.json({ events: [] })),
+  http.get(`${API}/api/auth/webauthn/credentials`, () => HttpResponse.json({ credentials: [] })),
 
   // ── Menu ────────────────────────────────────────────────────────────────────
   http.get(`${API}/api/restaurants/:restaurantId/menu`, () => HttpResponse.json(mockMenu)),

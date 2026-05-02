@@ -11,6 +11,9 @@ export default defineConfig({
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+    // Force Spanish locale so the i18n provider picks "es" — tests assert
+    // the Spanish strings shipped in src/i18n/es.json.
+    locale: 'es-AR',
   },
   projects: [
     {

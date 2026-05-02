@@ -21,7 +21,8 @@ test.describe('Dashboard — Menú', () => {
 
   test('abre modal al clickear + Agregar producto', async ({ page }) => {
     await page.getByRole('button', { name: '+ Agregar producto' }).click()
-    await expect(page.getByText('Agregar producto').nth(1)).toBeVisible()
+    // Modal heading "Agregar producto"
+    await expect(page.getByRole('heading', { name: 'Agregar producto' })).toBeVisible()
     await expect(page.getByPlaceholder('Ej: Hamburguesa clásica')).toBeVisible()
     await expect(page.getByRole('spinbutton')).toBeVisible()
   })
@@ -31,21 +32,22 @@ test.describe('Dashboard — Menú', () => {
     await page.getByPlaceholder('Ej: Hamburguesa clásica').fill('Pizza Margherita')
     await page.getByPlaceholder('Descripción opcional').fill('Salsa, mozzarella, albahaca')
     await page.getByRole('spinbutton').fill('1200')
-    await page.getByPlaceholder('Ej: Principales').fill('Pizzas')
+    // Categoría is a <select>; pick the first non-empty option to avoid relying on a free-text input.
+    // The select has "Sin categoría" + preset categories; we just leave it as "Sin categoría".
     await page.getByRole('button', { name: 'Guardar' }).click()
     await expect(page.getByText('Pizza Margherita')).toBeVisible()
   })
 
   test('cancela el modal sin guardar', async ({ page }) => {
     await page.getByRole('button', { name: '+ Agregar producto' }).click()
+    await expect(page.getByRole('heading', { name: 'Agregar producto' })).toBeVisible()
     await page.getByRole('button', { name: 'Cancelar' }).click()
-    // El modal se cierra
-    await expect(page.getByText('Agregar producto').nth(1)).not.toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Agregar producto' })).not.toBeVisible()
   })
 
   test('abre modal de edición al clickear Editar', async ({ page }) => {
     await page.getByRole('button', { name: 'Editar' }).first().click()
-    await expect(page.getByText('Editar producto')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Editar producto' })).toBeVisible()
     await expect(page.getByPlaceholder('Ej: Hamburguesa clásica')).toHaveValue('Hamburguesa Clásica')
   })
 
@@ -58,6 +60,7 @@ test.describe('Dashboard — Menú', () => {
   test('elimina un item con confirmación', async ({ page }) => {
     await page.getByRole('button', { name: 'Eliminar' }).first().click()
     await expect(page.getByText('¿Eliminar producto?')).toBeVisible()
+    // The confirmation modal also has an "Eliminar" button; use last() to pick it.
     await page.getByRole('button', { name: 'Eliminar' }).last().click()
     await expect(page.getByText('Hamburguesa Clásica')).not.toBeVisible()
   })

@@ -6,10 +6,13 @@ test.describe('Login', () => {
   })
 
   test('muestra el formulario de login', async ({ page }) => {
-    await expect(page.getByText('Ingresá a tu panel')).toBeVisible()
+    // Heading after i18n migration is "Ingresar a Runbits"
+    await expect(page.getByRole('heading', { name: /ingresar a runbits/i })).toBeVisible()
     await expect(page.locator('input[type="email"]')).toBeVisible()
     await expect(page.locator('input[type="password"]')).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Ingresar' })).toBeVisible()
+    // Submit label is now "Iniciar sesión" (exact, to avoid matching the
+    // separate "Iniciar sesión con passkey" button when WebAuthn is supported).
+    await expect(page.getByRole('button', { name: 'Iniciar sesión', exact: true })).toBeVisible()
   })
 
   test('login exitoso como restaurant owner → redirect a /dashboard', async ({ page }) => {

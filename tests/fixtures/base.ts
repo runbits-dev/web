@@ -136,7 +136,13 @@ export async function setupApiRoutes(page: Page) {
     if (method === 'POST') {
       const idx = currentAgents.findIndex(a => a.id === agentId)
       if (idx >= 0) {
-        const newStatus = action === 'suspend' ? 'suspended' : 'active'
+        // Match UI state machine: approve → 'approved', activate → 'active', suspend → 'suspended'
+        const statusMap: Record<string, string> = {
+          approve: 'approved',
+          activate: 'active',
+          suspend: 'suspended',
+        }
+        const newStatus = statusMap[action] ?? currentAgents[idx].status
         currentAgents[idx] = { ...currentAgents[idx], status: newStatus }
         await route.fulfill({ json: currentAgents[idx] })
       } else {
@@ -196,10 +202,20 @@ export async function setupApiRoutes(page: Page) {
     }
   })
 
-  // Auth — me
+  // Auth — me (GET = current user, PATCH = update name/phone)
   await page.route(`${API}/api/auth/me`, async (route) => {
+    const method = route.request().method()
     const auth = route.request().headers()['authorization'] || ''
     const token = auth.replace('Bearer ', '')
+
+    if (method === 'PATCH') {
+      let body: any = {}
+      try { body = route.request().postDataJSON() ?? {} } catch { body = {} }
+      // Minimal echo back so the settings save flow succeeds.
+      await route.fulfill({ json: { ...userRestaurant, ...body } })
+      return
+    }
+
     if (token === 'mock-token-restaurant') {
       await route.fulfill({ json: {
         account: { ...userRestaurant },
@@ -212,7 +228,13 @@ export async function setupApiRoutes(page: Page) {
         activeProfile: restaurantProfile,
       }})
     } else if (token === 'mock-token-superadmin') {
-      await route.fulfill({ json: userSuperadmin })
+      await route.fulfill({ json: {
+        account: { ...userSuperadmin },
+        roles: [{ role: 'superadmin', isPrimary: true }],
+        activeRole: 'superadmin',
+        profiles: [],
+        activeProfile: null,
+      }})
     } else {
       await route.fulfill({ status: 401, json: { error: 'No autorizado' } })
     }
@@ -274,9 +296,33 @@ export async function setupApiRoutes(page: Page) {
     await route.fulfill({ json: currentMenu })
   })
 
-  // Orders
+  // Orders — legacy /mine endpoint
   await page.route(`${API}/api/orders/mine`, async (route) => {
     await route.fulfill({ json: myOrders })
+  })
+
+  // Orders — /api/orders (with or without restaurantId query)
+  await page.route(`${API}/api/orders`, async (route) => {
+    await route.fulfill({ json: myOrders })
+  })
+  await page.route(`${API}/api/orders?**`, async (route) => {
+    await route.fulfill({ json: myOrders })
+  })
+
+  // Order ratings (used by stats page)
+  await page.route(`${API}/api/orders/restaurants/rest-001/ratings`, async (route) => {
+    await route.fulfill({ json: [] })
+  })
+
+  // Auth — sessions / audit / webauthn credentials (settings page)
+  await page.route(`${API}/api/auth/sessions`, async (route) => {
+    await route.fulfill({ json: { sessions: [] } })
+  })
+  await page.route(`${API}/api/auth/audit-log`, async (route) => {
+    await route.fulfill({ json: { events: [] } })
+  })
+  await page.route(`${API}/api/auth/webauthn/credentials`, async (route) => {
+    await route.fulfill({ json: { credentials: [] } })
   })
 
   // Restaurant detail (GET /api/restaurants/:id)
@@ -312,13 +358,19 @@ export async function setupApiRoutes(page: Page) {
     await route.fulfill({ json: statsRestaurant })
   })
 
-  // Admin — Restaurants list
+  // Admin — Restaurants list (with or without query string)
   await page.route(`${API}/api/admin/restaurants`, async (route) => {
     await route.fulfill({ json: adminRestaurants })
   })
+  await page.route(`${API}/api/admin/restaurants?**`, async (route) => {
+    await route.fulfill({ json: adminRestaurants })
+  })
 
-  // Admin — Agents list
+  // Admin — Agents list (with or without query string)
   await page.route(`${API}/api/admin/agents`, async (route) => {
+    await route.fulfill({ json: { data: currentAgents, total: currentAgents.length } })
+  })
+  await page.route(`${API}/api/admin/agents?**`, async (route) => {
     await route.fulfill({ json: { data: currentAgents, total: currentAgents.length } })
   })
 
@@ -327,8 +379,11 @@ export async function setupApiRoutes(page: Page) {
     await route.fulfill({ json: commissionsSummary })
   })
 
-  // Admin — Commissions list
+  // Admin — Commissions list (with or without query string)
   await page.route(`${API}/api/admin/commissions`, async (route) => {
+    await route.fulfill({ json: { data: currentCommissions, total: currentCommissions.length } })
+  })
+  await page.route(`${API}/api/admin/commissions?**`, async (route) => {
     await route.fulfill({ json: { data: currentCommissions, total: currentCommissions.length } })
   })
 }
