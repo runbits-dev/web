@@ -511,6 +511,11 @@ function Footer() {
                   {t('footer.cancellationPolicy')}
                 </Link>
               </li>
+              <li>
+                <Link href="/security" className="hover:text-white transition-colors">
+                  {t('footer.security')}
+                </Link>
+              </li>
             </ul>
           </div>
 

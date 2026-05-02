@@ -6,7 +6,8 @@
     "contact": "Contacto",
     "about": "Nosotros",
     "login": "Iniciar sesión",
-    "register": "Registrar comercio"
+    "register": "Registrar comercio",
+    "security": "Seguridad"
   },
   "hero": {
     "title1": "Tu negocio,",
@@ -327,10 +328,22 @@
     "title": "¿Por qué Runbits?",
     "subtitle": "Tu infraestructura digital propia — sin intermediarios, sin comisiones, sin depender de nadie.",
     "footer": "Tu plataforma, donde vos controlás todo.",
-    "benefit1": { "title": "Tus clientes son tuyos", "desc": "Vos tenés sus datos, su historial, su fidelidad. No los compartís con la competencia." },
-    "benefit2": { "title": "Sin comisiones por venta", "desc": "Pagás una tarifa fija mensual. Lo que vendés, es tuyo." },
-    "benefit3": { "title": "Tu marca, tu tienda", "desc": "Dominio propio, colores, logo. Tus clientes ven TU marca, no la nuestra." },
-    "benefit4": { "title": "Control total, sin dependencia", "desc": "Tu negocio, tus reglas. Sin algoritmos que decidan por vos." }
+    "benefit1": {
+      "title": "Tus clientes son tuyos",
+      "desc": "Vos tenés sus datos, su historial, su fidelidad. No los compartís con la competencia."
+    },
+    "benefit2": {
+      "title": "Sin comisiones por venta",
+      "desc": "Pagás una tarifa fija mensual. Lo que vendés, es tuyo."
+    },
+    "benefit3": {
+      "title": "Tu marca, tu tienda",
+      "desc": "Dominio propio, colores, logo. Tus clientes ven TU marca, no la nuestra."
+    },
+    "benefit4": {
+      "title": "Control total, sin dependencia",
+      "desc": "Tu negocio, tus reglas. Sin algoritmos que decidan por vos."
+    }
   },
   "valueProp": {
     "free": "Para empezar",
@@ -340,21 +353,54 @@
   "features": {
     "title": "Todo lo que necesitás para vender más",
     "subtitle": "Infraestructura real para comercios que quieren crecer sin intermediarios.",
-    "multiType": { "title": "Multi-tipo de negocio", "desc": "Vendé productos, servicios o ambos desde un mismo panel." },
-    "store": { "title": "Tienda online + checkout", "desc": "Tu tienda digital lista para recibir pedidos con checkout integrado." },
-    "aiChat": { "title": "Chat con IA de soporte", "desc": "Tus clientes reciben respuestas al instante, sin que vos hagas nada." },
-    "auth": { "title": "Múltiples métodos de acceso", "desc": "Login con email, Google, Apple, Facebook, Magic Link y OTP." },
-    "push": { "title": "Push notifications", "desc": "Enviá campañas push a todos tus clientes desde el panel." },
-    "dashboard": { "title": "Panel de comercio", "desc": "Gestioná catálogo, pedidos, estadísticas y clientes desde un solo lugar." },
-    "delivery": { "title": "Delivery flexible", "desc": "Usá tus propios repartidores o dejá que tus clientes retiren." },
-    "analytics": { "title": "Analytics", "desc": "Métricas de ventas, productos más vendidos, horarios pico y más." }
+    "multiType": {
+      "title": "Multi-tipo de negocio",
+      "desc": "Vendé productos, servicios o ambos desde un mismo panel."
+    },
+    "store": {
+      "title": "Tienda online + checkout",
+      "desc": "Tu tienda digital lista para recibir pedidos con checkout integrado."
+    },
+    "aiChat": {
+      "title": "Chat con IA de soporte",
+      "desc": "Tus clientes reciben respuestas al instante, sin que vos hagas nada."
+    },
+    "auth": {
+      "title": "Múltiples métodos de acceso",
+      "desc": "Login con email, Google, Apple, Facebook, Magic Link y OTP."
+    },
+    "push": {
+      "title": "Push notifications",
+      "desc": "Enviá campañas push a todos tus clientes desde el panel."
+    },
+    "dashboard": {
+      "title": "Panel de comercio",
+      "desc": "Gestioná catálogo, pedidos, estadísticas y clientes desde un solo lugar."
+    },
+    "delivery": {
+      "title": "Delivery flexible",
+      "desc": "Usá tus propios repartidores o dejá que tus clientes retiren."
+    },
+    "analytics": {
+      "title": "Analytics",
+      "desc": "Métricas de ventas, productos más vendidos, horarios pico y más."
+    }
   },
   "howItWorks": {
     "title": "Empezá en 3 simples pasos",
     "subtitle": "Ponemos tu negocio online en minutos, no en semanas.",
-    "step1": { "title": "Registrate gratis", "desc": "Creá tu cuenta en minutos. Sin tarjeta de crédito." },
-    "step2": { "title": "Cargá tu catálogo", "desc": "Subí tus productos o servicios. Configurá precios, fotos y variantes." },
-    "step3": { "title": "Recibí pedidos", "desc": "Tu tienda online está lista. Compartí el link y empezá a vender." }
+    "step1": {
+      "title": "Registrate gratis",
+      "desc": "Creá tu cuenta en minutos. Sin tarjeta de crédito."
+    },
+    "step2": {
+      "title": "Cargá tu catálogo",
+      "desc": "Subí tus productos o servicios. Configurá precios, fotos y variantes."
+    },
+    "step3": {
+      "title": "Recibí pedidos",
+      "desc": "Tu tienda online está lista. Compartí el link y empezá a vender."
+    }
   },
   "pricing": {
     "title": "Gratis para empezar. Sin comisiones. Nunca.",
@@ -369,31 +415,61 @@
     "footnoteLink": "Hablemos",
     "plans": {
       "free": {
-        "name": "Free", "desc": "Operá tu negocio sin costo", "billing": "Gratis para siempre — sin tarjeta",
+        "name": "Free",
+        "desc": "Operá tu negocio sin costo",
+        "billing": "Gratis para siempre — sin tarjeta",
         "cta": "Empezar gratis",
-        "f1": "Catálogo ilimitado", "f2": "Pedidos ilimitados", "f3": "Tienda online propia",
-        "f4": "Chat con clientes", "f5": "3 cupones", "f6": "1 promo activa", "f7": "Estadísticas básicas"
+        "f1": "Catálogo ilimitado",
+        "f2": "Pedidos ilimitados",
+        "f3": "Tienda online propia",
+        "f4": "Chat con clientes",
+        "f5": "3 cupones",
+        "f6": "1 promo activa",
+        "f7": "Estadísticas básicas"
       },
       "pro": {
-        "name": "Pro", "desc": "Herramientas para crecer", "billing": "Todo de Free + herramientas de crecimiento",
+        "name": "Pro",
+        "desc": "Herramientas para crecer",
+        "billing": "Todo de Free + herramientas de crecimiento",
         "cta": "Elegir Pro",
-        "f1": "Cupones ilimitados", "f2": "Promos ilimitadas", "f3": "Estadísticas avanzadas",
-        "f4": "Delivery con seguimiento", "f5": "Notificaciones push", "f6": "Dominio propio",
-        "f7": "Prioridad de soporte", "f8": "IA soporte al cliente"
+        "f1": "Cupones ilimitados",
+        "f2": "Promos ilimitadas",
+        "f3": "Estadísticas avanzadas",
+        "f4": "Delivery con seguimiento",
+        "f5": "Notificaciones push",
+        "f6": "Dominio propio",
+        "f7": "Prioridad de soporte",
+        "f8": "IA soporte al cliente"
       },
       "business": {
-        "name": "Business", "desc": "Para escalar tu operación", "billing": "Todo de Pro + multi-sucursal",
+        "name": "Business",
+        "desc": "Para escalar tu operación",
+        "billing": "Todo de Pro + multi-sucursal",
         "cta": "Elegir Business",
-        "f1": "Multi-sucursal", "f2": "Roles y permisos", "f3": "API access",
-        "f4": "Facturación AFIP", "f5": "Inventario avanzado", "f6": "Gift cards",
-        "f7": "Email marketing", "f8": "Reportes exportables", "f9": "Integraciones"
+        "f1": "Multi-sucursal",
+        "f2": "Roles y permisos",
+        "f3": "API access",
+        "f4": "Facturación AFIP",
+        "f5": "Inventario avanzado",
+        "f6": "Gift cards",
+        "f7": "Email marketing",
+        "f8": "Reportes exportables",
+        "f9": "Integraciones"
       },
       "enterprise": {
-        "name": "Enterprise", "desc": "Todo ilimitado + IA", "billing": "Todo de Business + IA y API",
+        "name": "Enterprise",
+        "desc": "Todo ilimitado + IA",
+        "billing": "Todo de Business + IA y API",
         "cta": "Elegir Enterprise",
-        "f1": "Todo ilimitado", "f2": "IA para marketing", "f3": "IA para soporte",
-        "f4": "API completa", "f5": "Webhooks", "f6": "Onboarding dedicado",
-        "f7": "SLA garantizado", "f8": "Soporte 24/7", "f9": "Custom features"
+        "f1": "Todo ilimitado",
+        "f2": "IA para marketing",
+        "f3": "IA para soporte",
+        "f4": "API completa",
+        "f5": "Webhooks",
+        "f6": "Onboarding dedicado",
+        "f7": "SLA garantizado",
+        "f8": "Soporte 24/7",
+        "f9": "Custom features"
       }
     }
   },
@@ -408,14 +484,46 @@
       "operations": "Operaciones"
     },
     "items": {
-      "loyalty": { "name": "Programa de fidelidad", "price": "$15/mes", "desc": "Puntos y recompensas para tus clientes." },
-      "giftCards": { "name": "Gift cards", "price": "$10/mes", "desc": "Tarjetas de regalo digitales." },
-      "emailMarketing": { "name": "Email marketing", "price": "$12/mes", "desc": "Campañas de email a tu base de clientes." },
-      "gps": { "name": "GPS tracking", "price": "$20/mes", "desc": "Seguimiento en tiempo real de repartidores." },
-      "inventory": { "name": "Inventario", "price": "$15/mes", "desc": "Control de stock automático." },
-      "whatsapp": { "name": "WhatsApp Bot", "price": "$25/mes", "desc": "Pedidos por WhatsApp con IA." },
-      "afip": { "name": "Facturación AFIP", "price": "$18/mes", "desc": "Factura electrónica automática." },
-      "verification": { "name": "Verificación", "price": "$8/mes", "desc": "Verificación de identidad de clientes." }
+      "loyalty": {
+        "name": "Programa de fidelidad",
+        "price": "$15/mes",
+        "desc": "Puntos y recompensas para tus clientes."
+      },
+      "giftCards": {
+        "name": "Gift cards",
+        "price": "$10/mes",
+        "desc": "Tarjetas de regalo digitales."
+      },
+      "emailMarketing": {
+        "name": "Email marketing",
+        "price": "$12/mes",
+        "desc": "Campañas de email a tu base de clientes."
+      },
+      "gps": {
+        "name": "GPS tracking",
+        "price": "$20/mes",
+        "desc": "Seguimiento en tiempo real de repartidores."
+      },
+      "inventory": {
+        "name": "Inventario",
+        "price": "$15/mes",
+        "desc": "Control de stock automático."
+      },
+      "whatsapp": {
+        "name": "WhatsApp Bot",
+        "price": "$25/mes",
+        "desc": "Pedidos por WhatsApp con IA."
+      },
+      "afip": {
+        "name": "Facturación AFIP",
+        "price": "$18/mes",
+        "desc": "Factura electrónica automática."
+      },
+      "verification": {
+        "name": "Verificación",
+        "price": "$8/mes",
+        "desc": "Verificación de identidad de clientes."
+      }
     }
   },
   "contact": {
@@ -439,7 +547,8 @@
     "rights": "Todos los derechos reservados.",
     "privacy": "Privacidad",
     "terms": "Términos",
-    "contact": "Contacto"
+    "contact": "Contacto",
+    "security": "Seguridad"
   },
   "about": {
     "title": "Tu negocio, tu plataforma.",
@@ -449,16 +558,43 @@
     "whyP2": "Creemos que la relación entre un negocio y sus clientes es del negocio, no de una plataforma de terceros. Cada dato, cada pedido, cada interacción pertenece al comercio que trabajó para conseguirla.",
     "howTitle": "Cómo funciona",
     "howDesc": "Registrate, configurá tu tienda en minutos, y empezá a recibir pedidos. Así de simple.",
-    "step1": { "title": "Registrate gratis.", "desc": "Creá tu cuenta y elegí tu tipo de negocio — productos, servicios, o ambos. Sin tarjeta de crédito requerida." },
-    "step2": { "title": "Configurá tu tienda.", "desc": "Subí tu catálogo con fotos y precios, personalizá colores y logo, y definí tus métodos de entrega y pago." },
-    "step3": { "title": "Recibí pedidos.", "desc": "Tus clientes compran desde tu tienda. Vos gestionás todo desde el dashboard — pedidos, stock, estadísticas, y más." },
-    "step4": { "title": "Crecé sin límites.", "desc": "Activá módulos adicionales a medida que los necesitás — push notifications, bot de WhatsApp, tracking GPS, y más." },
+    "step1": {
+      "title": "Registrate gratis.",
+      "desc": "Creá tu cuenta y elegí tu tipo de negocio — productos, servicios, o ambos. Sin tarjeta de crédito requerida."
+    },
+    "step2": {
+      "title": "Configurá tu tienda.",
+      "desc": "Subí tu catálogo con fotos y precios, personalizá colores y logo, y definí tus métodos de entrega y pago."
+    },
+    "step3": {
+      "title": "Recibí pedidos.",
+      "desc": "Tus clientes compran desde tu tienda. Vos gestionás todo desde el dashboard — pedidos, stock, estadísticas, y más."
+    },
+    "step4": {
+      "title": "Crecé sin límites.",
+      "desc": "Activá módulos adicionales a medida que los necesitás — push notifications, bot de WhatsApp, tracking GPS, y más."
+    },
     "valuesTitle": "Nuestros valores",
-    "value1": { "title": "Transparencia.", "desc": "Precios claros, sin sorpresas. Sabés exactamente lo que pagás cada mes." },
-    "value2": { "title": "Independencia.", "desc": "Tu tienda, tu marca, tus clientes. Nunca compartimos tu información con otros comercios." },
-    "value3": { "title": "Sin comisiones.", "desc": "Pagás una tarifa fija mensual y te quedás con el 100% de cada venta." },
-    "value4": { "title": "Tus clientes son tuyos.", "desc": "Accedé a tu base de datos, exportala, y llevátela si algún día decidís migrar. Sin lock-in." },
-    "value5": { "title": "Multi-vertical.", "desc": "No solo delivery de comida. Servicios, productos, reservas — la plataforma se adapta a tu negocio." },
+    "value1": {
+      "title": "Transparencia.",
+      "desc": "Precios claros, sin sorpresas. Sabés exactamente lo que pagás cada mes."
+    },
+    "value2": {
+      "title": "Independencia.",
+      "desc": "Tu tienda, tu marca, tus clientes. Nunca compartimos tu información con otros comercios."
+    },
+    "value3": {
+      "title": "Sin comisiones.",
+      "desc": "Pagás una tarifa fija mensual y te quedás con el 100% de cada venta."
+    },
+    "value4": {
+      "title": "Tus clientes son tuyos.",
+      "desc": "Accedé a tu base de datos, exportala, y llevátela si algún día decidís migrar. Sin lock-in."
+    },
+    "value5": {
+      "title": "Multi-vertical.",
+      "desc": "No solo delivery de comida. Servicios, productos, reservas — la plataforma se adapta a tu negocio."
+    },
     "companyTitle": "La empresa",
     "companyP1": "Runbits es desarrollado por Runbits.io LLC, empresa registrada en Wyoming, Estados Unidos. Nació con foco en los comercios de Latinoamérica — negocios que quieren crecer en el mundo digital sin ceder el control de lo que construyeron.",
     "companyP2": "Estamos comprometidos con construir una plataforma justa, accesible, y diseñada desde el primer día para que el éxito del comercio sea el nuestro.",
@@ -471,7 +607,7 @@
     "footerStatus": "Status"
   },
   "legal": {
-    "backToHome": "\u2190 Volver al inicio",
+    "backToHome": "← Volver al inicio",
     "lastUpdated": "Última actualización",
     "termsTitle": "Términos y Condiciones",
     "privacyTitle": "Política de Privacidad",

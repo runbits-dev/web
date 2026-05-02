@@ -6,7 +6,8 @@
     "contact": "Contact",
     "about": "About",
     "login": "Sign in",
-    "register": "Register your store"
+    "register": "Register your store",
+    "security": "Security"
   },
   "hero": {
     "title1": "Your business,",
@@ -327,10 +328,22 @@
     "title": "Why Runbits?",
     "subtitle": "Your own digital infrastructure — no middlemen, no commissions, no dependencies.",
     "footer": "Your platform, where you're in control.",
-    "benefit1": { "title": "Your customers are yours", "desc": "You own their data, their history, their loyalty. No sharing with competitors." },
-    "benefit2": { "title": "Zero sales commissions", "desc": "Pay a flat monthly fee. What you sell is yours to keep." },
-    "benefit3": { "title": "Your brand, your store", "desc": "Custom domain, colors, logo. Your customers see YOUR brand, not ours." },
-    "benefit4": { "title": "Full control, no lock-in", "desc": "Your business, your rules. No algorithms deciding for you." }
+    "benefit1": {
+      "title": "Your customers are yours",
+      "desc": "You own their data, their history, their loyalty. No sharing with competitors."
+    },
+    "benefit2": {
+      "title": "Zero sales commissions",
+      "desc": "Pay a flat monthly fee. What you sell is yours to keep."
+    },
+    "benefit3": {
+      "title": "Your brand, your store",
+      "desc": "Custom domain, colors, logo. Your customers see YOUR brand, not ours."
+    },
+    "benefit4": {
+      "title": "Full control, no lock-in",
+      "desc": "Your business, your rules. No algorithms deciding for you."
+    }
   },
   "valueProp": {
     "free": "To get started",
@@ -340,21 +353,54 @@
   "features": {
     "title": "Everything you need to sell more",
     "subtitle": "Real infrastructure for businesses that want to grow without middlemen.",
-    "multiType": { "title": "Multi-business type", "desc": "Sell products, services, or both from a single dashboard." },
-    "store": { "title": "Online store + checkout", "desc": "Your digital store ready to receive orders with integrated checkout." },
-    "aiChat": { "title": "AI support chat", "desc": "Your customers get instant answers without you lifting a finger." },
-    "auth": { "title": "Multiple sign-in methods", "desc": "Login with email, Google, Apple, Facebook, Magic Link, and OTP." },
-    "push": { "title": "Push notifications", "desc": "Send push campaigns to all your customers from the dashboard." },
-    "dashboard": { "title": "Business dashboard", "desc": "Manage catalog, orders, analytics, and customers from one place." },
-    "delivery": { "title": "Flexible delivery", "desc": "Use your own drivers or let customers pick up." },
-    "analytics": { "title": "Analytics", "desc": "Sales metrics, top-selling products, peak hours, and more." }
+    "multiType": {
+      "title": "Multi-business type",
+      "desc": "Sell products, services, or both from a single dashboard."
+    },
+    "store": {
+      "title": "Online store + checkout",
+      "desc": "Your digital store ready to receive orders with integrated checkout."
+    },
+    "aiChat": {
+      "title": "AI support chat",
+      "desc": "Your customers get instant answers without you lifting a finger."
+    },
+    "auth": {
+      "title": "Multiple sign-in methods",
+      "desc": "Login with email, Google, Apple, Facebook, Magic Link, and OTP."
+    },
+    "push": {
+      "title": "Push notifications",
+      "desc": "Send push campaigns to all your customers from the dashboard."
+    },
+    "dashboard": {
+      "title": "Business dashboard",
+      "desc": "Manage catalog, orders, analytics, and customers from one place."
+    },
+    "delivery": {
+      "title": "Flexible delivery",
+      "desc": "Use your own drivers or let customers pick up."
+    },
+    "analytics": {
+      "title": "Analytics",
+      "desc": "Sales metrics, top-selling products, peak hours, and more."
+    }
   },
   "howItWorks": {
     "title": "Get started in 3 simple steps",
     "subtitle": "We get your business online in minutes, not weeks.",
-    "step1": { "title": "Sign up for free", "desc": "Create your account in minutes. No credit card required." },
-    "step2": { "title": "Upload your catalog", "desc": "Add your products or services. Set prices, photos, and variants." },
-    "step3": { "title": "Start receiving orders", "desc": "Your online store is ready. Share the link and start selling." }
+    "step1": {
+      "title": "Sign up for free",
+      "desc": "Create your account in minutes. No credit card required."
+    },
+    "step2": {
+      "title": "Upload your catalog",
+      "desc": "Add your products or services. Set prices, photos, and variants."
+    },
+    "step3": {
+      "title": "Start receiving orders",
+      "desc": "Your online store is ready. Share the link and start selling."
+    }
   },
   "pricing": {
     "title": "Free to start. No commissions. Ever.",
@@ -369,31 +415,61 @@
     "footnoteLink": "Let's talk",
     "plans": {
       "free": {
-        "name": "Free", "desc": "Run your business at no cost", "billing": "Free forever — no card required",
+        "name": "Free",
+        "desc": "Run your business at no cost",
+        "billing": "Free forever — no card required",
         "cta": "Start for free",
-        "f1": "Unlimited catalog", "f2": "Unlimited orders", "f3": "Your own online store",
-        "f4": "Customer chat", "f5": "3 coupons", "f6": "1 active promo", "f7": "Basic analytics"
+        "f1": "Unlimited catalog",
+        "f2": "Unlimited orders",
+        "f3": "Your own online store",
+        "f4": "Customer chat",
+        "f5": "3 coupons",
+        "f6": "1 active promo",
+        "f7": "Basic analytics"
       },
       "pro": {
-        "name": "Pro", "desc": "Tools to grow", "billing": "Everything in Free + growth tools",
+        "name": "Pro",
+        "desc": "Tools to grow",
+        "billing": "Everything in Free + growth tools",
         "cta": "Choose Pro",
-        "f1": "Unlimited coupons", "f2": "Unlimited promos", "f3": "Advanced analytics",
-        "f4": "Delivery with tracking", "f5": "Push notifications", "f6": "Custom domain",
-        "f7": "Priority support", "f8": "AI customer support"
+        "f1": "Unlimited coupons",
+        "f2": "Unlimited promos",
+        "f3": "Advanced analytics",
+        "f4": "Delivery with tracking",
+        "f5": "Push notifications",
+        "f6": "Custom domain",
+        "f7": "Priority support",
+        "f8": "AI customer support"
       },
       "business": {
-        "name": "Business", "desc": "Scale your operation", "billing": "Everything in Pro + multi-location",
+        "name": "Business",
+        "desc": "Scale your operation",
+        "billing": "Everything in Pro + multi-location",
         "cta": "Choose Business",
-        "f1": "Multi-location", "f2": "Roles & permissions", "f3": "API access",
-        "f4": "Tax invoicing", "f5": "Advanced inventory", "f6": "Gift cards",
-        "f7": "Email marketing", "f8": "Exportable reports", "f9": "Integrations"
+        "f1": "Multi-location",
+        "f2": "Roles & permissions",
+        "f3": "API access",
+        "f4": "Tax invoicing",
+        "f5": "Advanced inventory",
+        "f6": "Gift cards",
+        "f7": "Email marketing",
+        "f8": "Exportable reports",
+        "f9": "Integrations"
       },
       "enterprise": {
-        "name": "Enterprise", "desc": "Unlimited + AI", "billing": "Everything in Business + AI & API",
+        "name": "Enterprise",
+        "desc": "Unlimited + AI",
+        "billing": "Everything in Business + AI & API",
         "cta": "Choose Enterprise",
-        "f1": "Everything unlimited", "f2": "AI for marketing", "f3": "AI for support",
-        "f4": "Full API", "f5": "Webhooks", "f6": "Dedicated onboarding",
-        "f7": "Guaranteed SLA", "f8": "24/7 support", "f9": "Custom features"
+        "f1": "Everything unlimited",
+        "f2": "AI for marketing",
+        "f3": "AI for support",
+        "f4": "Full API",
+        "f5": "Webhooks",
+        "f6": "Dedicated onboarding",
+        "f7": "Guaranteed SLA",
+        "f8": "24/7 support",
+        "f9": "Custom features"
       }
     }
   },
@@ -408,14 +484,46 @@
       "operations": "Operations"
     },
     "items": {
-      "loyalty": { "name": "Loyalty program", "price": "$15/mo", "desc": "Points and rewards for your customers." },
-      "giftCards": { "name": "Gift cards", "price": "$10/mo", "desc": "Digital gift cards." },
-      "emailMarketing": { "name": "Email marketing", "price": "$12/mo", "desc": "Email campaigns to your customer base." },
-      "gps": { "name": "GPS tracking", "price": "$20/mo", "desc": "Real-time driver tracking." },
-      "inventory": { "name": "Inventory", "price": "$15/mo", "desc": "Automatic stock control." },
-      "whatsapp": { "name": "WhatsApp Bot", "price": "$25/mo", "desc": "Orders via WhatsApp with AI." },
-      "afip": { "name": "Tax invoicing", "price": "$18/mo", "desc": "Automatic electronic invoicing." },
-      "verification": { "name": "Verification", "price": "$8/mo", "desc": "Customer identity verification." }
+      "loyalty": {
+        "name": "Loyalty program",
+        "price": "$15/mo",
+        "desc": "Points and rewards for your customers."
+      },
+      "giftCards": {
+        "name": "Gift cards",
+        "price": "$10/mo",
+        "desc": "Digital gift cards."
+      },
+      "emailMarketing": {
+        "name": "Email marketing",
+        "price": "$12/mo",
+        "desc": "Email campaigns to your customer base."
+      },
+      "gps": {
+        "name": "GPS tracking",
+        "price": "$20/mo",
+        "desc": "Real-time driver tracking."
+      },
+      "inventory": {
+        "name": "Inventory",
+        "price": "$15/mo",
+        "desc": "Automatic stock control."
+      },
+      "whatsapp": {
+        "name": "WhatsApp Bot",
+        "price": "$25/mo",
+        "desc": "Orders via WhatsApp with AI."
+      },
+      "afip": {
+        "name": "Tax invoicing",
+        "price": "$18/mo",
+        "desc": "Automatic electronic invoicing."
+      },
+      "verification": {
+        "name": "Verification",
+        "price": "$8/mo",
+        "desc": "Customer identity verification."
+      }
     }
   },
   "contact": {
@@ -439,7 +547,8 @@
     "rights": "All rights reserved.",
     "privacy": "Privacy",
     "terms": "Terms",
-    "contact": "Contact"
+    "contact": "Contact",
+    "security": "Security"
   },
   "about": {
     "title": "Your business, your platform.",
@@ -449,16 +558,43 @@
     "whyP2": "We believe the relationship between a business and its customers belongs to the business, not to a third-party platform. Every data point, every order, every interaction belongs to the business that worked to earn it.",
     "howTitle": "How it works",
     "howDesc": "Sign up, set up your store in minutes, and start receiving orders. That simple.",
-    "step1": { "title": "Sign up for free.", "desc": "Create your account and choose your business type — products, services, or both. No credit card required." },
-    "step2": { "title": "Set up your store.", "desc": "Upload your catalog with photos and prices, customize colors and logo, and define your delivery and payment methods." },
-    "step3": { "title": "Receive orders.", "desc": "Your customers buy from your store. You manage everything from the dashboard — orders, stock, analytics, and more." },
-    "step4": { "title": "Grow without limits.", "desc": "Activate additional modules as you need them — push notifications, WhatsApp bot, GPS tracking, and more." },
+    "step1": {
+      "title": "Sign up for free.",
+      "desc": "Create your account and choose your business type — products, services, or both. No credit card required."
+    },
+    "step2": {
+      "title": "Set up your store.",
+      "desc": "Upload your catalog with photos and prices, customize colors and logo, and define your delivery and payment methods."
+    },
+    "step3": {
+      "title": "Receive orders.",
+      "desc": "Your customers buy from your store. You manage everything from the dashboard — orders, stock, analytics, and more."
+    },
+    "step4": {
+      "title": "Grow without limits.",
+      "desc": "Activate additional modules as you need them — push notifications, WhatsApp bot, GPS tracking, and more."
+    },
     "valuesTitle": "Our values",
-    "value1": { "title": "Transparency.", "desc": "Clear pricing, no surprises. You know exactly what you pay each month." },
-    "value2": { "title": "Independence.", "desc": "Your store, your brand, your customers. We never share your information with other businesses." },
-    "value3": { "title": "No commissions.", "desc": "Pay a flat monthly fee and keep 100% of every sale." },
-    "value4": { "title": "Your customers are yours.", "desc": "Access your database, export it, and take it with you if you ever decide to migrate. No lock-in." },
-    "value5": { "title": "Multi-vertical.", "desc": "Not just food delivery. Services, products, bookings — the platform adapts to your business." },
+    "value1": {
+      "title": "Transparency.",
+      "desc": "Clear pricing, no surprises. You know exactly what you pay each month."
+    },
+    "value2": {
+      "title": "Independence.",
+      "desc": "Your store, your brand, your customers. We never share your information with other businesses."
+    },
+    "value3": {
+      "title": "No commissions.",
+      "desc": "Pay a flat monthly fee and keep 100% of every sale."
+    },
+    "value4": {
+      "title": "Your customers are yours.",
+      "desc": "Access your database, export it, and take it with you if you ever decide to migrate. No lock-in."
+    },
+    "value5": {
+      "title": "Multi-vertical.",
+      "desc": "Not just food delivery. Services, products, bookings — the platform adapts to your business."
+    },
     "companyTitle": "The company",
     "companyP1": "Runbits is developed by Runbits.io LLC, a company registered in Wyoming, United States. It was born with a focus on Latin American businesses — businesses that want to grow in the digital world without giving up control of what they built.",
     "companyP2": "We are committed to building a fair, accessible platform designed from day one so that the success of each business is our success.",
@@ -471,7 +607,7 @@
     "footerStatus": "Status"
   },
   "legal": {
-    "backToHome": "\u2190 Back to home",
+    "backToHome": "← Back to home",
     "lastUpdated": "Last updated",
     "termsTitle": "Terms & Conditions",
     "privacyTitle": "Privacy Policy",

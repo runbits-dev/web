@@ -30,6 +30,9 @@ export function LandingNavbar() {
             <Link href="/about" className="text-sm text-gray-600 hover:text-brand-700 transition-colors">
               {t('nav.about')}
             </Link>
+            <Link href="/security" className="text-sm text-gray-600 hover:text-brand-700 transition-colors">
+              {t('nav.security')}
+            </Link>
           </div>
           <div className="flex items-center gap-3">
             <LocaleSwitcher />
