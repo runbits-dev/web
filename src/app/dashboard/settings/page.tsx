@@ -23,6 +23,7 @@ import { useUser } from '@/context/UserContext'
 import Link from 'next/link'
 import { useI18n } from '@/i18n'
 import { registerPasskey, isPasskeySupported, type RegisteredPasskey } from '@/lib/webauthn'
+import { QRCodeSVG } from 'qrcode.react'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.runbits.dev'
 
@@ -900,8 +901,12 @@ function SecuritySection(p: SecuritySectionProps) {
               )}
               {p.twoFASetup && (
                 <div className="space-y-3">
-                  <p className="text-sm text-slate-700">Ingresá este código en tu app authenticator:</p>
-                  <code className="block bg-white border border-slate-200 px-4 py-3 rounded-xl text-base font-mono tracking-wider">{p.twoFASetup.secret}</code>
+                  <p className="text-sm text-slate-700">Escaneá el QR con tu app authenticator (Google Authenticator, Authy, 1Password):</p>
+                  <div className="flex justify-center bg-white border border-slate-200 rounded-xl p-4">
+                    <QRCodeSVG value={p.twoFASetup.otpAuthUrl} size={192} level="M" includeMargin={false} />
+                  </div>
+                  <p className="text-xs text-slate-500 text-center">O ingresá manualmente este código:</p>
+                  <code className="block bg-white border border-slate-200 px-4 py-3 rounded-xl text-base font-mono tracking-wider text-center break-all">{p.twoFASetup.secret}</code>
                   <input type="text" inputMode="numeric" maxLength={6} value={p.twoFACode}
                     onChange={e => p.setTwoFACode(e.target.value.replace(/\D/g, ''))}
                     placeholder="000000"
