@@ -482,5 +482,164 @@
     "footerTerms": "Términos",
     "footerRefund": "Reembolsos",
     "footerCancellation": "Cancelación"
+  },
+  "security": {
+    "badge": "Seguridad de nivel banco",
+    "heroTitle": "Seguridad de nivel banco para tu negocio",
+    "heroSubtitle": "Protegemos tu cuenta, tus datos y los de tus clientes con las mismas prácticas de seguridad que usan los bancos. Sin compromisos.",
+    "heroCta": "Ver detalles técnicos",
+    "reportVuln": "Reportar vulnerabilidad",
+    "gridTitle": "12 capas de protección",
+    "gridSubtitle": "Cada cuenta de Runbits está protegida por estas medidas — siempre activas, sin configuración.",
+    "features": {
+      "2fa": {
+        "title": "Autenticación en dos pasos (2FA)",
+        "desc": "TOTP con apps como Google Authenticator. 10 códigos de respaldo de un solo uso."
+      },
+      "passkeys": {
+        "title": "Passkeys (FIDO2)",
+        "desc": "Inicio de sesión sin contraseña usando biometría — resistente al phishing."
+      },
+      "aes": {
+        "title": "AES-256-GCM",
+        "desc": "Tus secretos de 2FA se cifran en reposo con AES-256-GCM y derivación HKDF."
+      },
+      "pbkdf2": {
+        "title": "PBKDF2 600.000 iteraciones",
+        "desc": "Contraseñas hasheadas con PBKDF2-SHA256 a 600k iters — más allá del estándar OWASP."
+      },
+      "hibp": {
+        "title": "Detección de contraseñas filtradas",
+        "desc": "Verificamos contra HIBP (k-anonymity) — bloqueamos contraseñas vistas en brechas."
+      },
+      "audit": {
+        "title": "Bitácora de auditoría",
+        "desc": "Cada acción sensible queda registrada con IP, user agent y timestamp."
+      },
+      "sessions": {
+        "title": "Gestión de sesiones",
+        "desc": "Ves tus sesiones activas por dispositivo y podés cerrarlas individualmente."
+      },
+      "jwtRotation": {
+        "title": "Rotación de claves JWT",
+        "desc": "Soporte de KID en headers — podemos rotar la clave de firma sin romper tokens activos."
+      },
+      "https": {
+        "title": "HTTPS + HSTS",
+        "desc": "TLS obligatorio en toda la infraestructura. HSTS con includeSubDomains."
+      },
+      "rateLimit": {
+        "title": "Rate limiting",
+        "desc": "Límites estrictos por IP y por email en login, registro y recuperación de contraseña."
+      },
+      "oauthCsrf": {
+        "title": "Protección OAuth CSRF",
+        "desc": "Token de estado de un solo uso vinculado a KV en flujos OAuth (Google, Facebook)."
+      },
+      "encryptionAtRest": {
+        "title": "Cifrado en reposo",
+        "desc": "Toda la base de datos D1 está cifrada en reposo en la red de Cloudflare."
+      }
+    },
+    "complianceTitle": "Cumplimiento normativo",
+    "complianceSubtitle": "Cumplimos con los estándares de protección de datos relevantes para tu negocio.",
+    "complianceCompliant": "Cumplido",
+    "complianceInProgress": "En curso",
+    "compliance": {
+      "gdpr": {
+        "title": "GDPR + Ley 25.326 (Argentina)",
+        "desc": "Cumplimos con el Reglamento General de Protección de Datos europeo y la Ley de Protección de Datos Personales argentina."
+      },
+      "soc2": {
+        "title": "SOC 2 Type II",
+        "desc": "Estamos en proceso de auditoría SOC 2. Esperamos certificación durante 2026."
+      }
+    },
+    "reportTitle": "Reportá una vulnerabilidad",
+    "reportDesc": "Si encontraste un problema de seguridad, escribinos directo. Respondemos en menos de 24 horas y reconocemos públicamente a quienes nos ayudan a proteger la plataforma.",
+    "reportFootnote": "PGP key disponible bajo pedido. No publiques el reporte hasta que confirmemos la corrección.",
+    "footerCopy": "Runbits.io — Seguridad como prioridad.",
+    "footerDetails": "Documentación técnica completa",
+    "details": {
+      "back": "Volver a Seguridad",
+      "title": "Detalles técnicos de seguridad",
+      "subtitle": "Documentación abierta de cómo protegemos tu cuenta y tus datos.",
+      "authTitle": "Métodos de autenticación",
+      "authDesc": "Soportamos múltiples métodos de autenticación, todos con segundo factor opcional:",
+      "auth": {
+        "password": "Email + contraseña con PBKDF2-SHA256 a 600.000 iteraciones",
+        "totp": "TOTP RFC 6238 (Google Authenticator, Authy, 1Password) con 10 códigos de respaldo de un solo uso",
+        "passkeys": "Passkeys WebAuthn / FIDO2 con biometría — bypass automático de TOTP por su naturaleza resistente al phishing",
+        "oauth": "Google, Apple Sign In y Facebook Login (con verificación criptográfica de tokens)"
+      },
+      "cryptoTitle": "Criptografía",
+      "cryptoDesc": "Los JWT se firman con HMAC-SHA256 y soportan rotación de clave (KID en el header). Los secretos de TOTP se cifran con AES-256-GCM derivado por HKDF, separados de la clave JWT. Las contraseñas se hashean con PBKDF2-SHA256 a 600.000 iteraciones — el doble de la recomendación OWASP 2023.",
+      "sessionsTitle": "Sesiones y refresh tokens",
+      "sessionsDesc": "Cada refresh token se vincula a un device fingerprint (IP + User-Agent). Los tokens rotan en cada uso (rotación de un solo uso). Mantenemos un índice por usuario para que podás listar y revocar sesiones activas individualmente o todas a la vez.",
+      "auditTitle": "Bitácora de auditoría",
+      "auditDesc": "Acciones registradas: login, logout, cambio de contraseña, alta/baja de 2FA, regeneración de códigos de respaldo, alta/baja de passkeys, modificación de cuenta por admin, impersonación. Cada entrada incluye IP, user agent, timestamp y metadata específica de la acción.",
+      "responseTitle": "Respuesta a incidentes",
+      "responseDesc": "Si detectamos un incidente que afecte tu cuenta, te notificamos por email dentro de las 72 horas y publicamos un postmortem dentro de 30 días. Reset masivo de sesiones disponible vía soporte.",
+      "contactTitle": "Contacto del equipo de seguridad",
+      "contactDesc": "Para reportes responsables, preguntas técnicas, o solicitudes de PGP key:"
+    }
+  },
+  "settingsSecurity": {
+    "title": "Seguridad",
+    "scoreTitle": "Tu nivel de seguridad",
+    "scoreEmail": "Email verificado",
+    "scorePassword": "Contraseña fuerte",
+    "score2FA": "Autenticación en 2 pasos",
+    "scoreBackupCodes": "Códigos de respaldo",
+    "scorePasskey": "Passkey",
+    "scoreSessions": "Sesiones activas",
+    "scoreAudit": "Historial de inicios de sesión",
+    "scoreHintLow": "Activá 2FA y passkeys para llegar a 95%",
+    "scoreHintMid": "Activá una passkey para subir a 95%",
+    "scoreHintHigh": "Tu cuenta está bien protegida.",
+    "actionActivate": "Activar",
+    "actionConfigure": "Configurar",
+    "actionView": "Ver",
+    "device": "dispositivo",
+    "devices": "dispositivos",
+    "sessionsTitle": "Sesiones activas",
+    "sessionsCurrent": "Actual",
+    "sessionsCloseAll": "Cerrar todas las sesiones",
+    "sessionsClose": "Cerrar sesión",
+    "sessionsEmpty": "No hay otras sesiones activas.",
+    "auditTitle": "Historial reciente",
+    "auditEmpty": "Aún no hay actividad registrada.",
+    "passkeysTitle": "Passkeys",
+    "passkeysSubtitle": "Iniciá sesión con tu huella, Face ID o llave de seguridad.",
+    "passkeysAdd": "Agregar passkey",
+    "passkeysName": "Nombre del dispositivo",
+    "passkeysNamePlaceholder": "Ej: iPhone de Juan",
+    "passkeysCreate": "Crear passkey",
+    "passkeysCancel": "Cancelar",
+    "passkeysRevoke": "Revocar",
+    "passkeysEmpty": "Aún no registraste ninguna passkey.",
+    "passkeysCreated": "Creada",
+    "passkeysLastUsed": "Último uso",
+    "passkeysNever": "Nunca usada",
+    "passkeysUnsupported": "Tu navegador no soporta passkeys.",
+    "passkeysError": "Error al crear la passkey",
+    "passkeysSuccess": "Passkey creada correctamente",
+    "backupCodesTitle": "Códigos de respaldo",
+    "backupCodesRemaining": "Tenés {n} de 10 códigos restantes",
+    "backupCodesRegenerate": "Regenerar códigos",
+    "backupCodesShownOnce": "Guardalos en un lugar seguro — no los vamos a mostrar de nuevo.",
+    "backupCodesCopy": "Copiar",
+    "backupCodesDownload": "Descargar",
+    "backupCodesDone": "Listo",
+    "backupCodesCopied": "Copiado",
+    "backupCodesWarning": "Cada código sirve una sola vez. Si perdés tu app authenticator, podés usar un código de respaldo en su lugar."
+  },
+  "loginPasskey": {
+    "button": "Iniciar sesión con passkey",
+    "emailPrompt": "Ingresá tu email",
+    "emailPlaceholder": "tu@email.com",
+    "continue": "Continuar",
+    "cancel": "Cancelar",
+    "error": "No se pudo iniciar sesión con passkey"
   }
 }

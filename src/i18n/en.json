@@ -482,5 +482,164 @@
     "footerTerms": "Terms",
     "footerRefund": "Refunds",
     "footerCancellation": "Cancellation"
+  },
+  "security": {
+    "badge": "Bank-grade security",
+    "heroTitle": "Bank-grade security for your business",
+    "heroSubtitle": "We protect your account, your data, and your customers' data with the same security practices banks use. No compromises.",
+    "heroCta": "View technical details",
+    "reportVuln": "Report a vulnerability",
+    "gridTitle": "12 layers of protection",
+    "gridSubtitle": "Every Runbits account is covered by these measures — always on, no configuration required.",
+    "features": {
+      "2fa": {
+        "title": "Two-factor authentication (2FA)",
+        "desc": "TOTP via apps like Google Authenticator. 10 single-use backup codes included."
+      },
+      "passkeys": {
+        "title": "Passkeys (FIDO2)",
+        "desc": "Passwordless sign-in with biometrics — phishing-resistant by design."
+      },
+      "aes": {
+        "title": "AES-256-GCM",
+        "desc": "Your 2FA secrets are encrypted at rest with AES-256-GCM and HKDF derivation."
+      },
+      "pbkdf2": {
+        "title": "PBKDF2 600,000 iterations",
+        "desc": "Passwords hashed with PBKDF2-SHA256 at 600k iters — beyond the OWASP standard."
+      },
+      "hibp": {
+        "title": "Breached-password detection",
+        "desc": "Checked against HIBP (k-anonymity) — passwords seen in breaches are rejected."
+      },
+      "audit": {
+        "title": "Audit log",
+        "desc": "Every sensitive action is logged with IP, user agent, and timestamp."
+      },
+      "sessions": {
+        "title": "Session management",
+        "desc": "See your active sessions per device and revoke them individually."
+      },
+      "jwtRotation": {
+        "title": "JWT key rotation",
+        "desc": "KID-aware JWT headers — we can rotate the signing key without breaking active tokens."
+      },
+      "https": {
+        "title": "HTTPS + HSTS",
+        "desc": "TLS enforced everywhere. HSTS with includeSubDomains on every response."
+      },
+      "rateLimit": {
+        "title": "Rate limiting",
+        "desc": "Strict per-IP and per-email limits on login, register, and password reset."
+      },
+      "oauthCsrf": {
+        "title": "OAuth CSRF protection",
+        "desc": "One-shot KV-bound state tokens on every OAuth flow (Google, Facebook)."
+      },
+      "encryptionAtRest": {
+        "title": "Encryption at rest",
+        "desc": "Our entire D1 database is encrypted at rest across Cloudflare's network."
+      }
+    },
+    "complianceTitle": "Compliance",
+    "complianceSubtitle": "We meet the data-protection standards relevant to your business.",
+    "complianceCompliant": "Compliant",
+    "complianceInProgress": "In progress",
+    "compliance": {
+      "gdpr": {
+        "title": "GDPR + Argentina Law 25.326",
+        "desc": "We comply with the EU General Data Protection Regulation and Argentina's Personal Data Protection Law."
+      },
+      "soc2": {
+        "title": "SOC 2 Type II",
+        "desc": "SOC 2 audit in progress. Certification expected during 2026."
+      }
+    },
+    "reportTitle": "Report a vulnerability",
+    "reportDesc": "Found a security issue? Email us directly. We respond within 24 hours and publicly credit anyone who helps us protect the platform.",
+    "reportFootnote": "PGP key available on request. Please don't disclose publicly until we've confirmed a fix.",
+    "footerCopy": "Runbits.io — security as a priority.",
+    "footerDetails": "Full technical documentation",
+    "details": {
+      "back": "Back to Security",
+      "title": "Security technical details",
+      "subtitle": "Open documentation of how we protect your account and your data.",
+      "authTitle": "Authentication methods",
+      "authDesc": "We support multiple authentication methods, all with optional second factor:",
+      "auth": {
+        "password": "Email + password with PBKDF2-SHA256 at 600,000 iterations",
+        "totp": "TOTP RFC 6238 (Google Authenticator, Authy, 1Password) with 10 single-use backup codes",
+        "passkeys": "WebAuthn / FIDO2 passkeys with biometrics — TOTP automatically bypassed because of their phishing-resistant nature",
+        "oauth": "Google, Apple Sign In, and Facebook Login (with cryptographic token verification)"
+      },
+      "cryptoTitle": "Cryptography",
+      "cryptoDesc": "JWTs are signed with HMAC-SHA256 and support key rotation (KID in the header). TOTP secrets are encrypted with AES-256-GCM derived via HKDF, separated from the JWT key. Passwords are hashed with PBKDF2-SHA256 at 600,000 iterations — twice the OWASP 2023 recommendation.",
+      "sessionsTitle": "Sessions and refresh tokens",
+      "sessionsDesc": "Each refresh token is bound to a device fingerprint (IP + User-Agent). Tokens rotate on every use (single-use rotation). We maintain a per-user index so you can list and revoke active sessions individually or all at once.",
+      "auditTitle": "Audit log",
+      "auditDesc": "Logged actions: login, logout, password change, 2FA enable/disable, backup code regeneration, passkey add/revoke, admin account modification, impersonation. Each entry includes IP, user agent, timestamp, and action-specific metadata.",
+      "responseTitle": "Incident response",
+      "responseDesc": "If we detect an incident affecting your account, we email you within 72 hours and publish a postmortem within 30 days. Mass session reset available via support.",
+      "contactTitle": "Security team contact",
+      "contactDesc": "For responsible disclosure, technical questions, or PGP-key requests:"
+    }
+  },
+  "settingsSecurity": {
+    "title": "Security",
+    "scoreTitle": "Your security level",
+    "scoreEmail": "Email verified",
+    "scorePassword": "Strong password",
+    "score2FA": "Two-step authentication",
+    "scoreBackupCodes": "Backup codes",
+    "scorePasskey": "Passkey",
+    "scoreSessions": "Active sessions",
+    "scoreAudit": "Login history",
+    "scoreHintLow": "Activate 2FA and passkeys to reach 95%",
+    "scoreHintMid": "Activate a passkey to reach 95%",
+    "scoreHintHigh": "Your account is well protected.",
+    "actionActivate": "Activate",
+    "actionConfigure": "Configure",
+    "actionView": "View",
+    "device": "device",
+    "devices": "devices",
+    "sessionsTitle": "Active sessions",
+    "sessionsCurrent": "Current",
+    "sessionsCloseAll": "Sign out of all sessions",
+    "sessionsClose": "Sign out",
+    "sessionsEmpty": "No other active sessions.",
+    "auditTitle": "Recent activity",
+    "auditEmpty": "No activity recorded yet.",
+    "passkeysTitle": "Passkeys",
+    "passkeysSubtitle": "Sign in with your fingerprint, Face ID, or security key.",
+    "passkeysAdd": "Add passkey",
+    "passkeysName": "Device name",
+    "passkeysNamePlaceholder": "e.g. John's iPhone",
+    "passkeysCreate": "Create passkey",
+    "passkeysCancel": "Cancel",
+    "passkeysRevoke": "Revoke",
+    "passkeysEmpty": "You haven't registered any passkeys yet.",
+    "passkeysCreated": "Created",
+    "passkeysLastUsed": "Last used",
+    "passkeysNever": "Never used",
+    "passkeysUnsupported": "Your browser does not support passkeys.",
+    "passkeysError": "Error creating passkey",
+    "passkeysSuccess": "Passkey created successfully",
+    "backupCodesTitle": "Backup codes",
+    "backupCodesRemaining": "You have {n} of 10 codes remaining",
+    "backupCodesRegenerate": "Regenerate codes",
+    "backupCodesShownOnce": "Save them somewhere safe — we won't show them again.",
+    "backupCodesCopy": "Copy",
+    "backupCodesDownload": "Download",
+    "backupCodesDone": "Done",
+    "backupCodesCopied": "Copied",
+    "backupCodesWarning": "Each code can be used once. If you lose your authenticator app, you can use a backup code instead."
+  },
+  "loginPasskey": {
+    "button": "Sign in with passkey",
+    "emailPrompt": "Enter your email",
+    "emailPlaceholder": "you@email.com",
+    "continue": "Continue",
+    "cancel": "Cancel",
+    "error": "Could not sign in with passkey"
   }
 }
