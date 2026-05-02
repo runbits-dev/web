@@ -1,13 +1,40 @@
 "use client"
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo, useCallback } from 'react'
 import { api, User } from '@/lib/api'
-import { RotateCcw, Pencil, Plus, Check as CheckIcon, ShieldCheck } from 'lucide-react'
+import {
+  RotateCcw,
+  Pencil,
+  Plus,
+  Check as CheckIcon,
+  ShieldCheck,
+  Fingerprint,
+  Key,
+  Activity,
+  Smartphone,
+  AlertTriangle,
+  Copy,
+  Download,
+  Trash2,
+  Loader2,
+} from 'lucide-react'
 import { useProfile } from '@/context/ProfileContext'
 import { useUser } from '@/context/UserContext'
 import Link from 'next/link'
+import { useI18n } from '@/i18n'
+import { registerPasskey, isPasskeySupported, type RegisteredPasskey } from '@/lib/webauthn'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.runbits.dev'
+
+async function authedFetch(path: string, init: RequestInit = {}) {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(init.headers as Record<string, string> | undefined),
+  }
+  if (token) headers.Authorization = `Bearer ${token}`
+  return fetch(`${API_BASE}${path}`, { ...init, headers })
+}
 
 const DAY_LABELS: Record<string, string> = {
   monday: 'Lunes',
@@ -32,6 +59,7 @@ const DEFAULT_OPENING_HOURS = {
 }
 
 export default function SettingsPage() {
+  const { t } = useI18n()
   const { activeProfile, profiles, switchProfile, refreshProfiles } = useProfile()
   const { user, refreshUser } = useUser()
   const [restaurant, setRestaurant] = useState<any | null>(null)
@@ -48,6 +76,25 @@ export default function SettingsPage() {
   const [disableCode, setDisableCode] = useState('')
   const [disablePassword, setDisablePassword] = useState('')
   const [disableError, setDisableError] = useState('')
+  const [backupCodes, setBackupCodes] = useState<string[] | null>(null)
+
+  // Security: passkeys
+  const [passkeys, setPasskeys] = useState<RegisteredPasskey[]>([])
+  const [passkeysLoading, setPasskeysLoading] = useState(false)
+  const [showAddPasskey, setShowAddPasskey] = useState(false)
+  const [newPasskeyName, setNewPasskeyName] = useState('')
+  const [passkeyError, setPasskeyError] = useState('')
+  const [passkeyBusy, setPasskeyBusy] = useState(false)
+
+  // Security: sessions
+  type SessionRow = { tokenId: string; createdAt: number | null; ip: string | null; userAgent: string | null; isCurrentSession: boolean }
+  const [sessions, setSessions] = useState<SessionRow[]>([])
+  const [sessionsExpanded, setSessionsExpanded] = useState(false)
+
+  // Security: audit log
+  type AuditEntry = { id: string; action: string; ip: string | null; created_at: number; metadata: string | null }
+  const [auditEvents, setAuditEvents] = useState<AuditEntry[]>([])
+  const [auditExpanded, setAuditExpanded] = useState(false)
 
   // Stripe Connect
   const [connectStatus, setConnectStatus] = useState<{ connected: boolean; chargesEnabled: boolean; payoutsEnabled: boolean; accountId?: string } | null>(null)
@@ -90,6 +137,94 @@ export default function SettingsPage() {
     api.getConnectStatus(user.restaurant_id).then(setConnectStatus).catch(() => {})
   }, [user?.restaurant_id])
 
+  const loadPasskeys = useCallback(async () => {
+    setPasskeysLoading(true)
+    try {
+      const res = await authedFetch('/api/auth/webauthn/credentials')
+      if (res.ok) {
+        const data = await res.json() as { credentials: RegisteredPasskey[] }
+        setPasskeys(data.credentials || [])
+      }
+    } catch {} finally { setPasskeysLoading(false) }
+  }, [])
+
+  const loadSessions = useCallback(async () => {
+    try {
+      const res = await authedFetch('/api/auth/sessions')
+      if (res.ok) {
+        const data = await res.json() as { sessions: SessionRow[] }
+        setSessions(data.sessions || [])
+      }
+    } catch {}
+  }, [])
+
+  const loadAudit = useCallback(async () => {
+    try {
+      const res = await authedFetch('/api/auth/audit-log')
+      if (res.ok) {
+        const data = await res.json() as { events: AuditEntry[] }
+        setAuditEvents((data.events || []).slice(0, 30))
+      }
+    } catch {}
+  }, [])
+
+  useEffect(() => {
+    if (!user) return
+    loadPasskeys()
+    loadSessions()
+    loadAudit()
+  }, [user, loadPasskeys, loadSessions, loadAudit])
+
+  async function handleAddPasskey() {
+    if (!newPasskeyName.trim()) return
+    setPasskeyBusy(true)
+    setPasskeyError('')
+    try {
+      await registerPasskey(newPasskeyName.trim())
+      setNewPasskeyName('')
+      setShowAddPasskey(false)
+      await loadPasskeys()
+    } catch (e: any) {
+      setPasskeyError(e?.message || t('settingsSecurity.passkeysError'))
+    } finally {
+      setPasskeyBusy(false)
+    }
+  }
+
+  async function handleRevokePasskey(id: string) {
+    const res = await authedFetch(`/api/auth/webauthn/credentials/${encodeURIComponent(id)}`, { method: 'DELETE' })
+    if (res.ok) await loadPasskeys()
+  }
+
+  async function handleCloseSession(tokenId: string) {
+    const res = await authedFetch(`/api/auth/sessions/${encodeURIComponent(tokenId)}`, { method: 'DELETE' })
+    if (res.ok) await loadSessions()
+  }
+
+  async function handleCloseAllSessions() {
+    const res = await authedFetch('/api/auth/logout-all', { method: 'POST' })
+    if (res.ok) {
+      // current session is gone too — boot to /login
+      localStorage.removeItem('token')
+      localStorage.removeItem('refreshToken')
+      window.location.href = '/login'
+    }
+  }
+
+  async function regenerateBackupCodes(password: string, code: string) {
+    const res = await authedFetch('/api/auth/2fa/regenerate-backup-codes', {
+      method: 'POST',
+      body: JSON.stringify({ password, code }),
+    })
+    if (res.ok) {
+      const data = await res.json() as { backupCodes: string[] }
+      setBackupCodes(data.backupCodes)
+    } else {
+      const d = await res.json().catch(() => ({}))
+      throw new Error(d.error || 'Error')
+    }
+  }
+
   async function startSetup() {
     setTwoFALoading(true)
     setTwoFAError('')
@@ -110,8 +245,11 @@ export default function SettingsPage() {
         method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ code: twoFACode }),
       })
-      if (res.ok) { setTwoFAEnabled(true); setTwoFASetup(null); setTwoFACode('') }
-      else { const d = await res.json(); setTwoFAError(d.error || 'Código incorrecto') }
+      if (res.ok) {
+        const data = await res.json() as { enabled?: boolean; backupCodes?: string[] }
+        setTwoFAEnabled(true); setTwoFASetup(null); setTwoFACode('')
+        if (data.backupCodes?.length) setBackupCodes(data.backupCodes)
+      } else { const d = await res.json(); setTwoFAError(d.error || 'Código incorrecto') }
     } catch { setTwoFAError('Error de conexión') }
     setTwoFALoading(false)
   }
@@ -483,57 +621,47 @@ export default function SettingsPage() {
       )}
 
       {/* Seguridad */}
-      {twoFAEnabled ? (
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 max-w-lg">
-          <h2 className="font-semibold text-slate-900 mb-4">Seguridad</h2>
-          <div className="flex items-center gap-3 mb-4">
-            <ShieldCheck className="w-5 h-5 text-indigo-600" />
-            <div>
-              <p className="text-sm font-medium text-slate-900">2FA activado</p>
-              <p className="text-xs text-slate-400">Tu cuenta está protegida con autenticación en dos pasos.</p>
-            </div>
-          </div>
-          <div className="space-y-3">
-            <input type="text" inputMode="numeric" maxLength={6} value={disableCode} onChange={e => setDisableCode(e.target.value.replace(/\D/g, ''))}
-              placeholder="Código authenticator" className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
-            <input type="password" value={disablePassword} onChange={e => setDisablePassword(e.target.value)}
-              placeholder="Contraseña" className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
-            {disableError && <p className="text-sm text-red-500">{disableError}</p>}
-            <button onClick={disable2FA} disabled={twoFALoading || disableCode.length !== 6}
-              className="text-sm text-red-500 hover:text-red-700 font-medium disabled:opacity-50">
-              Desactivar 2FA
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 max-w-lg">
-          <h2 className="font-semibold text-slate-900 mb-4">Seguridad</h2>
-          <div className="mb-4">
-            <p className="text-sm text-slate-600">Autenticación en dos pasos (2FA)</p>
-            <p className="text-xs text-slate-400 mt-1">Agregá una capa extra de seguridad a tu cuenta usando Google Authenticator o similar.</p>
-          </div>
+      <SecuritySection
+        user={user as any}
+        twoFAEnabled={twoFAEnabled}
+        twoFASetup={twoFASetup}
+        twoFACode={twoFACode}
+        setTwoFACode={setTwoFACode}
+        twoFAError={twoFAError}
+        twoFALoading={twoFALoading}
+        startSetup={startSetup}
+        confirmSetup={confirmSetup}
+        disableCode={disableCode}
+        setDisableCode={setDisableCode}
+        disablePassword={disablePassword}
+        setDisablePassword={setDisablePassword}
+        disableError={disableError}
+        disable2FA={disable2FA}
+        passkeys={passkeys}
+        passkeysLoading={passkeysLoading}
+        showAddPasskey={showAddPasskey}
+        setShowAddPasskey={setShowAddPasskey}
+        newPasskeyName={newPasskeyName}
+        setNewPasskeyName={setNewPasskeyName}
+        passkeyError={passkeyError}
+        passkeyBusy={passkeyBusy}
+        handleAddPasskey={handleAddPasskey}
+        handleRevokePasskey={handleRevokePasskey}
+        sessions={sessions}
+        sessionsExpanded={sessionsExpanded}
+        setSessionsExpanded={setSessionsExpanded}
+        handleCloseSession={handleCloseSession}
+        handleCloseAllSessions={handleCloseAllSessions}
+        auditEvents={auditEvents}
+        auditExpanded={auditExpanded}
+        setAuditExpanded={setAuditExpanded}
+        backupCodes={backupCodes}
+        setBackupCodes={setBackupCodes}
+        regenerateBackupCodes={regenerateBackupCodes}
+      />
 
-          {!twoFASetup ? (
-            <button onClick={startSetup} disabled={twoFALoading} className="text-sm bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-indigo-700 disabled:opacity-50">
-              Activar 2FA
-            </button>
-          ) : (
-            <div className="space-y-4">
-              <p className="text-sm text-slate-700 text-center py-4">Ingresá este código en tu app authenticator:</p>
-              <code className="block text-center bg-slate-100 px-4 py-3 rounded-xl text-lg font-mono tracking-wider">{twoFASetup.secret}</code>
-              <div>
-                <label className="text-xs font-semibold text-slate-600 mb-1 block">Código de verificación</label>
-                <input type="text" inputMode="numeric" maxLength={6} value={twoFACode} onChange={e => setTwoFACode(e.target.value.replace(/\D/g, ''))}
-                  placeholder="000000" className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-center text-xl font-mono tracking-[0.3em]" />
-              </div>
-              {twoFAError && <p className="text-sm text-red-500">{twoFAError}</p>}
-              <button onClick={confirmSetup} disabled={twoFALoading || twoFACode.length !== 6}
-                className="w-full bg-indigo-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50">
-                {twoFALoading ? 'Verificando...' : 'Confirmar y activar'}
-              </button>
-            </div>
-          )}
-        </div>
+      {backupCodes && (
+        <BackupCodesModal codes={backupCodes} onClose={() => setBackupCodes(null)} />
       )}
 
       {/* Ayuda */}
@@ -643,6 +771,444 @@ function ProfileCard({ profile, isActive, isOnly, onSwitch, onUpdate }: { profil
             )}
           </div>
         )}
+      </div>
+    </div>
+  )
+}
+
+// ── Security section: score header + collapsible rows ──────────────────────
+
+type SecuritySectionProps = {
+  user: any
+  twoFAEnabled: boolean
+  twoFASetup: { secret: string; otpAuthUrl: string } | null
+  twoFACode: string
+  setTwoFACode: (v: string) => void
+  twoFAError: string
+  twoFALoading: boolean
+  startSetup: () => void
+  confirmSetup: () => void
+  disableCode: string
+  setDisableCode: (v: string) => void
+  disablePassword: string
+  setDisablePassword: (v: string) => void
+  disableError: string
+  disable2FA: () => void
+  passkeys: RegisteredPasskey[]
+  passkeysLoading: boolean
+  showAddPasskey: boolean
+  setShowAddPasskey: (v: boolean) => void
+  newPasskeyName: string
+  setNewPasskeyName: (v: string) => void
+  passkeyError: string
+  passkeyBusy: boolean
+  handleAddPasskey: () => void
+  handleRevokePasskey: (id: string) => void
+  sessions: Array<{ tokenId: string; createdAt: number | null; ip: string | null; userAgent: string | null; isCurrentSession: boolean }>
+  sessionsExpanded: boolean
+  setSessionsExpanded: (v: boolean) => void
+  handleCloseSession: (tokenId: string) => void
+  handleCloseAllSessions: () => void
+  auditEvents: Array<{ id: string; action: string; ip: string | null; created_at: number; metadata: string | null }>
+  auditExpanded: boolean
+  setAuditExpanded: (v: boolean) => void
+  backupCodes: string[] | null
+  setBackupCodes: (v: string[] | null) => void
+  regenerateBackupCodes: (password: string, code: string) => Promise<void>
+}
+
+function SecuritySection(p: SecuritySectionProps) {
+  const { t } = useI18n()
+  const [twoFAOpen, setTwoFAOpen] = useState(false)
+  const [passkeysOpen, setPasskeysOpen] = useState(false)
+  const [regenOpen, setRegenOpen] = useState(false)
+  const [regenPassword, setRegenPassword] = useState('')
+  const [regenCode, setRegenCode] = useState('')
+  const [regenError, setRegenError] = useState('')
+  const [regenBusy, setRegenBusy] = useState(false)
+
+  const emailVerified = !!(p.user?.email_verified ?? p.user?.emailVerified ?? p.user?.email)
+  const passwordOk = !!p.user?.email // assume password set if account exists
+  const has2FA = p.twoFAEnabled
+  const hasPasskey = p.passkeys.length > 0
+  const sessionsActive = p.sessions.length > 0
+  const auditAvailable = p.auditEvents.length > 0
+  const hasBackupCodes = has2FA // backup codes ship with 2FA enable
+
+  const score = useMemo(() => {
+    const items = [emailVerified, passwordOk, has2FA, hasBackupCodes, hasPasskey, sessionsActive, auditAvailable]
+    const total = items.length
+    const ok = items.filter(Boolean).length
+    return Math.round((ok / total) * 100)
+  }, [emailVerified, passwordOk, has2FA, hasBackupCodes, hasPasskey, sessionsActive, auditAvailable])
+
+  const scoreColor = score >= 90 ? 'bg-emerald-500' : score >= 60 ? 'bg-amber-500' : 'bg-red-500'
+  const scoreEmoji = score >= 90 ? '🟢' : score >= 60 ? '🟡' : '🔴'
+  const hint = !has2FA ? t('settingsSecurity.scoreHintLow') : !hasPasskey ? t('settingsSecurity.scoreHintMid') : t('settingsSecurity.scoreHintHigh')
+
+  function fmt(ts: number | null) {
+    if (!ts) return '—'
+    return new Date(ts).toLocaleString()
+  }
+
+  return (
+    <div className="bg-white rounded-2xl border border-slate-200 max-w-2xl overflow-hidden">
+      {/* Header card */}
+      <div className="p-6 border-b border-slate-200">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-semibold text-slate-900">{t('settingsSecurity.title')}</h2>
+          <span className="text-xs text-slate-500">{scoreEmoji}</span>
+        </div>
+        <div className="flex items-baseline gap-2 mb-1">
+          <span className="text-sm text-slate-600">{t('settingsSecurity.scoreTitle')}:</span>
+          <span className="text-2xl font-bold text-slate-900">{score}%</span>
+        </div>
+        <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mb-2">
+          <div className={`h-full ${scoreColor} transition-all`} style={{ width: `${score}%` }} />
+        </div>
+        <p className="text-xs text-slate-500">{hint}</p>
+      </div>
+
+      {/* Rows */}
+      <div className="divide-y divide-slate-100">
+        <Row icon={<CheckIcon className="w-4 h-4" />} ok={emailVerified} label={t('settingsSecurity.scoreEmail')} />
+        <Row icon={<CheckIcon className="w-4 h-4" />} ok={passwordOk} label={t('settingsSecurity.scorePassword')} />
+
+        {/* 2FA */}
+        <div>
+          <button
+            onClick={() => setTwoFAOpen(o => !o)}
+            className="w-full flex items-center justify-between px-6 py-3 hover:bg-slate-50 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <span className={`w-5 h-5 rounded-md flex items-center justify-center ${has2FA ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}>
+                {has2FA ? <CheckIcon className="w-3 h-3" /> : <span className="text-[10px]">○</span>}
+              </span>
+              <span className="text-sm text-slate-700">{t('settingsSecurity.score2FA')}</span>
+            </div>
+            <span className="text-sm text-indigo-600 font-medium">
+              {has2FA ? t('settingsSecurity.actionView') : t('settingsSecurity.actionActivate')}
+            </span>
+          </button>
+          {twoFAOpen && (
+            <div className="px-6 pb-5 pt-1 space-y-3 bg-slate-50/50">
+              {!p.twoFAEnabled && !p.twoFASetup && (
+                <button onClick={p.startSetup} disabled={p.twoFALoading}
+                  className="text-sm bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-indigo-700 disabled:opacity-50">
+                  {t('settingsSecurity.actionActivate')}
+                </button>
+              )}
+              {p.twoFASetup && (
+                <div className="space-y-3">
+                  <p className="text-sm text-slate-700">Ingresá este código en tu app authenticator:</p>
+                  <code className="block bg-white border border-slate-200 px-4 py-3 rounded-xl text-base font-mono tracking-wider">{p.twoFASetup.secret}</code>
+                  <input type="text" inputMode="numeric" maxLength={6} value={p.twoFACode}
+                    onChange={e => p.setTwoFACode(e.target.value.replace(/\D/g, ''))}
+                    placeholder="000000"
+                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-center text-xl font-mono tracking-[0.3em]" />
+                  {p.twoFAError && <p className="text-sm text-red-500">{p.twoFAError}</p>}
+                  <button onClick={p.confirmSetup} disabled={p.twoFALoading || p.twoFACode.length !== 6}
+                    className="w-full bg-indigo-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50">
+                    {p.twoFALoading ? 'Verificando...' : 'Confirmar y activar'}
+                  </button>
+                </div>
+              )}
+              {p.twoFAEnabled && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-emerald-700">
+                    <ShieldCheck className="w-4 h-4" />
+                    <span className="text-sm font-medium">2FA activado</span>
+                  </div>
+                  <input type="text" inputMode="numeric" maxLength={6} value={p.disableCode}
+                    onChange={e => p.setDisableCode(e.target.value.replace(/\D/g, ''))}
+                    placeholder="Código authenticator"
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+                  <input type="password" value={p.disablePassword}
+                    onChange={e => p.setDisablePassword(e.target.value)}
+                    placeholder="Contraseña"
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+                  {p.disableError && <p className="text-sm text-red-500">{p.disableError}</p>}
+                  <button onClick={p.disable2FA} disabled={p.twoFALoading || p.disableCode.length !== 6}
+                    className="text-sm text-red-500 hover:text-red-700 font-medium disabled:opacity-50">
+                    Desactivar 2FA
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Backup codes */}
+        <div>
+          <button
+            onClick={() => setRegenOpen(o => !o)}
+            className="w-full flex items-center justify-between px-6 py-3 hover:bg-slate-50 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <span className={`w-5 h-5 rounded-md flex items-center justify-center ${hasBackupCodes ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}>
+                {hasBackupCodes ? <CheckIcon className="w-3 h-3" /> : <span className="text-[10px]">○</span>}
+              </span>
+              <span className="text-sm text-slate-700">{t('settingsSecurity.scoreBackupCodes')}</span>
+            </div>
+            {hasBackupCodes && <span className="text-sm text-indigo-600 font-medium">{t('settingsSecurity.actionConfigure')}</span>}
+          </button>
+          {regenOpen && hasBackupCodes && (
+            <div className="px-6 pb-5 pt-1 space-y-3 bg-slate-50/50">
+              <p className="text-xs text-slate-500">{t('settingsSecurity.backupCodesWarning')}</p>
+              <input type="password" value={regenPassword} onChange={e => setRegenPassword(e.target.value)}
+                placeholder="Contraseña" className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+              <input type="text" value={regenCode} onChange={e => setRegenCode(e.target.value)}
+                placeholder="Código TOTP o backup" className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
+              {regenError && <p className="text-sm text-red-500">{regenError}</p>}
+              <button
+                onClick={async () => {
+                  setRegenBusy(true); setRegenError('')
+                  try { await p.regenerateBackupCodes(regenPassword, regenCode); setRegenPassword(''); setRegenCode('') }
+                  catch (e: any) { setRegenError(e?.message || 'Error') }
+                  finally { setRegenBusy(false) }
+                }}
+                disabled={regenBusy || !regenPassword || !regenCode}
+                className="text-sm bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-indigo-700 disabled:opacity-50"
+              >
+                {regenBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : t('settingsSecurity.backupCodesRegenerate')}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Passkeys */}
+        <div>
+          <button
+            onClick={() => setPasskeysOpen(o => !o)}
+            className="w-full flex items-center justify-between px-6 py-3 hover:bg-slate-50 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <span className={`w-5 h-5 rounded-md flex items-center justify-center ${hasPasskey ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}>
+                {hasPasskey ? <CheckIcon className="w-3 h-3" /> : <span className="text-[10px]">○</span>}
+              </span>
+              <Fingerprint className="w-4 h-4 text-slate-400" />
+              <span className="text-sm text-slate-700">{t('settingsSecurity.passkeysTitle')}</span>
+            </div>
+            <span className="text-sm text-indigo-600 font-medium">
+              {hasPasskey ? t('settingsSecurity.actionConfigure') : t('settingsSecurity.actionActivate')}
+            </span>
+          </button>
+          {passkeysOpen && (
+            <div className="px-6 pb-5 pt-1 space-y-3 bg-slate-50/50">
+              <p className="text-xs text-slate-500">{t('settingsSecurity.passkeysSubtitle')}</p>
+              {!isPasskeySupported() && (
+                <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-sm text-amber-800">
+                  <AlertTriangle className="w-4 h-4 shrink-0" />
+                  {t('settingsSecurity.passkeysUnsupported')}
+                </div>
+              )}
+              {p.passkeys.length === 0 ? (
+                <p className="text-sm text-slate-500 italic">{t('settingsSecurity.passkeysEmpty')}</p>
+              ) : (
+                <div className="space-y-2">
+                  {p.passkeys.map(pk => (
+                    <div key={pk.id} className="flex items-center justify-between bg-white border border-slate-200 rounded-xl px-3 py-2">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <Smartphone className="w-4 h-4 text-slate-400 shrink-0" />
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-slate-900 truncate">{pk.deviceName || pk.deviceType || 'Passkey'}</p>
+                          <p className="text-xs text-slate-500 truncate">
+                            {t('settingsSecurity.passkeysCreated')}: {fmt(pk.createdAt)}
+                          </p>
+                        </div>
+                      </div>
+                      <button onClick={() => p.handleRevokePasskey(pk.id)}
+                        className="text-xs text-red-500 hover:text-red-700 font-medium ml-2 shrink-0">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {!p.showAddPasskey ? (
+                <button
+                  onClick={() => p.setShowAddPasskey(true)}
+                  disabled={!isPasskeySupported()}
+                  className="text-sm bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-2"
+                >
+                  <Plus className="w-4 h-4" /> {t('settingsSecurity.passkeysAdd')}
+                </button>
+              ) : (
+                <div className="space-y-2 bg-white border border-slate-200 rounded-xl p-3">
+                  <input
+                    value={p.newPasskeyName}
+                    onChange={e => p.setNewPasskeyName(e.target.value)}
+                    placeholder={t('settingsSecurity.passkeysNamePlaceholder')}
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" />
+                  {p.passkeyError && <p className="text-xs text-red-500">{p.passkeyError}</p>}
+                  <div className="flex gap-2">
+                    <button onClick={() => { p.setShowAddPasskey(false); p.setNewPasskeyName('') }}
+                      className="flex-1 border border-slate-200 text-slate-700 text-sm font-medium py-2 rounded-lg hover:bg-slate-50">
+                      {t('settingsSecurity.passkeysCancel')}
+                    </button>
+                    <button onClick={p.handleAddPasskey} disabled={p.passkeyBusy || !p.newPasskeyName.trim()}
+                      className="flex-1 bg-indigo-600 text-white text-sm font-semibold py-2 rounded-lg hover:bg-indigo-700 disabled:opacity-50">
+                      {p.passkeyBusy ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : t('settingsSecurity.passkeysCreate')}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Sessions */}
+        <div>
+          <button
+            onClick={() => p.setSessionsExpanded(!p.sessionsExpanded)}
+            className="w-full flex items-center justify-between px-6 py-3 hover:bg-slate-50 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <span className="w-5 h-5 rounded-md flex items-center justify-center bg-emerald-100 text-emerald-700">
+                <CheckIcon className="w-3 h-3" />
+              </span>
+              <Activity className="w-4 h-4 text-slate-400" />
+              <span className="text-sm text-slate-700">
+                {t('settingsSecurity.sessionsTitle')}: {p.sessions.length} {p.sessions.length === 1 ? t('settingsSecurity.device') : t('settingsSecurity.devices')}
+              </span>
+            </div>
+            <span className="text-sm text-indigo-600 font-medium">{t('settingsSecurity.actionView')}</span>
+          </button>
+          {p.sessionsExpanded && (
+            <div className="px-6 pb-5 pt-1 space-y-2 bg-slate-50/50">
+              {p.sessions.length === 0 && <p className="text-sm text-slate-500 italic">{t('settingsSecurity.sessionsEmpty')}</p>}
+              {p.sessions.map(s => (
+                <div key={s.tokenId} className="flex items-center justify-between bg-white border border-slate-200 rounded-xl px-3 py-2">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-slate-900 truncate">
+                      {s.userAgent?.slice(0, 50) || 'Dispositivo'}
+                      {s.isCurrentSession && <span className="ml-2 text-[10px] font-bold uppercase bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">{t('settingsSecurity.sessionsCurrent')}</span>}
+                    </p>
+                    <p className="text-xs text-slate-500 truncate">{s.ip || '—'} · {fmt(s.createdAt)}</p>
+                  </div>
+                  {!s.isCurrentSession && (
+                    <button onClick={() => p.handleCloseSession(s.tokenId)}
+                      className="text-xs text-red-500 hover:text-red-700 font-medium ml-2 shrink-0">
+                      {t('settingsSecurity.sessionsClose')}
+                    </button>
+                  )}
+                </div>
+              ))}
+              {p.sessions.length > 1 && (
+                <button onClick={p.handleCloseAllSessions}
+                  className="text-sm text-red-500 hover:text-red-700 font-medium">
+                  {t('settingsSecurity.sessionsCloseAll')}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Audit log */}
+        <div>
+          <button
+            onClick={() => p.setAuditExpanded(!p.auditExpanded)}
+            className="w-full flex items-center justify-between px-6 py-3 hover:bg-slate-50 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <span className="w-5 h-5 rounded-md flex items-center justify-center bg-emerald-100 text-emerald-700">
+                <CheckIcon className="w-3 h-3" />
+              </span>
+              <Key className="w-4 h-4 text-slate-400" />
+              <span className="text-sm text-slate-700">
+                {t('settingsSecurity.auditTitle')}: {p.auditEvents.length}
+              </span>
+            </div>
+            <span className="text-sm text-indigo-600 font-medium">{t('settingsSecurity.actionView')}</span>
+          </button>
+          {p.auditExpanded && (
+            <div className="px-6 pb-5 pt-1 space-y-1 bg-slate-50/50 max-h-80 overflow-y-auto">
+              {p.auditEvents.length === 0 && <p className="text-sm text-slate-500 italic">{t('settingsSecurity.auditEmpty')}</p>}
+              {p.auditEvents.map(e => (
+                <div key={e.id} className="flex items-center justify-between bg-white border border-slate-200 rounded-lg px-3 py-2">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-slate-900">{e.action}</p>
+                    <p className="text-xs text-slate-500">{e.ip || '—'}</p>
+                  </div>
+                  <p className="text-xs text-slate-400 ml-2 shrink-0">{fmt(e.created_at)}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function Row({ icon, ok, label }: { icon: React.ReactNode; ok: boolean; label: string }) {
+  return (
+    <div className="flex items-center justify-between px-6 py-3">
+      <div className="flex items-center gap-3">
+        <span className={`w-5 h-5 rounded-md flex items-center justify-center ${ok ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}>
+          {ok ? icon : <span className="text-[10px]">○</span>}
+        </span>
+        <span className="text-sm text-slate-700">{label}</span>
+      </div>
+    </div>
+  )
+}
+
+// ── Backup codes modal ─────────────────────────────────────────────────────
+
+function BackupCodesModal({ codes, onClose }: { codes: string[]; onClose: () => void }) {
+  const { t } = useI18n()
+  const [copied, setCopied] = useState(false)
+  const text = codes.join('\n')
+
+  function handleCopy() {
+    navigator.clipboard.writeText(text)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  function handleDownload() {
+    const blob = new Blob([text], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'runbits-backup-codes.txt'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6">
+        <div className="flex items-center gap-2 mb-2">
+          <ShieldCheck className="w-5 h-5 text-indigo-600" />
+          <h3 className="font-semibold text-slate-900">{t('settingsSecurity.backupCodesTitle')}</h3>
+        </div>
+        <p className="text-xs text-slate-500 mb-4">{t('settingsSecurity.backupCodesShownOnce')}</p>
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4">
+          <div className="grid grid-cols-2 gap-2 font-mono text-sm">
+            {codes.map(c => (
+              <div key={c} className="bg-white border border-slate-200 rounded px-2 py-1.5 text-center text-slate-900">
+                {c}
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="flex gap-2 mb-3">
+          <button onClick={handleCopy}
+            className="flex-1 flex items-center justify-center gap-2 border border-slate-200 text-slate-700 text-sm font-medium py-2 rounded-xl hover:bg-slate-50">
+            <Copy className="w-4 h-4" /> {copied ? t('settingsSecurity.backupCodesCopied') : t('settingsSecurity.backupCodesCopy')}
+          </button>
+          <button onClick={handleDownload}
+            className="flex-1 flex items-center justify-center gap-2 border border-slate-200 text-slate-700 text-sm font-medium py-2 rounded-xl hover:bg-slate-50">
+            <Download className="w-4 h-4" /> {t('settingsSecurity.backupCodesDownload')}
+          </button>
+        </div>
+        <button onClick={onClose}
+          className="w-full bg-indigo-600 text-white text-sm font-semibold py-2.5 rounded-xl hover:bg-indigo-700">
+          {t('settingsSecurity.backupCodesDone')}
+        </button>
       </div>
     </div>
   )
