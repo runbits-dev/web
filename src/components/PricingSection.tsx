@@ -113,9 +113,6 @@ export function PricingSection({ recommendedTier }: PricingSectionProps) {
               ? plan.key === recommendedTier
               : plan.popular
             const isFree = plan.monthly === 0
-            const displayPrice =
-              interval === 'monthly' ? plan.monthly : Math.round(plan.annual / 10)
-            const totalAnnual = plan.annual
 
             return (
               <div
@@ -155,39 +152,39 @@ export function PricingSection({ recommendedTier }: PricingSectionProps) {
                   </p>
                 </div>
 
-                <div className="mt-6 min-h-[88px]">
-                  <div className="flex items-baseline gap-1">
+                <div className="mt-6 min-h-[100px]">
+                  <div className="flex items-baseline gap-1.5">
                     <span
-                      className={`text-4xl font-bold ${
+                      className={`text-5xl font-extrabold tracking-tight transition-all duration-200 ${
                         isHighlighted ? 'text-white' : 'text-gray-900'
                       }`}
                     >
-                      {isFree ? t('pricing.free') : `${t('pricing.currency')}${displayPrice}`}
+                      {isFree ? t('pricing.free') : `${t('pricing.currency')}${interval === 'annual' ? plan.annual : plan.monthly}`}
                     </span>
                     {!isFree && (
                       <span
-                        className={`text-sm ${
+                        className={`text-sm font-medium ${
                           isHighlighted ? 'text-brand-200' : 'text-gray-500'
                         }`}
                       >
-                        {t('pricing.perMonth')}
+                        {interval === 'annual' ? t('pricing.perYear') : t('pricing.perMonth')}
                       </span>
                     )}
                   </div>
 
                   {!isFree && interval === 'annual' && (
-                    <div className="mt-2 flex flex-col gap-1">
-                      <span className="inline-flex w-fit text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded">
+                    <div className="mt-2 flex items-center gap-2">
+                      <span className="inline-flex text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded">
                         {t('pricing.save17')}
                       </span>
-                      <p
+                      <span
                         className={`text-xs ${
-                          isHighlighted ? 'text-brand-200' : 'text-gray-500'
+                          isHighlighted ? 'text-brand-100' : 'text-gray-600'
                         }`}
                       >
-                        {t('pricing.billedAnnually')} {t('pricing.currency')}
-                        {totalAnnual}
-                      </p>
+                        {t('pricing.equivPerMonth')} {t('pricing.currency')}
+                        {Math.floor(plan.annual / 12)}/{t('pricing.monthShort')}
+                      </span>
                     </div>
                   )}
                   {!isFree && interval === 'monthly' && (
