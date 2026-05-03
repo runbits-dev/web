@@ -7,7 +7,9 @@
     "about": "Nosotros",
     "login": "Iniciar sesión",
     "register": "Registrar comercio",
-    "security": "Seguridad"
+    "security": "Seguridad",
+    "solutions": "Funcionalidades",
+    "solutionsHeading": "Para tu negocio"
   },
   "hero": {
     "title1": "Tu negocio,",
@@ -495,6 +497,7 @@
       "mockupBadge": "Vista previa del panel"
     },
     "food": {
+      "short": "Restaurantes",
       "title": "Tu restaurante online,",
       "title2": "sin pagar comisiones.",
       "subtitle": "Catálogo, comandera y delivery. Sin que PedidosYa o Rappi se queden con un peso de tus ventas.",
@@ -536,6 +539,7 @@
       }
     },
     "goods": {
+      "short": "Tienda online",
       "title": "Tu tienda online completa,",
       "title2": "sin Shopify ni MercadoLibre.",
       "subtitle": "Catálogo con stock, multi-warehouse, dominio propio. Todo lo que necesitás para vender — sin pagar más por cada app o por cada venta.",
@@ -577,6 +581,7 @@
       }
     },
     "appointment": {
+      "short": "Turnos y citas",
       "title": "El sistema de turnos",
       "title2": "que tu negocio necesita.",
       "subtitle": "Calendario online, multi-staff y recordatorios. Para peluquerías, médicos, abogados y cualquier servicio con agenda.",
@@ -618,6 +623,7 @@
       }
     },
     "task": {
+      "short": "Servicios profesionales",
       "title": "Cobrá tus servicios profesionales",
       "title2": "sin perderte ningún cliente.",
       "subtitle": "Cotizaciones, milestones, contratos y chat. Para plomeros, electricistas, abogados y todo profesional independiente.",
@@ -659,6 +665,7 @@
       }
     },
     "realtime": {
+      "short": "Alquileres y reservas",
       "title": "Reservas online,",
       "title2": "sin comisiones por noche.",
       "subtitle": "Calendario unificado para alquileres, hoteles y canchas. Booking en tiempo real, deposits y escrow básico.",

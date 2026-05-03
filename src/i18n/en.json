@@ -7,7 +7,9 @@
     "about": "About",
     "login": "Sign in",
     "register": "Register your store",
-    "security": "Security"
+    "security": "Security",
+    "solutions": "Features",
+    "solutionsHeading": "For your business"
   },
   "hero": {
     "title1": "Your business,",
@@ -495,6 +497,7 @@
       "mockupBadge": "Dashboard preview"
     },
     "food": {
+      "short": "Restaurants",
       "title": "Your restaurant online,",
       "title2": "no commissions.",
       "subtitle": "Catalog, kitchen display, and delivery zones. No more PedidosYa or Rappi taking a cut on every order.",
@@ -536,6 +539,7 @@
       }
     },
     "goods": {
+      "short": "Online store",
       "title": "Your full online store,",
       "title2": "no Shopify or marketplace.",
       "subtitle": "Catalog with stock, multi-warehouse, custom domain. Everything you need to sell — without paying for every app or every sale.",
@@ -577,6 +581,7 @@
       }
     },
     "appointment": {
+      "short": "Appointments",
       "title": "The appointment system",
       "title2": "your business needs.",
       "subtitle": "Online calendar, multi-staff, and reminders. For salons, doctors, lawyers — any service with a schedule.",
@@ -618,6 +623,7 @@
       }
     },
     "task": {
+      "short": "Professional services",
       "title": "Bill for your professional services",
       "title2": "without losing a single client.",
       "subtitle": "Quotes, milestones, contracts, and chat. For plumbers, electricians, lawyers, and every freelancer.",
@@ -659,6 +665,7 @@
       }
     },
     "realtime": {
+      "short": "Rentals & bookings",
       "title": "Online bookings,",
       "title2": "no commission per night.",
       "subtitle": "Unified calendar for rentals, hotels, and courts. Real-time booking, deposits, and basic escrow.",
