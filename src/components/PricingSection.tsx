@@ -153,9 +153,9 @@ export function PricingSection({ recommendedTier }: PricingSectionProps) {
                 </div>
 
                 <div className="mt-6 min-h-[100px]">
-                  <div className="flex items-baseline gap-1.5">
+                  <div className="flex items-baseline gap-1">
                     <span
-                      className={`text-5xl font-extrabold tracking-tight transition-all duration-200 ${
+                      className={`text-4xl font-bold ${
                         isHighlighted ? 'text-white' : 'text-gray-900'
                       }`}
                     >
@@ -163,7 +163,7 @@ export function PricingSection({ recommendedTier }: PricingSectionProps) {
                     </span>
                     {!isFree && (
                       <span
-                        className={`text-sm font-medium ${
+                        className={`text-sm ${
                           isHighlighted ? 'text-brand-200' : 'text-gray-500'
                         }`}
                       >
