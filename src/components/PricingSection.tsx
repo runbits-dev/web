@@ -100,7 +100,7 @@ export function PricingSection({ recommendedTier }: PricingSectionProps) {
               }`}
             >
               {t('pricing.annual')}
-              <span className="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded">
+              <span className="text-[10px] font-bold bg-slate-900 text-white px-1.5 py-0.5 rounded">
                 {t('pricing.twoMonthsFree')}
               </span>
             </button>
@@ -174,7 +174,7 @@ export function PricingSection({ recommendedTier }: PricingSectionProps) {
 
                   {!isFree && interval === 'annual' && (
                     <div className="mt-2 flex items-center gap-2">
-                      <span className="inline-flex text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded">
+                      <span className="inline-flex text-[10px] font-bold bg-slate-900 text-white px-2 py-0.5 rounded">
                         {t('pricing.save17')}
                       </span>
                       <span
