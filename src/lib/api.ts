@@ -1,4 +1,4 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.runbits.dev'
+export const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.runbits.dev'
 
 export type Profile = {
   id: string

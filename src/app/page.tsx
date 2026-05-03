@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Users, DollarSign, Store, KeyRound, Smartphone, LayoutDashboard, Truck, BarChart3, Check, BriefcaseBusiness, Bell, MessageSquare, ShieldCheck } from 'lucide-react'
 import { LandingNavbar } from '@/components/LandingNavbar'
 import { FooterLocaleBar } from '@/components/FooterLocaleBar'
+import { PricingSection } from '@/components/PricingSection'
 import { useI18n } from '@/i18n'
 
 function Hero() {
@@ -200,150 +201,6 @@ function HowItWorks() {
   )
 }
 
-function Pricing() {
-  const { t } = useI18n()
-  const checkIcon = <Check className="w-5 h-5 shrink-0 mt-0.5" />
-
-  const plans = [
-    {
-      key: 'free',
-      price: '0',
-      popular: false,
-      highlighted: false,
-      featureKeys: ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7'],
-    },
-    {
-      key: 'pro',
-      price: '29',
-      popular: true,
-      highlighted: true,
-      featureKeys: ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8'],
-    },
-    {
-      key: 'business',
-      price: '99',
-      popular: false,
-      highlighted: false,
-      featureKeys: ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9'],
-    },
-    {
-      key: 'enterprise',
-      price: '249',
-      popular: false,
-      highlighted: false,
-      featureKeys: ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9'],
-    },
-  ]
-
-  return (
-    <section id="pricing" className="py-20 sm:py-28 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
-            {t('pricing.title')}
-          </h2>
-          <p className="mt-4 text-lg text-gray-600">
-            {t('pricing.subtitle')}
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-          {plans.map((plan) => (
-            <div
-              key={plan.key}
-              className={`relative rounded-2xl p-7 flex flex-col ${
-                plan.highlighted
-                  ? 'bg-brand-600 text-white shadow-xl shadow-brand-600/20 ring-2 ring-brand-600'
-                  : 'bg-gray-50 border border-gray-100'
-              }`}
-            >
-              {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-400 text-amber-900 text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap">
-                  {t('pricing.popular')}
-                </div>
-              )}
-              <div>
-                <h3 className={`text-lg font-semibold ${plan.highlighted ? 'text-white' : 'text-gray-900'}`}>
-                  {t(`pricing.plans.${plan.key}.name`)}
-                </h3>
-                <p className={`mt-1 text-sm ${plan.highlighted ? 'text-brand-100' : 'text-gray-500'}`}>
-                  {t(`pricing.plans.${plan.key}.desc`)}
-                </p>
-              </div>
-              <div className="mt-6">
-                {plan.price && plan.price !== '0' ? (
-                  <>
-                    <div className="flex items-baseline gap-1">
-                      <span className={`text-4xl font-bold ${plan.highlighted ? 'text-white' : 'text-gray-900'}`}>
-                        {t('pricing.currency')}{plan.price}
-                      </span>
-                      <span className={`text-sm ${plan.highlighted ? 'text-brand-200' : 'text-gray-500'}`}>{t('pricing.perMonth')}</span>
-                    </div>
-                    <p className={`mt-1 text-xs ${plan.highlighted ? 'text-brand-200' : 'text-gray-400'}`}>
-                      {t(`pricing.plans.${plan.key}.billing`)}
-                    </p>
-                  </>
-                ) : plan.price === '0' ? (
-                  <>
-                    <span className="text-4xl font-bold text-blue-600">
-                      {t('pricing.free')}
-                    </span>
-                    <p className="mt-1 text-xs text-blue-500">
-                      {t(`pricing.plans.${plan.key}.billing`)}
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <span className={`text-3xl font-bold ${plan.highlighted ? 'text-white' : 'text-gray-900'}`}>
-                      {t('pricing.custom')}
-                    </span>
-                    <p className={`mt-1 text-xs ${plan.highlighted ? 'text-brand-200' : 'text-gray-400'}`}>
-                      {t(`pricing.plans.${plan.key}.billing`)}
-                    </p>
-                  </>
-                )}
-              </div>
-              <ul className="mt-8 space-y-3 flex-1">
-                {plan.featureKeys.map((fk) => (
-                  <li
-                    key={fk}
-                    className={`flex items-start gap-3 text-sm ${
-                      plan.highlighted ? 'text-brand-50' : 'text-gray-700'
-                    }`}
-                  >
-                    <span className={plan.highlighted ? 'text-brand-300' : 'text-brand-500'}>
-                      {checkIcon}
-                    </span>
-                    {t(`pricing.plans.${plan.key}.${fk}`)}
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href={plan.price ? '/register' : 'mailto:sales@runbits.io'}
-                className={`mt-8 block w-full text-center py-3 px-6 rounded-xl font-semibold transition-colors ${
-                  plan.highlighted
-                    ? 'bg-white text-brand-700 hover:bg-brand-50'
-                    : 'border-2 border-brand-600 text-brand-700 hover:bg-brand-50'
-                }`}
-              >
-                {t(`pricing.plans.${plan.key}.cta`)}
-              </Link>
-            </div>
-          ))}
-        </div>
-
-        <p className="mt-10 text-center text-sm text-gray-500">
-          {t('pricing.footnote1')}
-          <br />
-          {t('pricing.footnote2')}{' '}
-          <a href="mailto:soporte@runbits.io" className="text-brand-600 hover:underline font-medium">
-            {t('pricing.footnoteLink')}
-          </a>
-        </p>
-      </div>
-    </section>
-  )
-}
 
 function Modules() {
   const { t } = useI18n()
@@ -574,7 +431,7 @@ export default function Home() {
       <WhyRunbits />
       <Features />
       <HowItWorks />
-      <Pricing />
+      <PricingSection />
       <Modules />
       <Contact />
       <Footer />

@@ -404,72 +404,296 @@
   },
   "pricing": {
     "title": "Free to start. No commissions. Ever.",
-    "subtitle": "Start at no cost. All plans include 14 free days of premium features.",
+    "subtitle": "Pay a flat monthly fee. No per-sale percentage, no surprises.",
     "popular": "Most popular",
+    "recommended": "Recommended",
     "perMonth": "/mo",
     "free": "Free",
     "custom": "Custom",
     "currency": "USD $",
+    "monthly": "Monthly",
+    "annual": "Annual",
+    "billingToggle": "Billing frequency",
+    "twoMonthsFree": "2 MONTHS FREE",
+    "save17": "SAVE 17%",
+    "billedMonthly": "Billed monthly",
+    "billedAnnually": "Billed annually:",
+    "freeForever": "Free forever — no card required",
     "footnote1": "The Free plan requires no credit card and has no time limit.",
     "footnote2": "Need something different?",
     "footnoteLink": "Let's talk",
+    "compare": {
+      "title": "Real comparison",
+      "subtitle": "You sell $2,000/mo in orders. Runbits Starter costs $19. The competition:",
+      "platform": "Platform",
+      "monthlyCost": "Monthly cost",
+      "yourPlan": "← Your plan",
+      "platforms": {
+        "pedidosya": "PedidosYa (20% commission)",
+        "rappi": "Rappi (25% commission)",
+        "pedix": "Pedix",
+        "shopify": "Shopify Basic",
+        "runbits": "Runbits Starter"
+      }
+    },
     "plans": {
       "free": {
         "name": "Free",
-        "desc": "Run your business at no cost",
-        "billing": "Free forever — no card required",
+        "desc": "MVP / startup",
         "cta": "Start for free",
-        "f1": "Unlimited catalog",
-        "f2": "Unlimited orders",
-        "f3": "Your own online store",
-        "f4": "Customer chat",
-        "f5": "3 coupons",
-        "f6": "1 active promo",
-        "f7": "Basic analytics"
+        "f1": "Online store tailored to your industry",
+        "f2": "Orders / bookings / quotes",
+        "f3": "Push to customers",
+        "f4": "1 staff, 1 location",
+        "f5": "'Powered by Runbits' branding"
       },
-      "pro": {
-        "name": "Pro",
-        "desc": "Tools to grow",
-        "billing": "Everything in Free + growth tools",
-        "cta": "Choose Pro",
-        "f1": "Unlimited coupons",
-        "f2": "Unlimited promos",
-        "f3": "Advanced analytics",
-        "f4": "Delivery with tracking",
-        "f5": "Push notifications",
-        "f6": "Custom domain",
-        "f7": "Priority support",
-        "f8": "AI customer support"
+      "starter": {
+        "name": "Starter",
+        "desc": "Professional",
+        "cta": "Try Starter",
+        "f1": "Everything in Free",
+        "f2": "Custom domain",
+        "f3": "WhatsApp for customers",
+        "f4": "Up to 3 staff",
+        "f5": "Unlimited coupons & promos",
+        "f6": "No 'Powered by' branding",
+        "f7": "Improved reports"
+      },
+      "growth": {
+        "name": "Growth",
+        "desc": "Growth",
+        "cta": "Try Growth",
+        "f1": "Everything in Starter",
+        "f2": "Multi-location (up to 5)",
+        "f3": "10 staff with roles",
+        "f4": "Marketing automation",
+        "f5": "Multi-vertical at the same time",
+        "f6": "AI (10 generations/mo)"
       },
       "business": {
         "name": "Business",
-        "desc": "Scale your operation",
-        "billing": "Everything in Pro + multi-location",
-        "cta": "Choose Business",
-        "f1": "Multi-location",
-        "f2": "Roles & permissions",
-        "f3": "API access",
-        "f4": "Tax invoicing",
-        "f5": "Advanced inventory",
-        "f6": "Gift cards",
-        "f7": "Email marketing",
-        "f8": "Exportable reports",
-        "f9": "Integrations"
+        "desc": "Enterprise",
+        "cta": "Try Business",
+        "f1": "Everything in Growth",
+        "f2": "API + Webhooks",
+        "f3": "B2B mode",
+        "f4": "Multi-currency + multi-language",
+        "f5": "Full white-label",
+        "f6": "Priority support + SLA"
+      }
+    }
+  },
+  "verticals": {
+    "common": {
+      "ctaPrimary": "Start for free",
+      "ctaSecondary": "See demo",
+      "howItWorks": "How it works",
+      "featuresTitle": "Built for your industry",
+      "mockupBadge": "Dashboard preview"
+    },
+    "food": {
+      "title": "Your restaurant online,",
+      "title2": "no commissions.",
+      "subtitle": "Catalog, kitchen display, and delivery zones. No more PedidosYa or Rappi taking a cut on every order.",
+      "feat1": {
+        "title": "Catalog + kitchen display + delivery zones",
+        "desc": "Online menu, kitchen view, and zones with configurable shipping costs."
       },
-      "enterprise": {
-        "name": "Enterprise",
-        "desc": "Unlimited + AI",
-        "billing": "Everything in Business + AI & API",
-        "cta": "Choose Enterprise",
-        "f1": "Everything unlimited",
-        "f2": "AI for marketing",
-        "f3": "AI for support",
-        "f4": "Full API",
-        "f5": "Webhooks",
-        "f6": "Dedicated onboarding",
-        "f7": "Guaranteed SLA",
-        "f8": "24/7 support",
-        "f9": "Custom features"
+      "feat2": {
+        "title": "Real-time ETA tracking",
+        "desc": "Customers see where their order is — without calling you."
+      },
+      "feat3": {
+        "title": "WhatsApp order confirmation",
+        "desc": "Receive orders by WhatsApp and confirm with a single click."
+      },
+      "feat4": {
+        "title": "0% commission per sale",
+        "desc": "$19 flat. PedidosYa takes 20% off the top."
+      },
+      "compare": {
+        "title": "Run the numbers",
+        "desc": "You sell $5,000/mo → PedidosYa charges you $1,000/mo. With Runbits, you pay $19 flat."
+      },
+      "step1": {
+        "title": "Upload your menu",
+        "desc": "Add dishes with photos, prices and variants in minutes."
+      },
+      "step2": {
+        "title": "Configure delivery zones",
+        "desc": "Set delivery areas and shipping fees."
+      },
+      "step3": {
+        "title": "Receive orders online",
+        "desc": "Customers order from your store — manage everything from the kitchen display."
+      },
+      "mockup": {
+        "title": "Today's kitchen display",
+        "subtitle": "12 active orders · 4 cooking · 3 on the way"
+      }
+    },
+    "goods": {
+      "title": "Your full online store,",
+      "title2": "no Shopify or marketplace.",
+      "subtitle": "Catalog with stock, multi-warehouse, custom domain. Everything you need to sell — without paying for every app or every sale.",
+      "feat1": {
+        "title": "Catalog with stock + variants",
+        "desc": "Sizes, colors, combinations. Stock per location."
+      },
+      "feat2": {
+        "title": "Advanced shipping zones",
+        "desc": "Set rates by zip code or region."
+      },
+      "feat3": {
+        "title": "Multi-warehouse",
+        "desc": "Manage stock across multiple warehouses from one panel."
+      },
+      "feat4": {
+        "title": "Custom domain included",
+        "desc": "Your brand front and center. No 'powered by' or weird redirects."
+      },
+      "compare": {
+        "title": "Compare it",
+        "desc": "Shopify Basic $29 + apps. Tiendanube Advanced $30 + 2-3% per sale. Runbits Starter $19 with no commission."
+      },
+      "step1": {
+        "title": "Upload your catalog",
+        "desc": "Add products with photos, variants, and stock."
+      },
+      "step2": {
+        "title": "Configure shipping",
+        "desc": "Define zones, rates, and delivery methods."
+      },
+      "step3": {
+        "title": "Sell with no commission",
+        "desc": "Your store is live. Keep 100% of every sale."
+      },
+      "mockup": {
+        "title": "Active catalog",
+        "subtitle": "248 products · 16 categories · 3 warehouses"
+      }
+    },
+    "appointment": {
+      "title": "The appointment system",
+      "title2": "your business needs.",
+      "subtitle": "Online calendar, multi-staff, and reminders. For salons, doctors, lawyers — any service with a schedule.",
+      "feat1": {
+        "title": "Online calendar + configurable slots",
+        "desc": "Set duration, breaks, and hours per service."
+      },
+      "feat2": {
+        "title": "Multi-staff with personal agendas",
+        "desc": "Each professional manages their own availability."
+      },
+      "feat3": {
+        "title": "SMS + WhatsApp reminders",
+        "desc": "Reduce no-shows with automated messages."
+      },
+      "feat4": {
+        "title": "Google Calendar sync",
+        "desc": "No conflicts: appointments synced with your personal calendar."
+      },
+      "compare": {
+        "title": "Compare it",
+        "desc": "Calendly Pro $12 + payment add-on. Acuity $61. Runbits Starter $19 with everything included."
+      },
+      "step1": {
+        "title": "Configure your services",
+        "desc": "Set prices, durations, and assigned professionals."
+      },
+      "step2": {
+        "title": "Share your booking link",
+        "desc": "Customers book online whenever it suits them."
+      },
+      "step3": {
+        "title": "Manage from the panel",
+        "desc": "Confirm, reschedule, or cancel appointments in one click."
+      },
+      "mockup": {
+        "title": "Today's schedule",
+        "subtitle": "8 appointments · 3 professionals · 2 confirmed via WhatsApp"
+      }
+    },
+    "task": {
+      "title": "Bill for your professional services",
+      "title2": "without losing a single client.",
+      "subtitle": "Quotes, milestones, contracts, and chat. For plumbers, electricians, lawyers, and every freelancer.",
+      "feat1": {
+        "title": "Quotes with versions",
+        "desc": "Customers see every revision. Clear approval, no misunderstandings."
+      },
+      "feat2": {
+        "title": "Milestones for projects",
+        "desc": "Split long jobs into stages. Get paid as you progress."
+      },
+      "feat3": {
+        "title": "Direct chat with the client",
+        "desc": "All conversation in one place — no missed messages."
+      },
+      "feat4": {
+        "title": "Electronic contracts",
+        "desc": "Digital signature included. No paper, no back-and-forth."
+      },
+      "compare": {
+        "title": "Compare it",
+        "desc": "Fiverr and Upwork take 10-20% commission. Runbits Starter $19 — keep 100%."
+      },
+      "step1": {
+        "title": "Build your quote",
+        "desc": "Detail items, prices, and conditions in minutes."
+      },
+      "step2": {
+        "title": "Send it as a link",
+        "desc": "Your client views, comments, or approves from the browser."
+      },
+      "step3": {
+        "title": "Get paid and deliver",
+        "desc": "Mark milestones as delivered and receive payment."
+      },
+      "mockup": {
+        "title": "Active jobs",
+        "subtitle": "6 quotes sent · 3 approved · $4,200 in payments"
+      }
+    },
+    "realtime": {
+      "title": "Online bookings,",
+      "title2": "no commission per night.",
+      "subtitle": "Unified calendar for rentals, hotels, and courts. Real-time booking, deposits, and basic escrow.",
+      "feat1": {
+        "title": "Unified multi-resource calendar",
+        "desc": "Cabins, rooms, or courts — all bookings in one view."
+      },
+      "feat2": {
+        "title": "Real-time booking",
+        "desc": "No overbookings. No manual confirmations."
+      },
+      "feat3": {
+        "title": "Configurable deposits",
+        "desc": "Ask for a deposit, full payment, or just a hold. You decide."
+      },
+      "feat4": {
+        "title": "Basic escrow",
+        "desc": "Release funds only when the guest or client confirms delivery."
+      },
+      "compare": {
+        "title": "Compare it",
+        "desc": "Booking 15% per reservation. Airbnb 14-16% to the guest. Runbits Starter $19 flat."
+      },
+      "step1": {
+        "title": "Add your resources",
+        "desc": "Cabins, rooms, courts — each with its own schedule."
+      },
+      "step2": {
+        "title": "Set prices and deposits",
+        "desc": "Seasonal rates, minimum nights, required deposit."
+      },
+      "step3": {
+        "title": "Receive bookings online",
+        "desc": "Customers book directly from your site. You charge directly."
+      },
+      "mockup": {
+        "title": "This week's occupancy",
+        "subtitle": "4 resources · 78% occupancy · $2,300 in bookings"
       }
     }
   },

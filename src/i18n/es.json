@@ -404,72 +404,296 @@
   },
   "pricing": {
     "title": "Gratis para empezar. Sin comisiones. Nunca.",
-    "subtitle": "Empezá sin costo. Todos los planes incluyen 14 días gratis de las funcionalidades premium.",
-    "popular": "Más elegido",
+    "subtitle": "Pagás una tarifa fija al mes. Sin porcentaje por venta, sin sorpresas.",
+    "popular": "Más popular",
+    "recommended": "Recomendado",
     "perMonth": "/mes",
     "free": "Gratis",
     "custom": "A medida",
     "currency": "USD $",
+    "monthly": "Mensual",
+    "annual": "Anual",
+    "billingToggle": "Frecuencia de facturación",
+    "twoMonthsFree": "2 MESES GRATIS",
+    "save17": "AHORRÁ 17%",
+    "billedMonthly": "Facturación mensual",
+    "billedAnnually": "Facturado anual:",
+    "freeForever": "Gratis para siempre — sin tarjeta",
     "footnote1": "El plan Free no requiere tarjeta de crédito y no tiene límite de tiempo.",
     "footnote2": "¿Necesitás algo diferente?",
     "footnoteLink": "Hablemos",
+    "compare": {
+      "title": "Comparativa real",
+      "subtitle": "Vendés $2.000/mes en pedidos. Con Runbits Starter pagás $19. Con la competencia:",
+      "platform": "Plataforma",
+      "monthlyCost": "Costo mensual",
+      "yourPlan": "← Tu plan",
+      "platforms": {
+        "pedidosya": "PedidosYa (20% comisión)",
+        "rappi": "Rappi (25% comisión)",
+        "pedix": "Pedix",
+        "shopify": "Shopify Basic",
+        "runbits": "Runbits Starter"
+      }
+    },
     "plans": {
       "free": {
         "name": "Free",
-        "desc": "Operá tu negocio sin costo",
-        "billing": "Gratis para siempre — sin tarjeta",
+        "desc": "MVP / startup",
         "cta": "Empezar gratis",
-        "f1": "Catálogo ilimitado",
-        "f2": "Pedidos ilimitados",
-        "f3": "Tienda online propia",
-        "f4": "Chat con clientes",
-        "f5": "3 cupones",
-        "f6": "1 promo activa",
-        "f7": "Estadísticas básicas"
+        "f1": "Tienda online según tu rubro",
+        "f2": "Pedidos / reservas / cotizaciones",
+        "f3": "Push a clientes",
+        "f4": "1 staff, 1 ubicación",
+        "f5": "Branding 'Powered by Runbits'"
       },
-      "pro": {
-        "name": "Pro",
-        "desc": "Herramientas para crecer",
-        "billing": "Todo de Free + herramientas de crecimiento",
-        "cta": "Elegir Pro",
-        "f1": "Cupones ilimitados",
-        "f2": "Promos ilimitadas",
-        "f3": "Estadísticas avanzadas",
-        "f4": "Delivery con seguimiento",
-        "f5": "Notificaciones push",
-        "f6": "Dominio propio",
-        "f7": "Prioridad de soporte",
-        "f8": "IA soporte al cliente"
+      "starter": {
+        "name": "Starter",
+        "desc": "Profesional",
+        "cta": "Probar Starter",
+        "f1": "Todo de Free",
+        "f2": "Dominio propio",
+        "f3": "WhatsApp para clientes",
+        "f4": "Hasta 3 staff",
+        "f5": "Cupones y promociones ilimitadas",
+        "f6": "Sin branding 'Powered by'",
+        "f7": "Reportes mejorados"
+      },
+      "growth": {
+        "name": "Growth",
+        "desc": "Crecimiento",
+        "cta": "Probar Growth",
+        "f1": "Todo de Starter",
+        "f2": "Multi-sucursal (hasta 5)",
+        "f3": "10 staff con roles",
+        "f4": "Marketing automation",
+        "f5": "Multi-rubro simultáneo",
+        "f6": "IA (10 generaciones/mes)"
       },
       "business": {
         "name": "Business",
-        "desc": "Para escalar tu operación",
-        "billing": "Todo de Pro + multi-sucursal",
-        "cta": "Elegir Business",
-        "f1": "Multi-sucursal",
-        "f2": "Roles y permisos",
-        "f3": "API access",
-        "f4": "Facturación AFIP",
-        "f5": "Inventario avanzado",
-        "f6": "Gift cards",
-        "f7": "Email marketing",
-        "f8": "Reportes exportables",
-        "f9": "Integraciones"
+        "desc": "Enterprise",
+        "cta": "Probar Business",
+        "f1": "Todo de Growth",
+        "f2": "API + Webhooks",
+        "f3": "Modo B2B",
+        "f4": "Multi-moneda + multi-idioma",
+        "f5": "White-label completo",
+        "f6": "Soporte prioritario + SLA"
+      }
+    }
+  },
+  "verticals": {
+    "common": {
+      "ctaPrimary": "Empezar gratis",
+      "ctaSecondary": "Ver demo",
+      "howItWorks": "Cómo funciona",
+      "featuresTitle": "Pensado para tu rubro",
+      "mockupBadge": "Vista previa del panel"
+    },
+    "food": {
+      "title": "Tu restaurante online,",
+      "title2": "sin pagar comisiones.",
+      "subtitle": "Catálogo, comandera y delivery. Sin que PedidosYa o Rappi se queden con un peso de tus ventas.",
+      "feat1": {
+        "title": "Catálogo + comandera + zonas de delivery",
+        "desc": "Menú online, comandera para cocina y zonas con costos configurables."
       },
-      "enterprise": {
-        "name": "Enterprise",
-        "desc": "Todo ilimitado + IA",
-        "billing": "Todo de Business + IA y API",
-        "cta": "Elegir Enterprise",
-        "f1": "Todo ilimitado",
-        "f2": "IA para marketing",
-        "f3": "IA para soporte",
-        "f4": "API completa",
-        "f5": "Webhooks",
-        "f6": "Onboarding dedicado",
-        "f7": "SLA garantizado",
-        "f8": "Soporte 24/7",
-        "f9": "Custom features"
+      "feat2": {
+        "title": "ETA tracking en tiempo real",
+        "desc": "Tus clientes ven dónde está su pedido sin llamarte."
+      },
+      "feat3": {
+        "title": "WhatsApp para confirmar pedidos",
+        "desc": "Recibí pedidos por WhatsApp y confirmá con un click."
+      },
+      "feat4": {
+        "title": "0% de comisión por venta",
+        "desc": "Pagás $19 fijos. PedidosYa te cobra el 20%."
+      },
+      "compare": {
+        "title": "Hagamos números",
+        "desc": "Vendés $5.000/mes → PedidosYa te cobra $1.000 al mes. Con Runbits, pagás $19 fijos."
+      },
+      "step1": {
+        "title": "Subí tu menú",
+        "desc": "Cargá platos con fotos, precios y variantes en minutos."
+      },
+      "step2": {
+        "title": "Configurá zonas de delivery",
+        "desc": "Definí tus zonas de reparto y los costos de envío."
+      },
+      "step3": {
+        "title": "Recibí pedidos online",
+        "desc": "Tus clientes piden por tu tienda y vos los gestionás desde la comandera."
+      },
+      "mockup": {
+        "title": "Comandera del día",
+        "subtitle": "12 pedidos activos · 4 en cocina · 3 en camino"
+      }
+    },
+    "goods": {
+      "title": "Tu tienda online completa,",
+      "title2": "sin Shopify ni MercadoLibre.",
+      "subtitle": "Catálogo con stock, multi-warehouse, dominio propio. Todo lo que necesitás para vender — sin pagar más por cada app o por cada venta.",
+      "feat1": {
+        "title": "Catálogo con stock + variantes",
+        "desc": "Talles, colores, combinaciones. Stock por sucursal."
+      },
+      "feat2": {
+        "title": "Shipping zones avanzadas",
+        "desc": "Configurá costos por código postal o región."
+      },
+      "feat3": {
+        "title": "Multi-warehouse",
+        "desc": "Manejá stock en varios depósitos desde un mismo panel."
+      },
+      "feat4": {
+        "title": "Dominio propio incluido",
+        "desc": "Tu marca al frente. Sin 'powered by' ni redirects raros."
+      },
+      "compare": {
+        "title": "Comparalo",
+        "desc": "Shopify Basic $29 + apps. Tiendanube Avanzado $30 + 2-3% por venta. Runbits Starter $19 sin comisión."
+      },
+      "step1": {
+        "title": "Cargá tu catálogo",
+        "desc": "Subí productos con fotos, variantes y stock."
+      },
+      "step2": {
+        "title": "Configurá envíos",
+        "desc": "Definí zonas, costos y métodos de entrega."
+      },
+      "step3": {
+        "title": "Vendé sin comisión",
+        "desc": "Tu tienda online lista. Cobrás el 100% de cada venta."
+      },
+      "mockup": {
+        "title": "Catálogo activo",
+        "subtitle": "248 productos · 16 categorías · 3 depósitos"
+      }
+    },
+    "appointment": {
+      "title": "El sistema de turnos",
+      "title2": "que tu negocio necesita.",
+      "subtitle": "Calendario online, multi-staff y recordatorios. Para peluquerías, médicos, abogados y cualquier servicio con agenda.",
+      "feat1": {
+        "title": "Calendario online + slots configurables",
+        "desc": "Definí duración, descansos y horarios por servicio."
+      },
+      "feat2": {
+        "title": "Multi-staff con agenda propia",
+        "desc": "Cada profesional gestiona su disponibilidad."
+      },
+      "feat3": {
+        "title": "Recordatorios SMS + WhatsApp",
+        "desc": "Reducí el ausentismo con avisos automáticos."
+      },
+      "feat4": {
+        "title": "Sync con Google Calendar",
+        "desc": "Sin conflictos: tus turnos sincronizados con tu calendario personal."
+      },
+      "compare": {
+        "title": "Comparalo",
+        "desc": "Calendly Pro $12 + cobranza extra. Acuity $61. Runbits Starter $19 con todo incluido."
+      },
+      "step1": {
+        "title": "Configurá tus servicios",
+        "desc": "Cargá precios, duraciones y profesionales asignados."
+      },
+      "step2": {
+        "title": "Compartí tu link de turnos",
+        "desc": "Tus clientes reservan online cuando les queda cómodo."
+      },
+      "step3": {
+        "title": "Gestioná desde el panel",
+        "desc": "Confirmá, reprogramá o cancelá turnos en un click."
+      },
+      "mockup": {
+        "title": "Agenda de hoy",
+        "subtitle": "8 turnos · 3 profesionales · 2 confirmados por WhatsApp"
+      }
+    },
+    "task": {
+      "title": "Cobrá tus servicios profesionales",
+      "title2": "sin perderte ningún cliente.",
+      "subtitle": "Cotizaciones, milestones, contratos y chat. Para plomeros, electricistas, abogados y todo profesional independiente.",
+      "feat1": {
+        "title": "Cotizaciones con versiones",
+        "desc": "Tus clientes ven cada cambio. Aprobación clara, sin malentendidos."
+      },
+      "feat2": {
+        "title": "Milestones para proyectos",
+        "desc": "Dividí trabajos largos en hitos. Cobrás conforme avanzás."
+      },
+      "feat3": {
+        "title": "Chat directo con cliente",
+        "desc": "Toda la conversación en un solo lugar — sin perder mensajes."
+      },
+      "feat4": {
+        "title": "Contratos electrónicos",
+        "desc": "Firma digital incluida. Sin papeles, sin idas y vueltas."
+      },
+      "compare": {
+        "title": "Comparalo",
+        "desc": "Fiverr y Upwork toman 10-20% de comisión. Runbits Starter $19, te quedás con el 100%."
+      },
+      "step1": {
+        "title": "Armá tu cotización",
+        "desc": "Detallá items, precios y condiciones en minutos."
+      },
+      "step2": {
+        "title": "Mandala con un link",
+        "desc": "Tu cliente la ve, comenta o aprueba desde el navegador."
+      },
+      "step3": {
+        "title": "Cobrá y entregá",
+        "desc": "Marcá milestones como entregados y recibí el pago."
+      },
+      "mockup": {
+        "title": "Trabajos activos",
+        "subtitle": "6 cotizaciones enviadas · 3 aprobadas · $4.200 en cobro"
+      }
+    },
+    "realtime": {
+      "title": "Reservas online,",
+      "title2": "sin comisiones por noche.",
+      "subtitle": "Calendario unificado para alquileres, hoteles y canchas. Booking en tiempo real, deposits y escrow básico.",
+      "feat1": {
+        "title": "Calendario unificado multi-recurso",
+        "desc": "Cabañas, habitaciones o canchas — todas las reservas en una vista."
+      },
+      "feat2": {
+        "title": "Booking en tiempo real",
+        "desc": "Sin overbookings. Sin confirmaciones manuales."
+      },
+      "feat3": {
+        "title": "Deposits configurables",
+        "desc": "Pedí seña, pago total o reserva sin pago. Vos decidís."
+      },
+      "feat4": {
+        "title": "Escrow básico",
+        "desc": "Liberá fondos solo cuando el huésped o cliente confirma la entrega."
+      },
+      "compare": {
+        "title": "Comparalo",
+        "desc": "Booking 15% por reserva. Airbnb 14-16% al huésped. Runbits Starter $19 fijos."
+      },
+      "step1": {
+        "title": "Cargá tus recursos",
+        "desc": "Cabañas, habitaciones, canchas — cada uno con su agenda."
+      },
+      "step2": {
+        "title": "Configurá precios y deposits",
+        "desc": "Tarifas por temporada, mínimo de noches, seña requerida."
+      },
+      "step3": {
+        "title": "Recibí reservas online",
+        "desc": "Tus clientes reservan desde tu sitio. Vos cobrás directo."
+      },
+      "mockup": {
+        "title": "Ocupación esta semana",
+        "subtitle": "4 recursos · 78% ocupación · $2.300 en reservas"
       }
     }
   },
