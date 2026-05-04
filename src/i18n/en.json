@@ -1011,5 +1011,113 @@
     "continue": "Continue",
     "cancel": "Cancel",
     "error": "Could not sign in with passkey"
+  },
+  "settingsDomain": {
+    "title": "Domain",
+    "subtitle": "Set up your store's public URL.",
+    "loading": "Loading…",
+    "errorGeneric": "We couldn't load your domain information.",
+    "retry": "Retry",
+    "noProfile": "You need an active profile to configure your domain.",
+    "statusActive": "Active",
+    "statusPending": "Pending",
+    "statusFailed": "Failed",
+    "statusUnknown": "Unknown",
+    "primaryBadge": "Primary",
+    "visit": "Visit store",
+    "copy": "Copy",
+    "copied": "Copied",
+    "verifyNow": "Verify now",
+    "verifying": "Verifying…",
+    "disconnect": "Disconnect",
+    "disconnectConfirm": "Are you sure you want to disconnect this domain?",
+    "free": {
+      "headline": "Your public URL",
+      "subhead": "Want your own subdomain mystore.runbits.app?",
+      "cta": "Upgrade to Starter"
+    },
+    "subdomain": {
+      "title": "Runbits Subdomain",
+      "subtitle": "Your store on mystore.runbits.app — included in Starter.",
+      "placeholder": "mystore",
+      "suffix": ".runbits.app",
+      "reserve": "Reserve",
+      "reserving": "Reserving…",
+      "change": "Change slug",
+      "current": "Your subdomain",
+      "errorFormat": "Use 3 to 30 chars: lowercase letters, numbers and hyphens.",
+      "errorHyphenEdge": "Slug cannot start or end with a hyphen.",
+      "errorTaken": "That subdomain is already taken. Try another.",
+      "errorGeneric": "We couldn't reserve the subdomain. Try again.",
+      "successReserved": "Subdomain reserved."
+    },
+    "customDomain": {
+      "title": "Custom domain",
+      "subtitle": "Connect mystore.com by migrating nameservers.",
+      "placeholder": "mystore.com",
+      "connect": "Connect my domain",
+      "connecting": "Connecting…",
+      "errorFormat": "Enter a valid domain (e.g. mystore.com).",
+      "errorGeneric": "We couldn't start the connection. Try again.",
+      "wizard": {
+        "title": "Connect your domain",
+        "step1Title": "Step 1 — Start the connection",
+        "step1Desc": "We'll set up your domain. It's free and you only do it once.",
+        "step1Cta": "Continue",
+        "step2Title": "Step 2 — Update nameservers",
+        "step2Desc": "Go to your registrar (Namecheap, GoDaddy, etc.) and replace the current nameservers with:",
+        "step2Hint": "Changes can take 5 to 30 minutes to propagate.",
+        "step2Done": "I've configured them",
+        "step3Title": "Step 3 — Verify propagation",
+        "step3Desc": "Wait 5 to 30 minutes for DNS propagation, then verify.",
+        "step3Cta": "Verify now",
+        "step3Pending": "Not yet propagated. Try again in a few minutes.",
+        "step4Title": "Connected!",
+        "step4Desc": "Your store is live at",
+        "step4Cta": "Done"
+      }
+    },
+    "customHostname": {
+      "title": "Custom Hostname (1-click)",
+      "subtitle": "Connect your domain without migrating nameservers — just a CNAME.",
+      "placeholder": "mystore.com",
+      "modeLabel": "How do you want to connect it?",
+      "modeNs": "NS migration (full control)",
+      "modeCname": "CNAME (simpler)",
+      "wizard": {
+        "title": "Configure your CNAME",
+        "step1Title": "Step 1 — Your domain",
+        "step1Desc": "Enter the domain you want to use.",
+        "step1Cta": "Next",
+        "step2Title": "Step 2 — Configure the CNAME",
+        "step2Desc": "In your DNS provider, add this CNAME record:",
+        "step2Type": "Type",
+        "step2Name": "Name",
+        "step2Value": "Value",
+        "step2Done": "I've configured it",
+        "step3Title": "Step 3 — Verify",
+        "step3Desc": "We'll check that the CNAME is pointing correctly.",
+        "step3Cta": "Verify now",
+        "step4Title": "Connected!",
+        "step4Desc": "Your store is live at",
+        "step4Cta": "Done"
+      }
+    },
+    "multiDomain": {
+      "title": "Multi-domain",
+      "subtitle": "Connect multiple domains and pick one as primary.",
+      "addAnother": "Add another domain",
+      "empty": "You haven't added additional domains yet.",
+      "makePrimary": "Mark as primary",
+      "primaryActive": "Primary"
+    },
+    "lockedSection": {
+      "growthCta": "Upgrade to Growth",
+      "businessCta": "Upgrade to Business",
+      "customDomainTitle": "Want your own custom domain (mystore.com)?",
+      "customDomainDesc": "Connect your own domain by migrating nameservers to Runbits.",
+      "businessTitle": "Need multi-domain or 1-click connection without migrating NS?",
+      "businessDesc": "Connect multiple domains or use CNAME mode without migrating nameservers."
+    }
   }
 }

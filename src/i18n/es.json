@@ -1011,5 +1011,113 @@
     "continue": "Continuar",
     "cancel": "Cancelar",
     "error": "No se pudo iniciar sesión con passkey"
+  },
+  "settingsDomain": {
+    "title": "Dominio",
+    "subtitle": "Configurá la URL pública de tu tienda.",
+    "loading": "Cargando…",
+    "errorGeneric": "No pudimos cargar la información del dominio.",
+    "retry": "Reintentar",
+    "noProfile": "Necesitás tener un perfil activo para configurar tu dominio.",
+    "statusActive": "Activo",
+    "statusPending": "Pendiente",
+    "statusFailed": "Fallido",
+    "statusUnknown": "Desconocido",
+    "primaryBadge": "Principal",
+    "visit": "Visitar tienda",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "verifyNow": "Verificar ahora",
+    "verifying": "Verificando…",
+    "disconnect": "Desconectar",
+    "disconnectConfirm": "¿Seguro que querés desconectar este dominio?",
+    "free": {
+      "headline": "Tu URL pública",
+      "subhead": "¿Querés tu propio subdominio mitienda.runbits.app?",
+      "cta": "Upgrade a Starter"
+    },
+    "subdomain": {
+      "title": "Subdominio Runbits",
+      "subtitle": "Tu tienda en mitienda.runbits.app — incluido en Starter.",
+      "placeholder": "mitienda",
+      "suffix": ".runbits.app",
+      "reserve": "Reservar",
+      "reserving": "Reservando…",
+      "change": "Cambiar slug",
+      "current": "Tu subdominio",
+      "errorFormat": "Usá entre 3 y 30 caracteres: minúsculas, números y guiones.",
+      "errorHyphenEdge": "El slug no puede empezar ni terminar con guión.",
+      "errorTaken": "Ese subdominio ya está en uso. Probá con otro.",
+      "errorGeneric": "No pudimos reservar el subdominio. Reintentá.",
+      "successReserved": "Subdominio reservado."
+    },
+    "customDomain": {
+      "title": "Dominio propio",
+      "subtitle": "Conectá mitienda.com migrando los nameservers.",
+      "placeholder": "mitienda.com",
+      "connect": "Conectar mi dominio",
+      "connecting": "Conectando…",
+      "errorFormat": "Ingresá un dominio válido (ej.: mitienda.com).",
+      "errorGeneric": "No pudimos iniciar la conexión. Reintentá.",
+      "wizard": {
+        "title": "Conectá tu dominio",
+        "step1Title": "Paso 1 — Empezá la conexión",
+        "step1Desc": "Vamos a configurar tu dominio. Esto es gratis y se hace una sola vez.",
+        "step1Cta": "Continuar",
+        "step2Title": "Paso 2 — Cambiá los nameservers",
+        "step2Desc": "Andá a tu registrador (Namecheap, GoDaddy, etc.) y reemplazá los nameservers actuales por:",
+        "step2Hint": "El cambio puede tardar entre 5 y 30 minutos en propagarse.",
+        "step2Done": "Ya los configuré",
+        "step3Title": "Paso 3 — Verificar propagación",
+        "step3Desc": "Esperá 5 a 30 minutos a que propague el DNS y verificá.",
+        "step3Cta": "Verificar ahora",
+        "step3Pending": "Aún no propagado. Probá de nuevo en unos minutos.",
+        "step4Title": "¡Conectado!",
+        "step4Desc": "Tu tienda ya está disponible en",
+        "step4Cta": "Listo"
+      }
+    },
+    "customHostname": {
+      "title": "Custom Hostname (1-click)",
+      "subtitle": "Conectá tu dominio sin migrar nameservers — solo un CNAME.",
+      "placeholder": "mitienda.com",
+      "modeLabel": "¿Cómo querés conectarlo?",
+      "modeNs": "Migración NS (control total)",
+      "modeCname": "CNAME (más simple)",
+      "wizard": {
+        "title": "Configurá tu CNAME",
+        "step1Title": "Paso 1 — Tu dominio",
+        "step1Desc": "Ingresá el dominio que querés usar.",
+        "step1Cta": "Siguiente",
+        "step2Title": "Paso 2 — Configurá el CNAME",
+        "step2Desc": "En tu proveedor DNS, agregá este registro CNAME:",
+        "step2Type": "Tipo",
+        "step2Name": "Nombre",
+        "step2Value": "Valor",
+        "step2Done": "Ya lo configuré",
+        "step3Title": "Paso 3 — Verificar",
+        "step3Desc": "Verificamos que el CNAME esté apuntando correctamente.",
+        "step3Cta": "Verificar ahora",
+        "step4Title": "¡Conectado!",
+        "step4Desc": "Tu tienda ya está disponible en",
+        "step4Cta": "Listo"
+      }
+    },
+    "multiDomain": {
+      "title": "Multi-dominio",
+      "subtitle": "Conectá varios dominios a tu tienda y elegí uno como principal.",
+      "addAnother": "Agregar otro dominio",
+      "empty": "Aún no agregaste dominios adicionales.",
+      "makePrimary": "Marcar como principal",
+      "primaryActive": "Principal"
+    },
+    "lockedSection": {
+      "growthCta": "Upgrade a Growth",
+      "businessCta": "Upgrade a Business",
+      "customDomainTitle": "¿Querés tu dominio propio (mitienda.com)?",
+      "customDomainDesc": "Conectá tu propio dominio migrando los nameservers a Runbits.",
+      "businessTitle": "¿Multi-dominio o conexión 1-click sin migrar NS?",
+      "businessDesc": "Conectá varios dominios o usá la modalidad CNAME sin migrar nameservers."
+    }
   }
 }
