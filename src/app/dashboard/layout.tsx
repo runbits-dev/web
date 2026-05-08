@@ -13,7 +13,7 @@ import { Tutorial } from '@/components/Tutorial'
 import { InitialOnboarding, getNavForBusinessType } from '@/components/InitialOnboarding'
 import { ProfileSelector } from '@/components/ProfileSelector'
 import { ProfileSwitcher } from '@/components/ProfileSwitcher'
-import { Home, ShoppingBag, PackageCheck, BarChart3, Megaphone, CreditCard, Settings, LayoutDashboard, MapPin, Store, Bike, ClipboardList, Users, DollarSign, Wallet, Receipt, Map, CalendarCheck, Puzzle, Menu, MessageSquare } from 'lucide-react'
+import { Home, ShoppingBag, PackageCheck, BarChart3, Megaphone, CreditCard, Settings, LayoutDashboard, MapPin, Store, Bike, ClipboardList, Users, DollarSign, Wallet, Receipt, Map, CalendarCheck, Puzzle, Menu, MessageSquare, Bot } from 'lucide-react'
 
 const storeNav = [
   { href: '/dashboard', label: 'Inicio', Icon: Home, exact: true, tour: 'home' },
@@ -35,6 +35,7 @@ const adminNav = [
   { href: '/dashboard/admin/subscriptions', label: 'Suscripciones', Icon: Receipt },
   { href: '/dashboard/admin/flags', label: 'Feature Flags', Icon: Settings },
   { href: '/dashboard/admin/sales', label: 'Sales Agent', Icon: Megaphone },
+  { href: '/dashboard/runtics', label: 'Runtics', Icon: Bot },
   { href: '/dashboard/roadmap', label: 'Roadmap', Icon: Map },
   { href: '/dashboard/settings', label: 'Mi cuenta', Icon: Settings },
 ]
@@ -122,7 +123,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
 
   // Superadmin: skip onboarding, redirect to admin if on store pages
   if (isSuperAdmin) {
-    if (!pathname.startsWith('/dashboard/admin') && !pathname.startsWith('/dashboard/roadmap') && !pathname.startsWith('/dashboard/settings')) {
+    if (!pathname.startsWith('/dashboard/admin') && !pathname.startsWith('/dashboard/roadmap') && !pathname.startsWith('/dashboard/settings') && !pathname.startsWith('/dashboard/runtics')) {
       router.push('/dashboard/admin')
       return null
     }
@@ -163,7 +164,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
     )
   }
 
-  const isAdminSection = pathname.startsWith('/dashboard/admin') || pathname.startsWith('/dashboard/roadmap')
+  const isAdminSection = pathname.startsWith('/dashboard/admin') || pathname.startsWith('/dashboard/roadmap') || pathname.startsWith('/dashboard/runtics')
   const businessType = activeProfile?.business_type ?? null
   const dynamicStoreNav = businessType ? getNavForBusinessType(businessType) : storeNav
   const nav = isSuperAdmin ? adminNav : (isAdminSection ? adminNav : dynamicStoreNav)
