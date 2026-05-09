@@ -104,6 +104,76 @@ export interface CostBreakdown {
   global: { budget_usd: number; used_usd: number; remaining_usd: number }
 }
 
+// ─── Connections + Webhooks ────────────────────────────────────────────────
+
+export type ConnectionStatus = 'active' | 'rotating' | 'invalid' | 'revoked'
+export type WebhookStatus = 'active' | 'failing' | 'disabled' | 'revoked'
+
+export interface ConnectionProvider {
+  id: string
+  name: string
+  type: string
+  status: string
+  config_json: string
+  features_json: string | null
+}
+
+export interface TenantConnection {
+  id: string
+  tenant_id: string
+  provider_id: string
+  display_name: string | null
+  external_account_type: string | null
+  external_account_id: string | null
+  external_account_login: string | null
+  installation_id: string | null
+  scope_metadata_json: string | null
+  status: ConnectionStatus
+  expires_at: number | null
+  last_used_at: number | null
+  last_validated_at: number | null
+  connected_at: number
+  connected_by_account_id: string | null
+  metadata_json: string | null
+}
+
+export interface TenantWebhook {
+  id: string
+  tenant_id: string
+  connection_id: string
+  source: string
+  source_external_id: string
+  hook_id_at_source: string | null
+  events_json: string
+  status: WebhookStatus
+  failures_count: number
+  last_received_at: number | null
+  last_failure_at: number | null
+  last_failure_reason: string | null
+  created_at: number
+  created_by_account_id: string | null
+}
+
+export interface WebhookDelivery {
+  id: string
+  tenant_webhook_id: string
+  tenant_id: string
+  source: string
+  event_type: string
+  payload_summary_json: string | null
+  signature_valid: number
+  triggered_runs_json: string | null
+  received_at: number
+}
+
+export interface DiscoveredRepo {
+  id: number
+  full_name: string
+  name: string
+  private: boolean
+  default_branch?: string
+}
+
 function authHeaders(): Record<string, string> {
   if (typeof window === 'undefined') return {}
   const token = localStorage.getItem('token')
@@ -171,6 +241,39 @@ export const runticsApi = {
     return rget<{ entries: AuditEntry[]; limit: number; offset: number }>(`/audit-log?${q.toString()}`)
   },
   schedules: () => rget<{ schedules: Schedule[] }>('/schedules'),
+  // ─── Connections ────────────────────────────────────────────────────────
+  providers: () => rget<{ providers: ConnectionProvider[] }>('/connection-providers'),
+  connections: () => rget<{ connections: TenantConnection[] }>('/connections'),
+  connection: (id: string) =>
+    rget<{ connection: TenantConnection; webhooks: TenantWebhook[] }>(
+      `/connections/${encodeURIComponent(id)}`,
+    ),
+  deleteConnection: (id: string) =>
+    rmut<{ ok: boolean }>(`/connections/${encodeURIComponent(id)}`, 'DELETE'),
+  githubInstallUrl: () => rget<{ install_url: string; state: string }>('/connections/github/install'),
+  // ─── Webhooks ───────────────────────────────────────────────────────────
+  webhooks: () => rget<{ webhooks: TenantWebhook[] }>('/webhooks'),
+  createWebhook: (body: { connection_id: string; source_external_id: string; events: string[] }) =>
+    rmut<{ ok: boolean; webhook: TenantWebhook }>('/webhooks', 'POST', body),
+  deleteWebhook: (id: string) =>
+    rmut<{ ok: boolean }>(`/webhooks/${encodeURIComponent(id)}`, 'DELETE'),
+  webhookDeliveries: (
+    id: string,
+    params: { limit?: number; offset?: number } = {},
+  ) => {
+    const q = new URLSearchParams()
+    if (params.limit) q.set('limit', String(params.limit))
+    if (params.offset) q.set('offset', String(params.offset))
+    return rget<{ deliveries: WebhookDelivery[]; limit: number; offset: number }>(
+      `/webhooks/${encodeURIComponent(id)}/deliveries?${q.toString()}`,
+    )
+  },
+  testWebhook: (id: string) =>
+    rmut<{ ok: boolean }>(`/webhooks/${encodeURIComponent(id)}/test`, 'POST'),
+  discoverRepos: (connectionId: string) =>
+    rget<{ repos: DiscoveredRepo[] }>(
+      `/webhooks/discover/repos?connection_id=${encodeURIComponent(connectionId)}`,
+    ),
 }
 
 export function severityColor(s: Severity): string {

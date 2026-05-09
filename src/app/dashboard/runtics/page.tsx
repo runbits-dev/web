@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Bot, Play, AlertTriangle, ArrowRight, Activity, DollarSign } from 'lucide-react'
+import { Bot, Play, AlertTriangle, ArrowRight, Activity, DollarSign, Plug } from 'lucide-react'
 import {
   runticsApi,
   type Overview,
@@ -73,6 +73,14 @@ export default function RunticsOverviewPage() {
         <p className="text-slate-500 text-sm">
           Plataforma de agents agéntico — auditorías, monitoreo, oportunidades.
         </p>
+        <div className="flex gap-2 mt-3">
+          <Link
+            href="/dashboard/runtics/connections"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-full px-3 py-1.5 transition-colors"
+          >
+            <Plug className="w-3 h-3" /> Conexiones
+          </Link>
+        </div>
       </div>
 
       {/* Top KPIs */}
