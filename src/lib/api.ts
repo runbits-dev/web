@@ -352,4 +352,48 @@ export const api = {
     request<{ reply: string }>('/api/support/chat', {
       method: 'POST', body: JSON.stringify({ message, history }),
     }),
+
+  // ── Catalog v2 (multi-rubro polymorphic items) ───────────────────────────
+
+  /** GET /api/categories — flat list or hierarchical tree (with ?tree=true). */
+  getCategories: (opts: { tree?: boolean; kind?: string } = {}) => {
+    const qs = new URLSearchParams()
+    if (opts.tree) qs.set('tree', 'true')
+    if (opts.kind) qs.set('kind', opts.kind)
+    return request<{ data: any[] }>(`/api/categories${qs.toString() ? '?' + qs.toString() : ''}`)
+  },
+
+  /** GET /api/categories/:slug — category detail + items. */
+  getCategory: (slug: string) =>
+    request<{ category: any; items: any[]; limit: number; offset: number }>(`/api/categories/${encodeURIComponent(slug)}`),
+
+  /** POST /api/category-requests — propose a new curated category. */
+  requestCategory: (data: { storeId?: string; parentId?: string; proposedNameEs: string; proposedNameEn?: string; proposedSlug?: string; useCase?: string; exampleItems?: string[] }) =>
+    request<{ id: string; status: string }>('/api/category-requests', { method: 'POST', body: JSON.stringify(data) }),
+
+  /** GET /api/items — list items (storeId/kind/status/category/search filters). */
+  getItems: (params: { storeId?: string; kind?: string; status?: string; category?: string; search?: string; limit?: number; offset?: number } = {}) => {
+    const qs = new URLSearchParams()
+    Object.entries(params).forEach(([k, v]) => { if (v !== undefined && v !== '') qs.set(k, String(v)) })
+    return request<{ data: any[]; total: number; limit: number; offset: number }>(`/api/items${qs.toString() ? '?' + qs.toString() : ''}`)
+  },
+
+  /** GET /api/items/:id — full item with variants, attributes, photos, categories. */
+  getItem: (id: string) => request<any>(`/api/items/${encodeURIComponent(id)}`),
+
+  /** POST /api/items — create an item in any kind. */
+  createItem: (data: { storeId: string; kind: 'food' | 'physical' | 'service' | 'rental' | 'experience'; name: string; price: number; description?: string; status?: string; visibility?: string; available?: boolean; stock?: number | null; durationMinutes?: number | null; capacity?: number | null; preparationMinutes?: number | null; categoryIds?: string[]; metadata?: Record<string, any> }) =>
+    request<any>('/api/items', { method: 'POST', body: JSON.stringify(data) }),
+
+  patchItem: (id: string, data: Record<string, any>) =>
+    request<any>(`/api/items/${encodeURIComponent(id)}`, { method: 'PATCH', body: JSON.stringify(data) }),
+
+  archiveItem: (id: string) => request<{ ok: boolean }>(`/api/items/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+
+  /** GET /api/catalog/search — public FTS5-backed search with filters + facets. */
+  searchCatalog: (params: { q?: string; kind?: string; category?: string; min_price?: number; max_price?: number; store_id?: string; attrs?: string; limit?: number; cursor?: string } = {}) => {
+    const qs = new URLSearchParams()
+    Object.entries(params).forEach(([k, v]) => { if (v !== undefined && v !== '') qs.set(k, String(v)) })
+    return request<{ items: any[]; total: number; facets: any; next_cursor: string | null }>(`/api/catalog/search${qs.toString() ? '?' + qs.toString() : ''}`)
+  },
 }

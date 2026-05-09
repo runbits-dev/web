@@ -51,6 +51,21 @@ const CATEGORY_PRESETS: Record<string, string[]> = {
   other: ['General', 'Destacados', 'Ofertas'],
 }
 
+// Map dashboard business_type → catalog v2 kind + UI labels. We keep the
+// route at /dashboard/menu (existing nav target) but the page label adapts
+// to whatever the active profile sells.
+const BUSINESS_TYPE_LABELS: Record<string, { pageTitle: string; itemPlural: string; addLabel: string }> = {
+  restaurant: { pageTitle: 'Menú', itemPlural: 'productos', addLabel: '+ Agregar producto' },
+  store:      { pageTitle: 'Catálogo', itemPlural: 'productos', addLabel: '+ Agregar producto' },
+  grocery:    { pageTitle: 'Catálogo', itemPlural: 'productos', addLabel: '+ Agregar producto' },
+  pharmacy:   { pageTitle: 'Catálogo', itemPlural: 'productos', addLabel: '+ Agregar producto' },
+  services:   { pageTitle: 'Servicios', itemPlural: 'servicios', addLabel: '+ Agregar servicio' },
+  beauty:     { pageTitle: 'Servicios', itemPlural: 'servicios', addLabel: '+ Agregar servicio' },
+  pets:       { pageTitle: 'Catálogo', itemPlural: 'productos', addLabel: '+ Agregar producto' },
+  transport:  { pageTitle: 'Servicios', itemPlural: 'servicios', addLabel: '+ Agregar servicio' },
+  other:      { pageTitle: 'Catálogo', itemPlural: 'items', addLabel: '+ Agregar item' },
+}
+
 const EMPTY_FORM = { name: '', description: '', price: '', category: '', is_available: true, imagePreview: '' }
 
 export default function MenuPage() {
@@ -208,8 +223,8 @@ export default function MenuPage() {
     <div>
       <div className="mb-8 flex items-center justify-between gap-2 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Menú</h1>
-          <p className="text-slate-500 text-sm mt-1">{items.length} productos</p>
+          <h1 className="text-2xl font-bold text-slate-900">{BUSINESS_TYPE_LABELS[bt]?.pageTitle ?? 'Catálogo'}</h1>
+          <p className="text-slate-500 text-sm mt-1">{items.length} {BUSINESS_TYPE_LABELS[bt]?.itemPlural ?? 'items'}</p>
         </div>
         {restaurantId && (
           <div className="flex items-center gap-2">
@@ -237,7 +252,7 @@ export default function MenuPage() {
               onClick={openCreate}
               className="bg-slate-900 text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-slate-700 transition-colors"
             >
-              + Agregar producto
+              {BUSINESS_TYPE_LABELS[bt]?.addLabel ?? '+ Agregar item'}
             </button>
           </div>
         )}
