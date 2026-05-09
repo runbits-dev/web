@@ -14,6 +14,7 @@ import { InitialOnboarding, getNavForBusinessType } from '@/components/InitialOn
 import { ProfileSelector } from '@/components/ProfileSelector'
 import { ProfileSwitcher } from '@/components/ProfileSwitcher'
 import { OnboardingChecklistSidebar } from '@/components/OnboardingChecklist'
+import { OnboardingHelpButton } from '@/components/OnboardingHelpButton'
 import { Home, ShoppingBag, PackageCheck, BarChart3, Megaphone, CreditCard, Settings, LayoutDashboard, MapPin, Store, Bike, ClipboardList, Users, DollarSign, Wallet, Receipt, Map, CalendarCheck, Puzzle, Menu, MessageSquare, Bot } from 'lucide-react'
 
 const storeNav = [
@@ -251,6 +252,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
       </main>
       <Tutorial />
       {/* HelpWidget removed — support is now at /dashboard/support */}
+      {!isSuperAdmin && !isAdminSection && <OnboardingHelpButton />}
     </div>
   )
 }

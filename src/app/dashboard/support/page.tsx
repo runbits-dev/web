@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState, useRef } from 'react'
-import { Plus, Send, MessageSquare, Clock, Check, X, Loader2, Trash2 } from 'lucide-react'
+import { Plus, Send, MessageSquare, Clock, Check, X, Loader2, Trash2, Sparkles, UserRound, ExternalLink } from 'lucide-react'
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'https://api.runbits.dev'
 
@@ -10,6 +10,15 @@ type Conversation = {
   messages?: Message[]
 }
 type Message = { id: string; role: string; content: string; created_at: number }
+
+type AskAnswer = {
+  answer: string
+  requires_human: boolean
+  confidence?: 'high' | 'medium' | 'low'
+  cta_label?: string | null
+  cta_href?: string | null
+  matched_kb_id?: string | null
+}
 
 function getHeaders(): Record<string, string> {
   return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` }
@@ -32,6 +41,85 @@ export default function SupportPage() {
   const [sending, setSending] = useState(false)
   const [creating, setCreating] = useState(false)
   const chatRef = useRef<HTMLDivElement>(null)
+
+  // ─── Quick-ask (Runi L1 agent) ───────────────────────────────────────────
+  const [askInput, setAskInput] = useState('')
+  const [askAnswer, setAskAnswer] = useState<AskAnswer | null>(null)
+  const [askLoading, setAskLoading] = useState(false)
+  const [askError, setAskError] = useState<string | null>(null)
+
+  async function askRuni(): Promise<void> {
+    const q = askInput.trim()
+    if (!q || askLoading) return
+    setAskLoading(true)
+    setAskError(null)
+    setAskAnswer(null)
+    try {
+      const res = await fetch(`${API}/api/runtics/support/ask`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({
+          question: q,
+          context_screen: '/dashboard/support',
+        }),
+      })
+      if (res.status === 429) {
+        setAskError('Hiciste muchas preguntas seguidas. Esperá unos minutos o creá una conversación con un humano.')
+      } else if (!res.ok) {
+        setAskError('No pude responderte ahora. Probá creando una conversación con un humano.')
+      } else {
+        const data = (await res.json()) as { ok: boolean } & AskAnswer
+        if (data.ok) {
+          setAskAnswer({
+            answer: data.answer,
+            requires_human: !!data.requires_human,
+            confidence: data.confidence,
+            cta_label: data.cta_label,
+            cta_href: data.cta_href,
+            matched_kb_id: data.matched_kb_id,
+          })
+        } else {
+          setAskError('No pude generar una respuesta. Probá creando una conversación con un humano.')
+        }
+      }
+    } catch {
+      setAskError('Error de conexión. Reintentá en unos segundos.')
+    } finally {
+      setAskLoading(false)
+    }
+  }
+
+  async function escalateToHuman(): Promise<void> {
+    // Pre-create a conversation seeded with the question + the agent's answer.
+    setCreating(true)
+    try {
+      const title = askInput.trim().slice(0, 60) || 'Consulta escalada'
+      const res = await fetch(`${API}/api/support/conversations`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ title }),
+      })
+      if (res.ok) {
+        const conv = (await res.json()) as { id: string }
+        // Send the original question as the first message in the conversation.
+        if (askInput.trim()) {
+          await fetch(`${API}/api/support/conversations/${conv.id}/message`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({ message: askInput.trim() }),
+          }).catch(() => {})
+        }
+        await loadConversations()
+        await loadConversation(conv.id)
+        setAskAnswer(null)
+        setAskInput('')
+      }
+    } catch {
+      /* ignore */
+    } finally {
+      setCreating(false)
+    }
+  }
 
   useEffect(() => { loadConversations() }, [])
   useEffect(() => { chatRef.current?.scrollTo(0, chatRef.current.scrollHeight) }, [messages, sending])
@@ -245,10 +333,100 @@ export default function SupportPage() {
             )}
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center">
-              <MessageSquare className="w-12 h-12 text-slate-200 mx-auto mb-3" />
-              <p className="text-slate-400 text-sm">Seleccioná una conversación o creá una nueva</p>
+          <div className="flex-1 flex flex-col">
+            {/* Quick-ask powered by Runi (merchant-support-l1 agent) */}
+            <div className="px-6 py-6 border-b border-slate-100">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="w-4 h-4 text-indigo-600" />
+                <h2 className="text-sm font-semibold text-slate-900">Pregunta rápida con Runi</h2>
+                <span className="text-[10px] text-slate-400">IA — respuesta inmediata</span>
+              </div>
+              <p className="text-xs text-slate-500 mb-3">
+                ¿Tenés una consulta sobre cómo funciona Runbits? Runi puede responderte al toque.
+                Para temas más complejos, conectamos con un humano.
+              </p>
+              <div className="flex gap-2">
+                <input
+                  value={askInput}
+                  onChange={(e) => setAskInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && askRuni()}
+                  placeholder="Ej: ¿Cómo conecto Mercado Pago?"
+                  className="flex-1 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  maxLength={500}
+                />
+                <button
+                  onClick={askRuni}
+                  disabled={!askInput.trim() || askLoading}
+                  className="bg-indigo-600 text-white px-4 py-2.5 rounded-xl hover:bg-indigo-700 disabled:opacity-50 transition-colors flex items-center gap-1.5 text-sm font-medium"
+                >
+                  {askLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                  Preguntar
+                </button>
+              </div>
+
+              {askError && (
+                <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-100 text-sm text-red-700">
+                  {askError}
+                </div>
+              )}
+
+              {askAnswer && (
+                <div className="mt-4 p-4 rounded-2xl bg-indigo-50/60 border border-indigo-100">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
+                      <Sparkles className="w-4 h-4 text-indigo-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      {/* Plain text only — never dangerouslySetInnerHTML. The agent
+                          output is sanitized server-side, but we render as text
+                          for defense in depth. */}
+                      <p className="text-sm text-slate-800 whitespace-pre-wrap leading-relaxed">{askAnswer.answer}</p>
+
+                      <div className="mt-3 flex flex-wrap items-center gap-2">
+                        {askAnswer.cta_href && askAnswer.cta_label && askAnswer.cta_href.startsWith('/dashboard/') && (
+                          <a
+                            href={askAnswer.cta_href}
+                            className="inline-flex items-center gap-1.5 bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-50 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+                          >
+                            {askAnswer.cta_label}
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        )}
+                        {askAnswer.requires_human && (
+                          <button
+                            onClick={escalateToHuman}
+                            disabled={creating}
+                            className="inline-flex items-center gap-1.5 bg-slate-900 text-white hover:bg-slate-800 disabled:opacity-50 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+                          >
+                            {creating ? <Loader2 className="w-3 h-3 animate-spin" /> : <UserRound className="w-3 h-3" />}
+                            Conectar con humano
+                          </button>
+                        )}
+                        {askAnswer.confidence && (
+                          <span className="text-[10px] text-slate-400">
+                            confianza: {askAnswer.confidence === 'high' ? 'alta' : askAnswer.confidence === 'medium' ? 'media' : 'baja'}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setAskAnswer(null)}
+                      className="text-slate-400 hover:text-slate-600 p-1"
+                      title="Cerrar"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex-1 flex items-center justify-center px-6">
+              <div className="text-center">
+                <MessageSquare className="w-12 h-12 text-slate-200 mx-auto mb-3" />
+                <p className="text-slate-400 text-sm">¿Necesitás hablar con un humano?</p>
+                <p className="text-slate-400 text-xs mt-1">Creá una conversación o seleccioná una existente.</p>
+              </div>
             </div>
           </div>
         )}

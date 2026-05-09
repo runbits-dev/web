@@ -1295,5 +1295,38 @@
     "templatesTitle": "WhatsApp templates",
     "templatesEmpty": "No templates yet. Runbits ships pre-approved templates that auto-activate when an order is confirmed.",
     "templatesError": "We couldn't load your templates."
+  },
+  "runtics": {
+    "support": {
+      "title": "Support",
+      "askTitle": "Quick ask with Runi",
+      "askSubtitle": "AI — instant answer",
+      "askDescription": "Have a question about how Runbits works? Runi can answer right away. For more complex issues, we'll connect you with a human.",
+      "askPlaceholder": "E.g., How do I connect Mercado Pago?",
+      "askButton": "Ask",
+      "askError": "I couldn't answer right now. Try creating a conversation with a human.",
+      "askErrorRateLimit": "You've asked a lot of questions in a row. Wait a few minutes or open a human conversation.",
+      "askErrorConnection": "Connection error. Try again in a few seconds.",
+      "connectHuman": "Connect with a human",
+      "confidenceLabel": "confidence",
+      "confidenceHigh": "high",
+      "confidenceMedium": "medium",
+      "confidenceLow": "low",
+      "needHuman": "Need to talk with a human?",
+      "needHumanSub": "Open a new conversation or pick an existing one."
+    },
+    "onboarding": {
+      "buttonLabel": "Runi tip",
+      "buttonTitle": "Ask Runi for a tip",
+      "panelTitle": "Runi — Your assistant",
+      "panelSubtitle": "Personalized tip for your store",
+      "loading": "Thinking a tip for you…",
+      "errorGeneric": "I couldn't generate a tip right now.",
+      "errorRateLimit": "You've asked a lot in a row. Try again in a few minutes.",
+      "errorConnection": "Connection error.",
+      "retry": "Retry",
+      "anotherTip": "Another tip",
+      "footerLabel": "AI-generated suggestion"
+    }
   }
 }
