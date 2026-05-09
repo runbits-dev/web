@@ -666,19 +666,27 @@ export default function SettingsPage() {
       )}
 
       {/* Ayuda */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6">
-        <h2 className="font-semibold text-slate-900 mb-4">Ayuda</h2>
-        <button
-          onClick={async () => {
-            if (activeProfile) {
-              await api.updateProfile(activeProfile.id, { tutorialCompleted: false, tutorialStep: 0 })
-              window.location.href = '/dashboard'
-            }
-          }}
-          className="text-sm text-indigo-600 font-medium hover:underline"
-        >
-          <RotateCcw className="w-4 h-4 inline-block mr-1 align-text-bottom" /> Ver tutorial de nuevo
-        </button>
+      <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-3">
+        <h2 className="font-semibold text-slate-900">Ayuda</h2>
+        <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
+          <button
+            onClick={async () => {
+              if (activeProfile) {
+                await api.updateProfile(activeProfile.id, { tutorialCompleted: false, tutorialStep: 0 })
+                window.location.href = '/dashboard'
+              }
+            }}
+            className="text-sm text-indigo-600 font-medium hover:underline text-left"
+          >
+            <RotateCcw className="w-4 h-4 inline-block mr-1 align-text-bottom" /> Ver tutorial de nuevo
+          </button>
+          <a
+            href="/dashboard/settings/onboarding"
+            className="text-sm text-indigo-600 font-medium hover:underline"
+          >
+            Gestionar onboarding
+          </a>
+        </div>
       </div>
     </div>
   )

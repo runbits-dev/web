@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { api } from '@/lib/api'
-import { ImagePlus, Sparkles, Loader2 } from 'lucide-react'
+import { ImagePlus, Sparkles, Loader2, Wand2 } from 'lucide-react'
 import { useProfile } from '@/context/ProfileContext'
+import { getTemplatesForBusinessType, getNamePlaceholder, type ItemTemplate } from '@/components/ItemTemplates'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.runbits.dev'
 
@@ -89,6 +90,22 @@ export default function MenuPage() {
     setError(null)
     setModal({ mode: 'create' })
   }
+
+  function applyTemplate(tpl: ItemTemplate) {
+    setForm({
+      name: tpl.name,
+      description: tpl.description,
+      price: tpl.price.toFixed(2),
+      category: tpl.category ?? '',
+      is_available: true,
+      imagePreview: '',
+    })
+    setSelectedFile(null)
+    setError(null)
+    setModal({ mode: 'create' })
+  }
+
+  const templates = getTemplatesForBusinessType(businessType)
 
   function openEdit(item: MenuItem) {
     setForm({
@@ -189,18 +206,40 @@ export default function MenuPage() {
 
   return (
     <div>
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex items-center justify-between gap-2 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Menú</h1>
           <p className="text-slate-500 text-sm mt-1">{items.length} productos</p>
         </div>
         {restaurantId && (
-          <button
-            onClick={openCreate}
-            className="bg-slate-900 text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-slate-700 transition-colors"
-          >
-            + Agregar producto
-          </button>
+          <div className="flex items-center gap-2">
+            {templates.length > 0 && items.length > 0 && (
+              <details className="relative">
+                <summary className="list-none cursor-pointer bg-white border border-slate-200 text-slate-700 text-sm font-semibold px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors flex items-center gap-1">
+                  <Wand2 className="w-4 h-4 text-indigo-600" />
+                  <span>Templates</span>
+                </summary>
+                <div className="absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-xl shadow-lg z-20 p-2 max-h-72 overflow-y-auto">
+                  {templates.map(tpl => (
+                    <button
+                      key={tpl.label}
+                      onClick={() => applyTemplate(tpl)}
+                      className="w-full text-left p-2 rounded-lg hover:bg-indigo-50 transition-colors"
+                    >
+                      <p className="text-xs font-semibold text-slate-900">{tpl.label}</p>
+                      <p className="text-[10px] text-slate-400 truncate">{tpl.description}</p>
+                    </button>
+                  ))}
+                </div>
+              </details>
+            )}
+            <button
+              onClick={openCreate}
+              className="bg-slate-900 text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-slate-700 transition-colors"
+            >
+              + Agregar producto
+            </button>
+          </div>
         )}
       </div>
 
@@ -211,9 +250,32 @@ export default function MenuPage() {
           <p className="text-amber-700 text-sm">Tu cuenta no tiene un restaurante asociado aún.</p>
         </div>
       ) : items.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-slate-200 p-16 text-center">
-          <p className="text-slate-400 text-sm">No hay productos en el menú</p>
-          <button onClick={openCreate} className="mt-4 text-sm text-slate-900 font-semibold underline">Agregar el primero</button>
+        <div className="bg-white rounded-2xl border border-slate-200 p-8 md:p-12">
+          <div className="text-center">
+            <p className="text-slate-700 font-semibold">Empezá con un template</p>
+            <p className="text-slate-400 text-sm mt-1">Elegí uno y editalo a tu gusto. O empezá de cero.</p>
+          </div>
+          {templates.length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mt-6">
+              {templates.map(tpl => (
+                <button
+                  key={tpl.label}
+                  onClick={() => applyTemplate(tpl)}
+                  className="text-left p-4 rounded-xl border-2 border-slate-200 hover:border-indigo-400 hover:bg-indigo-50 transition-all"
+                >
+                  <Wand2 className="w-4 h-4 text-indigo-600 mb-2" />
+                  <p className="text-xs font-semibold text-slate-900">{tpl.label}</p>
+                  <p className="text-[10px] text-slate-400 mt-1 line-clamp-2">{tpl.description}</p>
+                  <p className="text-[10px] text-indigo-600 font-semibold mt-1">${tpl.price.toFixed(2)}</p>
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="text-center mt-6">
+            <button onClick={openCreate} className="text-sm text-slate-900 font-semibold underline">
+              Empezar de cero
+            </button>
+          </div>
         </div>
       ) : (
         <div className="grid gap-3">
@@ -271,7 +333,7 @@ export default function MenuPage() {
                   className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
                   value={form.name}
                   onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                  placeholder="Ej: Hamburguesa clásica"
+                  placeholder={getNamePlaceholder(businessType)}
                 />
               </div>
               <div>

@@ -158,11 +158,13 @@ export function Tutorial() {
                 Anterior
               </button>
             )}
-            {isFirst && (
-              <button onClick={() => setShow(false)} className="flex-1 py-2 rounded-xl text-xs font-semibold border border-gray-200 text-gray-400 hover:bg-gray-50">
-                Después
-              </button>
-            )}
+            <button
+              onClick={() => setShow(false)}
+              className="flex-1 py-2 rounded-xl text-xs font-semibold border border-gray-200 text-gray-500 hover:bg-gray-50"
+              title="Pausar — podés volver desde Configuración"
+            >
+              Después
+            </button>
             <button
               onClick={() => isLast ? dismiss() : setStep(s => s + 1)}
               className="flex-1 bg-indigo-600 text-white py-2 rounded-xl text-xs font-semibold hover:bg-indigo-700"

@@ -13,6 +13,7 @@ import { Tutorial } from '@/components/Tutorial'
 import { InitialOnboarding, getNavForBusinessType } from '@/components/InitialOnboarding'
 import { ProfileSelector } from '@/components/ProfileSelector'
 import { ProfileSwitcher } from '@/components/ProfileSwitcher'
+import { OnboardingChecklistSidebar } from '@/components/OnboardingChecklist'
 import { Home, ShoppingBag, PackageCheck, BarChart3, Megaphone, CreditCard, Settings, LayoutDashboard, MapPin, Store, Bike, ClipboardList, Users, DollarSign, Wallet, Receipt, Map, CalendarCheck, Puzzle, Menu, MessageSquare, Bot } from 'lucide-react'
 
 const storeNav = [
@@ -201,6 +202,10 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
 
         {!isSuperAdmin && (
           <ProfileSwitcher />
+        )}
+
+        {!isSuperAdmin && !isAdminSection && (
+          <OnboardingChecklistSidebar />
         )}
 
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
