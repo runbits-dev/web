@@ -1328,5 +1328,150 @@
       "anotherTip": "Another tip",
       "footerLabel": "AI-generated suggestion"
     }
+  },
+  "marketing": {
+    "featured": {
+      "title": "Featured slots",
+      "subtitle": "Promote your items so they appear first across the marketplace.",
+      "newCta": "Promote new item",
+      "tabAll": "All",
+      "tabActive": "Active",
+      "tabPending": "Pending payment",
+      "tabExpired": "Expired",
+      "tabCancelled": "Cancelled",
+      "empty": {
+        "title": "You haven't promoted anything yet",
+        "body": "Featured slots showcase your product at the front of the catalog (home, category or search). Reach can grow up to 10×."
+      },
+      "table": {
+        "item": "Item",
+        "placement": "Placement",
+        "status": "Status",
+        "schedule": "Schedule",
+        "cost": "Cost",
+        "impressions": "Impressions",
+        "clicks": "Clicks",
+        "ctr": "CTR",
+        "actions": "Actions"
+      },
+      "status": {
+        "active": "Active",
+        "pending_payment": "Pending payment",
+        "expired": "Expired",
+        "cancelled": "Cancelled"
+      },
+      "actions": {
+        "view": "View",
+        "extend": "Extend",
+        "cancel": "Cancel",
+        "retryPayment": "Retry payment"
+      },
+      "placement": {
+        "home_top": {
+          "title": "Home featured",
+          "description": "Show up in the marketplace home carousel. Maximum impact."
+        },
+        "category_top": {
+          "title": "Top of category",
+          "description": "Appear at the top of your category. Highly qualified traffic."
+        },
+        "search_promoted": {
+          "title": "Promoted in search",
+          "description": "Appear as a promoted result in related searches."
+        }
+      },
+      "purchase": {
+        "title": "Promote item",
+        "subtitle": "Pick what to promote and where to appear.",
+        "step": {
+          "item": "Item",
+          "placement": "Placement",
+          "duration": "Duration",
+          "payment": "Payment"
+        },
+        "next": "Continue",
+        "back": "Back",
+        "payNow": "Pay {amount}",
+        "step1": {
+          "title": "Which item do you want to promote?",
+          "search": "Search items by name…",
+          "noItems": "No items found. Make sure they are published.",
+          "loading": "Loading items…"
+        },
+        "step2": {
+          "title": "Where do you want to appear?",
+          "category": "Category to promote in",
+          "categoryHelp": "Only applies to Top of category — pick which slug to appear on."
+        },
+        "step3": {
+          "title": "Duration and date",
+          "days": "Duration",
+          "daysUnit": "days",
+          "starts": "Start date",
+          "startsHelp": "Defaults to today. You can schedule it for the future.",
+          "quoteCost": "Total cost",
+          "quoteEnds": "Ends on",
+          "competing": "{n} slots competing in this placement this week.",
+          "estimatedImpressions": "Estimated impressions: {n}/day",
+          "calculating": "Calculating price…",
+          "unavailable": "This combination isn't available. Try a different date."
+        },
+        "step4": {
+          "title": "Summary and payment",
+          "summary": "Purchase summary",
+          "noProvider": "You need to connect a payment method (Mercado Pago, Stripe or PayPal) before promoting.",
+          "noProviderCta": "Connect payment method",
+          "redirecting": "Taking you to checkout…",
+          "errorGeneric": "We couldn't create the payment. Try again in a few seconds."
+        }
+      },
+      "detail": {
+        "back": "Back to slots",
+        "metrics": {
+          "impressions": "Impressions",
+          "clicks": "Clicks",
+          "ctr": "CTR",
+          "cost": "Total cost",
+          "remaining": "Days remaining",
+          "remainingExpired": "Expired"
+        },
+        "chartTitle": "Daily performance",
+        "chartEmpty": "No data yet.",
+        "extendModal": {
+          "title": "Extend slot",
+          "body": "Add days to the end of the promotion. Cost is prorated.",
+          "days": "Additional days",
+          "extraCost": "Additional cost",
+          "confirm": "Pay and extend"
+        },
+        "cancelModal": {
+          "title": "Cancel slot",
+          "bodyBeforeStart": "Since the slot hasn't started, we'll refund the full amount.",
+          "bodyAfterStart": "The slot already started: it will be deactivated now but the elapsed period is NOT refunded.",
+          "confirm": "Yes, cancel"
+        },
+        "paymentPending": {
+          "title": "Pending payment",
+          "body": "We haven't received payment confirmation yet. If more than 30 minutes have passed, please retry.",
+          "retry": "Retry payment"
+        }
+      },
+      "result": {
+        "checking": "Verifying your payment…",
+        "checkingHint": "This can take a few seconds.",
+        "successTitle": "Slot activated!",
+        "successBody": "Your item is now promoted. You'll start seeing impressions in minutes.",
+        "successCta": "View details",
+        "failTitle": "Payment was not confirmed",
+        "failBody": "Either you cancelled or the provider declined it.",
+        "failCta": "Retry",
+        "timeoutTitle": "Payment is processing",
+        "timeoutBody": "We'll email you once it's confirmed. You can close this page."
+      },
+      "refundPolicy": {
+        "title": "Refund policy",
+        "body": "If you cancel before the promotion starts, we refund in full. Once it has started, the elapsed period is NOT refunded."
+      }
+    }
   }
 }

@@ -396,4 +396,64 @@ export const api = {
     Object.entries(params).forEach(([k, v]) => { if (v !== undefined && v !== '') qs.set(k, String(v)) })
     return request<{ items: any[]; total: number; facets: any; next_cursor: string | null }>(`/api/catalog/search${qs.toString() ? '?' + qs.toString() : ''}`)
   },
+
+  // ── Featured slots — paid promoted placements (marketplace) ──────────────
+  // Backend in runbits-restaurant-service: /catalog/featured/* endpoints.
+  // Wired through the gateway as /api/catalog/featured/*.
+
+  /** Public pricing per placement — no auth needed. */
+  getFeaturedPricing: () =>
+    request<{ placements: Array<{ placement: string; cost_per_day_cents: number; currency: string; min_days: number; max_days: number; description?: string }> }>(
+      '/api/catalog/featured/pricing',
+    ),
+
+  /** Quote a slot before purchase — server-side computes cost and availability. */
+  quoteFeatured: (data: { item_id: string; placement: string; placement_value?: string; duration_days: number; starts_at?: number }) =>
+    request<{ placement: string; cost_cents: number; currency: string; starts_at: number; ends_at: number; duration_days: number; available: boolean; competing_slots: number }>(
+      '/api/catalog/featured/quote',
+      { method: 'POST', body: JSON.stringify(data) },
+    ),
+
+  /** Create slot (status=pending_payment) and obtain checkout_url for the merchant's payment provider. */
+  createFeatured: (data: { item_id: string; placement: string; placement_value?: string; duration_days: number; starts_at?: number; idempotencyKey?: string }) => {
+    const headers: Record<string, string> = {}
+    if (data.idempotencyKey) headers['Idempotency-Key'] = data.idempotencyKey
+    const { idempotencyKey: _ik, ...body } = data
+    return request<{ id: string; status: string; checkout_url: string }>(
+      '/api/catalog/featured',
+      { method: 'POST', body: JSON.stringify(body), headers },
+    )
+  },
+
+  /** List my slots (merchant-scoped) with aggregated metrics. */
+  listMyFeatured: (params: { status?: string; limit?: number; cursor?: string } = {}) => {
+    const qs = new URLSearchParams()
+    Object.entries(params).forEach(([k, v]) => { if (v !== undefined && v !== '') qs.set(k, String(v)) })
+    return request<{ data: Array<{ id: string; item_id: string; item_name?: string; item_image_key?: string | null; placement: string; placement_value?: string | null; status: string; starts_at: number; ends_at: number; duration_days: number; cost_cents: number; currency: string; impressions_total: number; clicks_total: number; ctr: number; checkout_url?: string | null }>; next_cursor: string | null }>(
+      `/api/catalog/featured/mine${qs.toString() ? '?' + qs.toString() : ''}`,
+    )
+  },
+
+  /** Get one slot — owner check applied server-side. */
+  getFeatured: (id: string) =>
+    request<{ id: string; item_id: string; item_name?: string; item_image_key?: string | null; placement: string; placement_value?: string | null; status: string; starts_at: number; ends_at: number; duration_days: number; cost_cents: number; currency: string; checkout_url?: string | null; impressions_total: number; clicks_total: number; ctr: number }>(
+      `/api/catalog/featured/${encodeURIComponent(id)}`,
+    ),
+
+  /** Cancel a slot — refund logic decided server-side based on starts_at vs now. */
+  cancelFeatured: (id: string) =>
+    request<{ ok: boolean; refunded_cents: number }>(`/api/catalog/featured/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+
+  /** Extend an active slot — creates a new charge and pushes ends_at on confirmation. */
+  extendFeatured: (id: string, additional_days: number) =>
+    request<{ id: string; status: string; checkout_url: string; cost_cents: number; new_ends_at: number }>(
+      `/api/catalog/featured/${encodeURIComponent(id)}/extend`,
+      { method: 'POST', body: JSON.stringify({ additional_days }) },
+    ),
+
+  /** Time-series metrics for a slot — last 30 days by default. */
+  getFeaturedMetrics: (id: string) =>
+    request<{ data: Array<{ date_yyyymmdd: number; impressions: number; clicks: number }> }>(
+      `/api/catalog/featured/${encodeURIComponent(id)}/metrics`,
+    ),
 }

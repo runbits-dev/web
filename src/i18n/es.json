@@ -1328,5 +1328,150 @@
       "anotherTip": "Otro tip",
       "footerLabel": "Sugerencia generada por IA"
     }
+  },
+  "marketing": {
+    "featured": {
+      "title": "Slots destacados",
+      "subtitle": "Promocioná tus items para que aparezcan primero en el marketplace.",
+      "newCta": "Promocionar nuevo item",
+      "tabAll": "Todos",
+      "tabActive": "Activos",
+      "tabPending": "Pendientes de pago",
+      "tabExpired": "Expirados",
+      "tabCancelled": "Cancelados",
+      "empty": {
+        "title": "Aún no promocionaste ningún item",
+        "body": "Los slots destacados muestran tu producto al frente del catálogo (home, categoría o búsqueda). El alcance puede multiplicarse hasta 10×."
+      },
+      "table": {
+        "item": "Item",
+        "placement": "Ubicación",
+        "status": "Estado",
+        "schedule": "Vigencia",
+        "cost": "Costo",
+        "impressions": "Impresiones",
+        "clicks": "Clicks",
+        "ctr": "CTR",
+        "actions": "Acciones"
+      },
+      "status": {
+        "active": "Activo",
+        "pending_payment": "Pendiente de pago",
+        "expired": "Expirado",
+        "cancelled": "Cancelado"
+      },
+      "actions": {
+        "view": "Ver",
+        "extend": "Extender",
+        "cancel": "Cancelar",
+        "retryPayment": "Reintentar pago"
+      },
+      "placement": {
+        "home_top": {
+          "title": "Home destacado",
+          "description": "Aparecé en el carousel de la home del marketplace. Máximo impacto."
+        },
+        "category_top": {
+          "title": "Top de categoría",
+          "description": "Aparecé al inicio de tu categoría. Tráfico calificado."
+        },
+        "search_promoted": {
+          "title": "Promoted en búsqueda",
+          "description": "Aparecé como resultado promovido en las búsquedas relacionadas."
+        }
+      },
+      "purchase": {
+        "title": "Promocionar item",
+        "subtitle": "Elegí qué promocionar y dónde aparecer.",
+        "step": {
+          "item": "Item",
+          "placement": "Ubicación",
+          "duration": "Duración",
+          "payment": "Pago"
+        },
+        "next": "Continuar",
+        "back": "Atrás",
+        "payNow": "Pagar {amount}",
+        "step1": {
+          "title": "¿Qué item querés promocionar?",
+          "search": "Buscar item por nombre…",
+          "noItems": "No se encontraron items. Asegurate de tenerlos publicados.",
+          "loading": "Cargando items…"
+        },
+        "step2": {
+          "title": "¿Dónde querés aparecer?",
+          "category": "Categoría a promocionar",
+          "categoryHelp": "Solo aplica para Top de categoría — elegí en qué slug aparecer."
+        },
+        "step3": {
+          "title": "Duración y fecha",
+          "days": "Duración",
+          "daysUnit": "días",
+          "starts": "Fecha de inicio",
+          "startsHelp": "Por defecto arranca hoy. Podés programarla a futuro.",
+          "quoteCost": "Costo total",
+          "quoteEnds": "Termina el",
+          "competing": "Hay {n} slots compitiendo en esta ubicación esta semana.",
+          "estimatedImpressions": "Impresiones estimadas: {n}/día",
+          "calculating": "Calculando precio…",
+          "unavailable": "Esta combinación no está disponible. Probá otra fecha."
+        },
+        "step4": {
+          "title": "Resumen y pago",
+          "summary": "Resumen de la compra",
+          "noProvider": "Necesitás conectar un método de pago (Mercado Pago, Stripe o PayPal) antes de promocionar.",
+          "noProviderCta": "Conectar método de pago",
+          "redirecting": "Te llevamos al checkout…",
+          "errorGeneric": "No pudimos crear el pago. Probá de nuevo en unos segundos."
+        }
+      },
+      "detail": {
+        "back": "Volver a slots",
+        "metrics": {
+          "impressions": "Impresiones",
+          "clicks": "Clicks",
+          "ctr": "CTR",
+          "cost": "Costo total",
+          "remaining": "Días restantes",
+          "remainingExpired": "Expirado"
+        },
+        "chartTitle": "Performance diaria",
+        "chartEmpty": "Aún no hay datos.",
+        "extendModal": {
+          "title": "Extender slot",
+          "body": "Agregá días al final de la promoción. Se cobra el costo prorrateado.",
+          "days": "Días adicionales",
+          "extraCost": "Costo adicional",
+          "confirm": "Pagar y extender"
+        },
+        "cancelModal": {
+          "title": "Cancelar slot",
+          "bodyBeforeStart": "Como el slot todavía no empezó, te reembolsamos el monto completo.",
+          "bodyAfterStart": "El slot ya empezó: la promoción se desactiva ahora pero NO se reembolsa el período corrido.",
+          "confirm": "Sí, cancelar"
+        },
+        "paymentPending": {
+          "title": "Pago pendiente",
+          "body": "Aún no recibimos confirmación del pago. Si pasaron más de 30 minutos, reintentá.",
+          "retry": "Reintentar pago"
+        }
+      },
+      "result": {
+        "checking": "Verificando tu pago…",
+        "checkingHint": "Esto puede tardar unos segundos.",
+        "successTitle": "¡Slot activado!",
+        "successBody": "Tu item ya está promocionado. Empezarás a ver impresiones en minutos.",
+        "successCta": "Ver detalles",
+        "failTitle": "El pago no se confirmó",
+        "failBody": "Puede que lo hayas cancelado o que el provider lo haya rechazado.",
+        "failCta": "Reintentar",
+        "timeoutTitle": "El pago está procesando",
+        "timeoutBody": "Te avisaremos por email cuando se confirme. Podés cerrar esta página."
+      },
+      "refundPolicy": {
+        "title": "Política de reembolso",
+        "body": "Si cancelás antes de que empiece la promoción te reembolsamos el monto completo. Si ya empezó, no hay reembolso del período corrido."
+      }
+    }
   }
 }

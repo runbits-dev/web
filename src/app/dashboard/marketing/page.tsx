@@ -1,8 +1,9 @@
 "use client"
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { api } from '@/lib/api'
-import { Info } from 'lucide-react'
+import { Info, Sparkles, ChevronRight } from 'lucide-react'
 
 type Coupon = { id: string; code: string; discount_type: string; discount_value: number; min_order: number; max_uses: number; used_count: number; expires_at: string | null; restaurant_id: string }
 type Promotion = { id: string; name?: string; title?: string; description?: string; type?: string; config?: string | Record<string, any>; discount_type?: string; discount_value?: number; starts_at: string | number; ends_at: string | number; restaurant_id: string; active?: number; is_active?: boolean }
@@ -119,6 +120,25 @@ export default function MarketingPage() {
           + {tab === 'coupons' ? 'Nuevo cupón' : 'Nueva promo'}
         </button>
       </div>
+
+      {/* Featured slots CTA */}
+      <Link
+        href="/dashboard/marketing/featured"
+        className="block bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-5 mb-6 hover:shadow-md transition-shadow group"
+      >
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="font-semibold text-slate-900">Slots destacados (marketplace)</p>
+              <p className="text-xs text-slate-500 mt-0.5">Promocioná tus items en el marketplace de Runbits para multiplicar tu alcance.</p>
+            </div>
+          </div>
+          <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-slate-700" />
+        </div>
+      </Link>
 
       {/* Tabs */}
       <div className="flex gap-2 mb-6">
