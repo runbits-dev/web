@@ -407,6 +407,20 @@ export const api = {
       '/api/catalog/featured/pricing',
     ),
 
+  /** Admin: list ALL pricing rows (including inactive). Requires role=superadmin. */
+  getFeaturedPricingAdmin: () =>
+    request<{ placements: Array<{ placement: string; cost_per_day_cents: number; currency: string; min_days: number; max_days: number; description: string | null; active: boolean }> }>(
+      '/api/catalog/featured/pricing/admin',
+    ),
+
+  /** Admin: upsert a placement's pricing config. Affects new purchases only —
+   *  active slots keep their snapshot cost_cents. Requires role=superadmin. */
+  updateFeaturedPricing: (placement: string, data: { cost_per_day_cents: number; currency: string; min_days: number; max_days: number; description?: string | null; active?: boolean }) =>
+    request<{ placement: string; cost_per_day_cents: number; currency: string; min_days: number; max_days: number; description: string | null; active: boolean }>(
+      `/api/catalog/featured/pricing/${encodeURIComponent(placement)}`,
+      { method: 'PUT', body: JSON.stringify(data) },
+    ),
+
   /** Quote a slot before purchase — server-side computes cost and availability. */
   quoteFeatured: (data: { item_id: string; placement: string; placement_value?: string; duration_days: number; starts_at?: number }) =>
     request<{ placement: string; cost_cents: number; currency: string; starts_at: number; ends_at: number; duration_days: number; available: boolean; competing_slots: number }>(

@@ -36,6 +36,7 @@ const adminNav = [
   { href: '/dashboard/admin/orders', label: 'Pedidos', Icon: ClipboardList },
   { href: '/dashboard/admin/subscriptions', label: 'Suscripciones', Icon: Receipt },
   { href: '/dashboard/admin/flags', label: 'Feature Flags', Icon: Settings },
+  { href: '/dashboard/admin/featured-pricing', label: 'Pricing Destacados', Icon: DollarSign },
   { href: '/dashboard/admin/sales', label: 'Sales Agent', Icon: Megaphone },
   { href: '/dashboard/runtics', label: 'Runtics', Icon: Bot },
   { href: '/dashboard/roadmap', label: 'Roadmap', Icon: Map },
