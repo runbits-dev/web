@@ -470,4 +470,29 @@ export const api = {
     request<{ data: Array<{ date_yyyymmdd: number; impressions: number; clicks: number }> }>(
       `/api/catalog/featured/${encodeURIComponent(id)}/metrics`,
     ),
+
+  // ── Web Vitals analytics (admin) ──────────────────────────────────────────
+
+  /**
+   * Percentiles (p50/p75/p95) for the given Core Web Vital metric over a time
+   * window. `since` is a UNIX ms epoch (defaults to last 24h server-side).
+   */
+  getVitalsPercentiles: (metric: 'CLS' | 'INP' | 'LCP' | 'FCP' | 'TTFB', since: number) =>
+    request<{
+      metric: string
+      since: number
+      count: number
+      p50: number | null
+      p75: number | null
+      p95: number | null
+    }>(`/api/vitals/percentiles?metric=${metric}&since=${since}`),
+
+  /** Top URLs by average value for the given metric (worst-first). */
+  getVitalsByUrl: (metric: 'CLS' | 'INP' | 'LCP' | 'FCP' | 'TTFB', since: number, limit = 20) =>
+    request<{
+      metric: string
+      since: number
+      limit: number
+      data: Array<{ url: string; samples: number; avg_value: number; min_value: number; max_value: number }>
+    }>(`/api/vitals/by-url?metric=${metric}&since=${since}&limit=${limit}`),
 }
