@@ -5,6 +5,7 @@ import { api } from '@/lib/api'
 import { ImagePlus, Sparkles, Loader2, Wand2 } from 'lucide-react'
 import { useProfile } from '@/context/ProfileContext'
 import { getTemplatesForBusinessType, getNamePlaceholder, type ItemTemplate } from '@/components/ItemTemplates'
+import OptimizedImage from '@/components/OptimizedImage'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.runbits.dev'
 
@@ -297,7 +298,7 @@ export default function MenuPage() {
           {items.map(item => (
             <div key={item.id} className="bg-white rounded-2xl border border-slate-200 p-5 flex items-center justify-between gap-4">
               {item.image_key ? (
-                <img src={`https://runbit-storage.r2.dev/${item.image_key}`} alt={item.name} className="w-12 h-12 rounded-lg object-cover shrink-0" />
+                <OptimizedImage src={`https://runbit-storage.r2.dev/${item.image_key}`} alt={item.name} width={96} widths={[96, 192]} sizes="48px" className="w-12 h-12 rounded-lg object-cover shrink-0" />
               ) : null}
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-slate-900">{item.name}</p>

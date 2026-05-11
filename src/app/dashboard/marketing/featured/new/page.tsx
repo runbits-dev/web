@@ -8,6 +8,7 @@ import { useI18n } from '@/i18n'
 import { useToast } from '@/components/Toast'
 import { useProfile } from '@/context/ProfileContext'
 import { ChevronLeft, ChevronRight, Search, Sparkles, Home, Tag, Compass, AlertCircle, CheckCircle2 } from 'lucide-react'
+import OptimizedImage from '@/components/OptimizedImage'
 
 type Item = { id: string; name: string; price: number; image_key?: string | null; category_slug?: string | null; categories?: Array<{ slug: string; name: string }> }
 type Pricing = { placement: string; cost_per_day_cents: number; currency: string; min_days: number; max_days: number; description?: string }
@@ -240,8 +241,7 @@ export default function NewFeaturedPage() {
                   >
                     <div className="aspect-square bg-slate-100 rounded-lg mb-2 overflow-hidden flex items-center justify-center">
                       {it.image_key ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={`${API_BASE}/api/images/${it.image_key}`} alt={it.name} className="w-full h-full object-cover" />
+                        <OptimizedImage src={`${API_BASE}/api/images/${it.image_key}`} alt={it.name} width={400} className="w-full h-full object-cover" sizes="(max-width: 640px) 50vw, 200px" />
                       ) : (
                         <span className="text-slate-300 text-xs">sin imagen</span>
                       )}
