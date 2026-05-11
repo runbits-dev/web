@@ -110,6 +110,10 @@ export default function SettingsPage() {
 
   // Restaurant form
   const [editingRestaurant, setEditingRestaurant] = useState(false)
+  // 0005_multi_currency: full list of LATAM-relevant currencies + USD/EUR.
+  // The store charges in `default_currency`; `supported_currencies` is a
+  // display-only allowlist surfaced to the buyer for preview.
+  const SUPPORTED_CCYS = ['USD', 'ARS', 'BRL', 'CLP', 'MXN', 'PEN', 'COP', 'UYU', 'EUR'] as const
   const [restaurantForm, setRestaurantForm] = useState({
     name: '',
     address: '',
@@ -117,15 +121,29 @@ export default function SettingsPage() {
     description: '',
     is_open: false,
     opening_hours: DEFAULT_OPENING_HOURS as Record<string, { open: string; close: string; closed: boolean }>,
+    default_currency: 'USD' as string,
+    supported_currencies: [] as string[],
   })
   const [savingRestaurant, setSavingRestaurant] = useState(false)
   const [restaurantSuccess, setRestaurantSuccess] = useState(false)
   const [restaurantError, setRestaurantError] = useState<string | null>(null)
+  const [convertCcy, setConvertCcy] = useState<string>('USD')
+  const [convertingCcy, setConvertingCcy] = useState(false)
+  const [convertResult, setConvertResult] = useState<{ items_updated: number; variants_updated: number } | null>(null)
 
   useEffect(() => {
     if (!user?.restaurant_id) return
     api.getRestaurant(user.restaurant_id).then(r => {
       setRestaurant(r)
+      let supported: string[] = []
+      try {
+        if (typeof r.supported_currencies === 'string' && r.supported_currencies.trim()) {
+          const parsed = JSON.parse(r.supported_currencies)
+          if (Array.isArray(parsed)) supported = parsed.filter((x): x is string => typeof x === 'string')
+        } else if (Array.isArray(r.supported_currencies)) {
+          supported = r.supported_currencies.filter((x: unknown): x is string => typeof x === 'string')
+        }
+      } catch { /* leave empty */ }
       setRestaurantForm({
         name: r.name || '',
         address: r.address || '',
@@ -133,6 +151,8 @@ export default function SettingsPage() {
         description: r.description || '',
         is_open: r.is_open ?? false,
         opening_hours: r.opening_hours || DEFAULT_OPENING_HOURS,
+        default_currency: (r.default_currency || 'USD').toUpperCase(),
+        supported_currencies: supported,
       })
     }).catch(() => {}).finally(() => setRestaurantLoading(false))
     api.getConnectStatus(user.restaurant_id).then(setConnectStatus).catch(() => {})
@@ -302,6 +322,34 @@ export default function SettingsPage() {
     }
   }
 
+  // Bulk re-denominate every item in the store from `convertCcy` to the new
+  // default_currency. Calls the dedicated endpoint added in 0005_multi_currency.
+  async function runConvertCurrency() {
+    if (!restaurantId) return
+    setConvertingCcy(true)
+    setConvertResult(null)
+    try {
+      const res = await fetch(`${API_BASE}/api/restaurants/${restaurantId}/items/convert-currency`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') || '' : ''}`,
+        },
+        body: JSON.stringify({ from: convertCcy.toUpperCase(), to: restaurantForm.default_currency }),
+      })
+      if (!res.ok) {
+        const detail = await res.text().catch(() => '')
+        throw new Error(detail || `HTTP ${res.status}`)
+      }
+      const payload = await res.json() as { items_updated: number; variants_updated: number }
+      setConvertResult({ items_updated: payload.items_updated, variants_updated: payload.variants_updated })
+    } catch (e: any) {
+      setRestaurantError(e.message || 'Error en la conversión')
+    } finally {
+      setConvertingCcy(false)
+    }
+  }
+
   async function saveRestaurant() {
     if (!restaurantId) return
     if (!restaurantForm.name.trim()) { setRestaurantError('El nombre es obligatorio'); return }
@@ -315,6 +363,9 @@ export default function SettingsPage() {
         description: restaurantForm.description.trim(),
         is_open: restaurantForm.is_open,
         opening_hours: restaurantForm.opening_hours,
+        // 0005_multi_currency
+        defaultCurrency: restaurantForm.default_currency,
+        supportedCurrencies: restaurantForm.supported_currencies,
       })
       setRestaurant(updated)
       setEditingRestaurant(false)
@@ -479,6 +530,89 @@ export default function SettingsPage() {
                   className="rounded"
                 />
                 <label htmlFor="is_open" className="text-sm text-slate-700 font-medium">Abierto ahora</label>
+              </div>
+
+              {/* ── Multi-currency (0005) ── */}
+              <div className="border-t border-slate-100 pt-4">
+                <p className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wide">Moneda</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-semibold text-slate-600 mb-1 block">Moneda de cobro *</label>
+                    <select
+                      className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                      value={restaurantForm.default_currency}
+                      onChange={e => setRestaurantForm(f => ({ ...f, default_currency: e.target.value }))}
+                    >
+                      {SUPPORTED_CCYS.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                    <p className="text-[11px] text-slate-400 mt-1">Cobramos a tus compradores en esta moneda.</p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-slate-600 mb-1 block">Monedas de visualización</label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {SUPPORTED_CCYS.map(c => {
+                        const active = restaurantForm.supported_currencies.includes(c)
+                        return (
+                          <button
+                            key={c}
+                            type="button"
+                            onClick={() => setRestaurantForm(f => ({
+                              ...f,
+                              supported_currencies: active
+                                ? f.supported_currencies.filter(x => x !== c)
+                                : [...f.supported_currencies, c],
+                            }))}
+                            className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
+                              active
+                                ? 'bg-slate-900 text-white border-slate-900'
+                                : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'
+                            }`}
+                          >
+                            {c}
+                          </button>
+                        )
+                      })}
+                    </div>
+                    <p className="text-[11px] text-slate-400 mt-1">Los compradores pueden previsualizar precios en cualquiera. El cargo siempre va en {restaurantForm.default_currency}.</p>
+                  </div>
+                </div>
+
+                {/* Warning when changing default_currency away from current restaurant value */}
+                {restaurant && (restaurant.default_currency || 'USD').toUpperCase() !== restaurantForm.default_currency.toUpperCase() && (
+                  <div className="mt-3 rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-800">
+                    <p className="font-semibold mb-1">Vas a cambiar la moneda de {(restaurant.default_currency || 'USD').toUpperCase()} a {restaurantForm.default_currency}.</p>
+                    <p>Los precios de tus productos siguen en {(restaurant.default_currency || 'USD').toUpperCase()}. Después de guardar, podés convertirlos masivamente con el botón debajo o editarlos uno por uno.</p>
+                  </div>
+                )}
+
+                {/* Bulk currency converter */}
+                <div className="mt-4 rounded-xl bg-slate-50 border border-slate-200 p-3">
+                  <p className="text-xs font-semibold text-slate-700 mb-2">Conversión masiva de precios</p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs text-slate-500">Convertir todos los items de</span>
+                    <select
+                      value={convertCcy}
+                      onChange={e => setConvertCcy(e.target.value)}
+                      className="border border-slate-200 rounded-lg px-2 py-1 text-xs"
+                    >
+                      {SUPPORTED_CCYS.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                    <span className="text-xs text-slate-500">a {restaurantForm.default_currency}</span>
+                    <button
+                      type="button"
+                      onClick={runConvertCurrency}
+                      disabled={convertingCcy || convertCcy === restaurantForm.default_currency}
+                      className="ml-auto text-xs font-semibold bg-slate-900 text-white px-3 py-1.5 rounded-lg hover:bg-slate-700 disabled:opacity-50"
+                    >
+                      {convertingCcy ? 'Convirtiendo...' : 'Convertir ahora'}
+                    </button>
+                  </div>
+                  {convertResult && (
+                    <p className="text-[11px] text-emerald-700 mt-2">
+                      ✓ {convertResult.items_updated} items y {convertResult.variants_updated} variantes convertidas.
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* Horarios */}
