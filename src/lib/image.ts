@@ -2,7 +2,7 @@
 //
 // CF Image Resizing is enabled on the runbits.app zone. The /cdn-cgi/image/
 // endpoint serves on-the-fly WebP/AVIF + responsive sizes. Source images can
-// be R2 assets (runbit-storage) or any HTTPS URL on Runbits domains.
+// be R2 assets (runbits-storage) or any HTTPS URL on Runbits domains.
 //
 // Only Runbits-hosted images and HTTPS URLs from runbits.dev / R2 are routed
 // through the resizer. data: URLs (FileReader previews), blob: URLs, and
@@ -17,7 +17,7 @@ export type ImageOptions = {
 }
 
 const RESIZER_HOST = 'https://runbits.app'
-const R2_PUBLIC_BASE = 'https://runbit-storage.r2.dev'
+const R2_PUBLIC_BASE = 'https://runbits-storage.r2.dev'
 // Same-zone proxy implemented by runbits-app /functions/r2/[[path]].ts.
 const R2_PROXY_PREFIX = `${RESIZER_HOST}/r2/`
 
@@ -26,7 +26,7 @@ function isRunbitsAsset(src: string): boolean {
   return (
     src.includes('runbits.dev') ||
     src.includes('runbits.app') ||
-    src.includes('runbit-storage.r2.dev') ||
+    src.includes('runbits-storage.r2.dev') ||
     src.startsWith('/')
   )
 }
