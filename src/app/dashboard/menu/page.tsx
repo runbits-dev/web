@@ -130,7 +130,7 @@ export default function MenuPage() {
       price: (item.price / 100).toFixed(2),
       category: item.category || '',
       is_available: isItemAvailable(item),
-      imagePreview: item.image_key ? `https://runbit-storage.r2.dev/${item.image_key}` : '',
+      imagePreview: item.image_key ? `https://runbits-storage.r2.dev/${item.image_key}` : '',
     })
     setSelectedFile(null)
     setError(null)
@@ -298,7 +298,7 @@ export default function MenuPage() {
           {items.map(item => (
             <div key={item.id} className="bg-white rounded-2xl border border-slate-200 p-5 flex items-center justify-between gap-4">
               {item.image_key ? (
-                <OptimizedImage src={`https://runbit-storage.r2.dev/${item.image_key}`} alt={item.name} width={96} widths={[96, 192]} sizes="48px" className="w-12 h-12 rounded-lg object-cover shrink-0" />
+                <OptimizedImage src={`https://runbits-storage.r2.dev/${item.image_key}`} alt={item.name} width={96} widths={[96, 192]} sizes="48px" className="w-12 h-12 rounded-lg object-cover shrink-0" />
               ) : null}
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-slate-900">{item.name}</p>
