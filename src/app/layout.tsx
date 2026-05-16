@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { MSWProvider } from '@/components/MSWProvider'
 import { I18nProvider } from '@/i18n'
+import SentryProvider from '@/components/SentryProvider'
 
 export const metadata: Metadata = {
   title: {
@@ -38,6 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="antialiased">
         <I18nProvider>
           <MSWProvider>
+            <SentryProvider />
             {children}
           </MSWProvider>
         </I18nProvider>

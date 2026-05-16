@@ -13,6 +13,7 @@
     "test:e2e:report": "playwright show-report"
   },
   "dependencies": {
+    "@sentry/nextjs": "^10.53.1",
     "@simplewebauthn/browser": "^11.0.0",
     "lucide-react": "^1.8.0",
     "msw": "^2.7.0",

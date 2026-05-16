@@ -16,6 +16,22 @@ export class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error }
   }
 
+  // Forward caught errors to Sentry. Dynamically imported so the SDK isn't
+  // pulled into the synchronous render path of error-free pages.
+  // Fail-safe: any failure here is silently swallowed.
+  componentDidCatch(error: Error, info: { componentStack?: string | null }): void {
+    import('@sentry/nextjs')
+      .then((Sentry) => {
+        Sentry.withScope((scope) => {
+          if (info?.componentStack) {
+            scope.setExtra('componentStack', info.componentStack)
+          }
+          Sentry.captureException(error)
+        })
+      })
+      .catch(() => { /* SDK not loaded or DSN missing — swallow */ })
+  }
+
   render() {
     if (this.state.hasError) {
       if (this.props.fallback) return this.props.fallback
