@@ -43,6 +43,50 @@ export type MonitoringService = {
   latency_ms: number
 }
 
+// ── Layer 1/2/3 monitoring (alerts/findings/reports) ───────────────────────
+export type MonitoringAlert = {
+  id: string
+  source: 'cf_notifications' | 'status_worker' | 'agent' | 'manual'
+  alert_type: string
+  severity: 'critical' | 'warning' | 'info'
+  service: string | null
+  message: string
+  payload_json: string | null
+  status: 'open' | 'acknowledged' | 'resolved' | 'auto_resolved'
+  acknowledged_by: string | null
+  acknowledged_at: number | null
+  resolved_at: number | null
+  resolved_by: string | null
+  channels_dispatched: string | null
+  agent_enrichment_json: string | null
+  enriched_at: number | null
+  created_at: number
+}
+
+export type MonitoringFinding = {
+  id: string
+  tenant_id: string
+  agent_id: string
+  run_id: string
+  severity: 'critical' | 'high' | 'medium' | 'low' | 'info'
+  category: string | null
+  title: string
+  description: string | null
+  metadata_json: string | null
+  status: 'open' | 'acknowledged' | 'closed' | 'regressed'
+  created_at: number
+}
+
+export type MonitoringReport = {
+  id: string
+  period_start: number
+  period_end: number
+  type: 'weekly_slo' | 'monthly_slo'
+  payload_json: string
+  markdown: string | null
+  created_at: number
+}
+
 export type User = {
   id: string
   email: string
@@ -387,6 +431,40 @@ export const api = {
     }),
   getMonitoringHealthSnapshot: () =>
     request<{ ts: number; services: MonitoringService[] }>('/api/monitoring/health-snapshot'),
+
+  // ── Monitoring agent: alerts / findings / reports ────────────────────────
+  // Backed by runtics-control via /api/runtics/monitoring/*.
+  getMonitoringAlerts: (params: { status?: string; service?: string; severity?: string; limit?: number; cursor?: number } = {}) => {
+    const qs = new URLSearchParams()
+    if (params.status) qs.set('status', params.status)
+    if (params.service) qs.set('service', params.service)
+    if (params.severity) qs.set('severity', params.severity)
+    if (params.limit) qs.set('limit', String(params.limit))
+    if (params.cursor) qs.set('cursor', String(params.cursor))
+    return request<{ alerts: MonitoringAlert[]; next_cursor: number | null }>(`/api/runtics/monitoring/alerts${qs.toString() ? '?' + qs.toString() : ''}`)
+  },
+  acknowledgeMonitoringAlert: (id: string) =>
+    request<{ ok: boolean }>(`/api/runtics/monitoring/alerts/${encodeURIComponent(id)}/acknowledge`, { method: 'POST' }),
+  resolveMonitoringAlert: (id: string) =>
+    request<{ ok: boolean }>(`/api/runtics/monitoring/alerts/${encodeURIComponent(id)}/resolve`, { method: 'POST' }),
+  getMonitoringFindings: (params: { since?: number; severity?: string; limit?: number } = {}) => {
+    const qs = new URLSearchParams()
+    if (params.since) qs.set('since', String(params.since))
+    if (params.severity) qs.set('severity', params.severity)
+    if (params.limit) qs.set('limit', String(params.limit))
+    return request<{ findings: MonitoringFinding[]; since: number }>(`/api/runtics/monitoring/findings${qs.toString() ? '?' + qs.toString() : ''}`)
+  },
+  getMonitoringReports: (params: { type?: string; limit?: number } = {}) => {
+    const qs = new URLSearchParams()
+    if (params.type) qs.set('type', params.type)
+    if (params.limit) qs.set('limit', String(params.limit))
+    return request<{ reports: MonitoringReport[] }>(`/api/runtics/monitoring/reports${qs.toString() ? '?' + qs.toString() : ''}`)
+  },
+  runMonitoringAgentNow: (mode: 'hourly_patterns' | 'weekly_report' = 'hourly_patterns') =>
+    request<{ ok: boolean; run_id?: string }>(`/api/runtics/agents/monitoring/run`, {
+      method: 'POST',
+      body: JSON.stringify({ args: { mode } }),
+    }),
 
   // Support chat (uses request() for auto token refresh)
   supportChat: (message: string, history: Array<{ role: string; content: string }>) =>

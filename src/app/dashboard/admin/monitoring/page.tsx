@@ -23,11 +23,14 @@
  * middleware; the dashboard layout also gates the route at /dashboard/admin/*.
  */
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   api,
+  type MonitoringAlert,
   type MonitoringConfig,
   type MonitoringConfigInput,
+  type MonitoringFinding,
+  type MonitoringReport,
   type MonitoringService,
 } from '@/lib/api'
 import {
@@ -35,9 +38,12 @@ import {
   AlertTriangle,
   BellRing,
   CheckCircle2,
+  ChevronDown,
+  ChevronRight,
   Cog,
   FileText,
   Loader2,
+  Play,
   RefreshCw,
   Search,
   Save,
@@ -482,32 +488,336 @@ function EmptyState({ title, description, Icon }: { title: string; description: 
   )
 }
 
-function AlertsTab() {
+// ─── Tab: Alerts (Layer 1 — push-driven) ─────────────────────────────────────
+
+function severityBadge(sev: 'critical' | 'warning' | 'info' | 'high' | 'medium' | 'low') {
+  const map: Record<string, { bg: string; text: string }> = {
+    critical: { bg: 'bg-red-100', text: 'text-red-700' },
+    high: { bg: 'bg-orange-100', text: 'text-orange-700' },
+    warning: { bg: 'bg-amber-100', text: 'text-amber-800' },
+    medium: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
+    low: { bg: 'bg-blue-100', text: 'text-blue-700' },
+    info: { bg: 'bg-slate-100', text: 'text-slate-700' },
+  }
+  const v = map[sev] ?? map.info
   return (
-    <EmptyState
-      Icon={BellRing}
-      title="Sin alertas todavía"
-      description="Cuando el monitoring agent detecte issues, aparecen acá con timestamp, severidad, origen, mensaje y la acción tomada."
-    />
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold uppercase tracking-wide ${v.bg} ${v.text}`}>
+      {sev}
+    </span>
   )
 }
+
+function statusBadge(s: MonitoringAlert['status']) {
+  const map: Record<MonitoringAlert['status'], { bg: string; text: string; label: string }> = {
+    open: { bg: 'bg-red-50', text: 'text-red-700', label: 'open' },
+    acknowledged: { bg: 'bg-amber-50', text: 'text-amber-700', label: 'ack' },
+    resolved: { bg: 'bg-green-50', text: 'text-green-700', label: 'resolved' },
+    auto_resolved: { bg: 'bg-emerald-50', text: 'text-emerald-700', label: 'auto-resolved' },
+  }
+  const v = map[s]
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium ${v.bg} ${v.text}`}>
+      {v.label}
+    </span>
+  )
+}
+
+function AlertsTab() {
+  const [filter, setFilter] = useState<'open' | 'all'>('open')
+  const [items, setItems] = useState<MonitoringAlert[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [busyId, setBusyId] = useState<string | null>(null)
+  const [running, setRunning] = useState(false)
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const out = await api.getMonitoringAlerts({ status: filter, limit: 100 })
+      setItems(out.alerts)
+    } catch (e: any) {
+      setError(e?.message || 'No se pudo cargar las alertas')
+    } finally {
+      setLoading(false)
+    }
+  }, [filter])
+
+  useEffect(() => { load() }, [load])
+
+  async function handleAck(id: string) {
+    setBusyId(id)
+    try { await api.acknowledgeMonitoringAlert(id); await load() } catch (e: any) { setError(e?.message) } finally { setBusyId(null) }
+  }
+  async function handleResolve(id: string) {
+    setBusyId(id)
+    try { await api.resolveMonitoringAlert(id); await load() } catch (e: any) { setError(e?.message) } finally { setBusyId(null) }
+  }
+  async function handleRunAgent() {
+    setRunning(true)
+    try {
+      await api.runMonitoringAgentNow('hourly_patterns')
+    } catch (e: any) {
+      setError(e?.message || 'No se pudo disparar el agent')
+    } finally {
+      setRunning(false)
+    }
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setFilter('open')}
+            className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${filter === 'open' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}
+          >
+            Abiertas
+          </button>
+          <button
+            onClick={() => setFilter('all')}
+            className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${filter === 'all' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}
+          >
+            Todas
+          </button>
+          <button
+            onClick={load}
+            className="ml-2 flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-600 bg-white border border-slate-200 rounded-md hover:bg-slate-50"
+          >
+            <RefreshCw className="h-3.5 w-3.5" />
+            Refresh
+          </button>
+        </div>
+        <button
+          onClick={handleRunAgent}
+          disabled={running}
+          className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-50"
+        >
+          {running ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Play className="h-3.5 w-3.5" />}
+          Run agent now
+        </button>
+      </div>
+
+      {error && (
+        <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">{error}</div>
+      )}
+
+      {loading ? (
+        <div className="flex items-center justify-center py-16 text-slate-400">
+          <Loader2 className="h-5 w-5 animate-spin mr-2" /> Cargando alertas...
+        </div>
+      ) : items.length === 0 ? (
+        <EmptyState
+          Icon={BellRing}
+          title={filter === 'open' ? 'Sin alertas abiertas' : 'Sin alertas todavía'}
+          description="Cuando el monitoring agent detecte issues, aparecen acá con severidad, servicio, mensaje y acciones."
+        />
+      ) : (
+        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-slate-50 border-b border-slate-200">
+              <tr>
+                <th className="text-left px-4 py-2 font-medium text-slate-600 text-xs uppercase tracking-wide">Severidad</th>
+                <th className="text-left px-4 py-2 font-medium text-slate-600 text-xs uppercase tracking-wide">Servicio</th>
+                <th className="text-left px-4 py-2 font-medium text-slate-600 text-xs uppercase tracking-wide">Mensaje</th>
+                <th className="text-left px-4 py-2 font-medium text-slate-600 text-xs uppercase tracking-wide">Origen</th>
+                <th className="text-left px-4 py-2 font-medium text-slate-600 text-xs uppercase tracking-wide">Cuándo</th>
+                <th className="text-left px-4 py-2 font-medium text-slate-600 text-xs uppercase tracking-wide">Estado</th>
+                <th className="text-right px-4 py-2 font-medium text-slate-600 text-xs uppercase tracking-wide">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map(a => (
+                <tr key={a.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
+                  <td className="px-4 py-3">{severityBadge(a.severity)}</td>
+                  <td className="px-4 py-3 font-medium text-slate-700">{a.service ?? '—'}</td>
+                  <td className="px-4 py-3 text-slate-700 max-w-md">
+                    <div className="line-clamp-2">{a.message}</div>
+                    <div className="text-xs text-slate-400 mt-0.5">{a.alert_type}</div>
+                  </td>
+                  <td className="px-4 py-3 text-xs text-slate-500">{a.source}</td>
+                  <td className="px-4 py-3 text-xs text-slate-500 whitespace-nowrap">{new Date(a.created_at).toLocaleString()}</td>
+                  <td className="px-4 py-3">{statusBadge(a.status)}</td>
+                  <td className="px-4 py-3 text-right whitespace-nowrap">
+                    {a.status === 'open' && (
+                      <button
+                        onClick={() => handleAck(a.id)}
+                        disabled={busyId === a.id}
+                        className="text-xs px-2 py-1 text-amber-700 bg-amber-50 rounded hover:bg-amber-100 disabled:opacity-50 mr-1"
+                      >
+                        Ack
+                      </button>
+                    )}
+                    {(a.status === 'open' || a.status === 'acknowledged') && (
+                      <button
+                        onClick={() => handleResolve(a.id)}
+                        disabled={busyId === a.id}
+                        className="text-xs px-2 py-1 text-green-700 bg-green-50 rounded hover:bg-green-100 disabled:opacity-50"
+                      >
+                        Resolve
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Tab: Findings (Layer 2 — hourly pattern detection) ──────────────────────
 
 function FindingsTab() {
+  const [items, setItems] = useState<MonitoringFinding[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const out = await api.getMonitoringFindings({ limit: 100 })
+      setItems(out.findings)
+    } catch (e: any) {
+      setError(e?.message || 'No se pudo cargar los findings')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+  useEffect(() => { load() }, [load])
+
+  const grouped = useMemo(() => {
+    const m = new Map<string, MonitoringFinding[]>()
+    for (const f of items) {
+      const key = (f.metadata_json ? (() => { try { return (JSON.parse(f.metadata_json) as any).service ?? 'other' } catch { return 'other' } })() : 'other')
+      const list = m.get(key) ?? []
+      list.push(f)
+      m.set(key, list)
+    }
+    return Array.from(m.entries()).sort((a, b) => a[0].localeCompare(b[0]))
+  }, [items])
+
+  if (loading) {
+    return <div className="flex items-center justify-center py-16 text-slate-400"><Loader2 className="h-5 w-5 animate-spin mr-2" /> Cargando findings...</div>
+  }
+  if (error) {
+    return <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">{error}</div>
+  }
+  if (items.length === 0) {
+    return (
+      <EmptyState
+        Icon={Search}
+        title="Sin findings todavía"
+        description="Los findings del monitoring agent (Layer 2 — pull mode horario) van a aparecer acá una vez que el cron corra (cada hora a los 15 minutos)."
+      />
+    )
+  }
   return (
-    <EmptyState
-      Icon={Search}
-      title="Sin findings todavía"
-      description="Los findings del monitoring agent (Layer 2 — pull mode horario) se publican acá una vez que el agente esté activo."
-    />
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-slate-500">{items.length} findings en los últimos 7 días, agrupados por servicio.</p>
+        <button onClick={load} className="text-xs px-2.5 py-1.5 text-slate-600 bg-white border border-slate-200 rounded hover:bg-slate-50 flex items-center gap-1.5">
+          <RefreshCw className="h-3.5 w-3.5" /> Refresh
+        </button>
+      </div>
+      {grouped.map(([service, fs]) => (
+        <section key={service} className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+          <div className="px-4 py-2.5 bg-slate-50 border-b border-slate-200">
+            <h3 className="text-sm font-semibold text-slate-700">{service}</h3>
+            <p className="text-xs text-slate-500">{fs.length} finding{fs.length === 1 ? '' : 's'}</p>
+          </div>
+          <ul className="divide-y divide-slate-100">
+            {fs.map(f => (
+              <li key={f.id} className="px-4 py-3">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 mt-0.5">{severityBadge(f.severity)}</div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-slate-800">{f.title}</p>
+                    {f.description && <p className="text-xs text-slate-500 mt-1 whitespace-pre-wrap line-clamp-3">{f.description}</p>}
+                    <p className="text-xs text-slate-400 mt-1">{new Date(f.created_at).toLocaleString()} &middot; {f.category ?? 'general'}</p>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
   )
 }
 
+// ─── Tab: Reports (Layer 3 — weekly SLO) ─────────────────────────────────────
+
 function ReportsTab() {
+  const [items, setItems] = useState<MonitoringReport[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [expanded, setExpanded] = useState<string | null>(null)
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const out = await api.getMonitoringReports({ type: 'weekly_slo', limit: 20 })
+      setItems(out.reports)
+    } catch (e: any) {
+      setError(e?.message || 'No se pudo cargar los reportes')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+  useEffect(() => { load() }, [load])
+
+  if (loading) {
+    return <div className="flex items-center justify-center py-16 text-slate-400"><Loader2 className="h-5 w-5 animate-spin mr-2" /> Cargando reportes...</div>
+  }
+  if (error) {
+    return <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">{error}</div>
+  }
+  if (items.length === 0) {
+    return (
+      <EmptyState
+        Icon={FileText}
+        title="Sin reportes todavía"
+        description="Los reportes semanales sintetizados por el monitoring agent (Layer 3) van a aparecer acá los lunes a la mañana."
+      />
+    )
+  }
   return (
-    <EmptyState
-      Icon={FileText}
-      title="Sin reportes todavía"
-      description="Los reportes semanales sintetizados por el monitoring agent (Layer 3) van a aparecer acá."
-    />
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-slate-500">{items.length} reporte{items.length === 1 ? '' : 's'} disponibles.</p>
+        <button onClick={load} className="text-xs px-2.5 py-1.5 text-slate-600 bg-white border border-slate-200 rounded hover:bg-slate-50 flex items-center gap-1.5">
+          <RefreshCw className="h-3.5 w-3.5" /> Refresh
+        </button>
+      </div>
+      {items.map(r => {
+        const isOpen = expanded === r.id
+        const start = new Date(r.period_start).toISOString().slice(0, 10)
+        const end = new Date(r.period_end).toISOString().slice(0, 10)
+        return (
+          <article key={r.id} className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+            <button
+              onClick={() => setExpanded(isOpen ? null : r.id)}
+              className="w-full text-left px-4 py-3 flex items-center justify-between hover:bg-slate-50"
+            >
+              <div className="flex items-center gap-2">
+                {isOpen ? <ChevronDown className="h-4 w-4 text-slate-400" /> : <ChevronRight className="h-4 w-4 text-slate-400" />}
+                <span className="font-medium text-sm text-slate-800">Weekly SLO — {start} → {end}</span>
+              </div>
+              <span className="text-xs text-slate-400">{new Date(r.created_at).toLocaleString()}</span>
+            </button>
+            {isOpen && r.markdown && (
+              <div className="px-4 py-4 border-t border-slate-100 bg-slate-50/50">
+                <pre className="text-xs font-mono whitespace-pre-wrap text-slate-700 leading-relaxed">{r.markdown}</pre>
+              </div>
+            )}
+          </article>
+        )
+      })}
+    </div>
   )
 }
