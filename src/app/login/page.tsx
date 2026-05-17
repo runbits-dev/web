@@ -91,9 +91,33 @@ export default function LoginPage() {
     }
   }
 
-  function triggerGoogle() {
-    if (!(window as any).google) return
-    ;(window as any).google.accounts.id.prompt()
+  // OAuth redirect flow (popup-free, guaranteed to work). Falls back from
+  // google.accounts.id.prompt() which is the One Tap UI — it's silently
+  // dismissed when FedCM is disabled or the user previously closed it.
+  async function triggerGoogle() {
+    if (!GOOGLE_CLIENT_ID) {
+      setError(t('login.errorConnection'))
+      return
+    }
+    setSocialLoading(true)
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/oauth-state`, { method: 'POST' })
+      const { state } = await res.json()
+      const redirectUri = encodeURIComponent(`${API_BASE}/api/auth/google/callback`)
+      const scope = encodeURIComponent('openid email profile')
+      window.location.href =
+        `https://accounts.google.com/o/oauth2/v2/auth` +
+        `?client_id=${GOOGLE_CLIENT_ID}` +
+        `&redirect_uri=${redirectUri}` +
+        `&response_type=code` +
+        `&scope=${scope}` +
+        `&access_type=online` +
+        `&prompt=select_account` +
+        `&state=${encodeURIComponent(state)}`
+    } catch {
+      setError(t('login.errorConnection'))
+      setSocialLoading(false)
+    }
   }
 
   async function handleFacebook() {
