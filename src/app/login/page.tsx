@@ -51,8 +51,9 @@ export default function LoginPage() {
     script.src = 'https://accounts.google.com/gsi/client'
     script.async = true
     script.onload = () => {
-      if (!(window as any).google) return
-      ;(window as any).google.accounts.id.initialize({
+      const google = (window as any).google
+      if (!google) return
+      google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
         callback: handleGoogleCallback,
         auto_select: false,
@@ -60,6 +61,20 @@ export default function LoginPage() {
         // settings and silently fails — never fall back to it.
         use_fedcm_for_prompt: false,
       })
+      // Render the official Google button which ALWAYS shows the account
+      // chooser popup on click (prompt() only surfaces the One Tap UI which
+      // picks the primary browser account silently). The hidden container is
+      // rendered offscreen — our custom button delegates the click to it.
+      const container = document.getElementById('google-signin-hidden')
+      if (container) {
+        google.accounts.id.renderButton(container, {
+          type: 'standard',
+          theme: 'outline',
+          size: 'large',
+          text: 'continue_with',
+          shape: 'pill',
+        })
+      }
       googleInitialized.current = true
     }
     document.head.appendChild(script)
@@ -92,8 +107,19 @@ export default function LoginPage() {
   }
 
   function triggerGoogle() {
-    if (!(window as any).google) return
-    ;(window as any).google.accounts.id.prompt()
+    // Click the hidden Google-rendered button. Its click handler opens the
+    // account chooser popup (different code path from prompt() which only
+    // surfaces One Tap with no chooser).
+    const hidden = document.getElementById('google-signin-hidden')
+    const btn = hidden?.querySelector('[role="button"]') as HTMLElement | null
+    if (btn) {
+      btn.click()
+      return
+    }
+    // Fallback to One Tap if the rendered button isn't ready yet (rare).
+    if ((window as any).google) {
+      ;(window as any).google.accounts.id.prompt()
+    }
   }
 
   async function handleFacebook() {
@@ -225,6 +251,10 @@ export default function LoginPage() {
             </div>
           ) : (
           <>
+          {/* Hidden Google-rendered button — opens the account chooser popup
+              when clicked. Our custom button below delegates to it via DOM. */}
+          <div id="google-signin-hidden" style={{ position: 'absolute', left: '-9999px', top: '-9999px', width: 1, height: 1, overflow: 'hidden' }} aria-hidden="true" />
+
           {/* Social buttons */}
           <div className="flex gap-3 mb-3">
             <button onClick={triggerGoogle} className={socialBtnClass}>
