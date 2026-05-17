@@ -13,6 +13,36 @@ export type Profile = {
   tutorial_step: number
 }
 
+export type MonitoringConfig = {
+  version: number
+  status_cron: { interval_minutes: number; enabled: boolean }
+  thresholds: {
+    error_rate_pct: number
+    error_rate_window_minutes: number
+    cost_daily_usd: number
+    latency_p95_ms: number
+  }
+  channels: {
+    email: { enabled: boolean; address: string }
+    whatsapp: { enabled: boolean; phone: string }
+    push: { enabled: boolean }
+  }
+  updated_at: number
+  updated_by: string
+}
+
+// Same shape as MonitoringConfig but updated_at/updated_by are stamped by the
+// server, so the client doesn't need to send them.
+export type MonitoringConfigInput = Omit<MonitoringConfig, 'updated_at' | 'updated_by'>
+
+export type MonitoringService = {
+  id: string
+  name: string
+  ok: boolean
+  status: number
+  latency_ms: number
+}
+
 export type User = {
   id: string
   email: string
@@ -346,6 +376,17 @@ export const api = {
     request<{ ok: boolean }>('/api/admin/flags', {
       method: 'POST', body: JSON.stringify({ flag, value }),
     }),
+
+  // Monitoring & Alerts (admin) — backed by runbits-status worker, proxied
+  // through the gateway under /api/monitoring/*. Admin role required.
+  getMonitoringConfig: () =>
+    request<{ config: MonitoringConfig }>('/api/monitoring/config'),
+  updateMonitoringConfig: (config: MonitoringConfigInput) =>
+    request<{ ok: boolean; config: MonitoringConfig }>('/api/monitoring/config', {
+      method: 'PUT', body: JSON.stringify(config),
+    }),
+  getMonitoringHealthSnapshot: () =>
+    request<{ ts: number; services: MonitoringService[] }>('/api/monitoring/health-snapshot'),
 
   // Support chat (uses request() for auto token refresh)
   supportChat: (message: string, history: Array<{ role: string; content: string }>) =>
