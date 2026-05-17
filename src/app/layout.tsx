@@ -32,9 +32,30 @@ export const metadata: Metadata = {
   },
 }
 
+// Runs synchronously in <head>, BEFORE Next.js hydration, so any stale MSW
+// service worker from a previous Playwright session gets unregistered before
+// it can intercept requests and cause hydration mismatches (React #418).
+const swCleanup = `
+(function(){
+  if (!navigator.serviceWorker) return;
+  navigator.serviceWorker.getRegistrations().then(function(regs){
+    for (var i = 0; i < regs.length; i++) {
+      var r = regs[i];
+      var url = (r.active && r.active.scriptURL) || (r.installing && r.installing.scriptURL) || (r.waiting && r.waiting.scriptURL) || '';
+      if (url.indexOf('mockServiceWorker') !== -1) {
+        r.unregister();
+      }
+    }
+  }).catch(function(){});
+})();
+`
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: swCleanup }} />
+      </head>
       <body className="antialiased">
         <I18nProvider>
           <MSWProvider>

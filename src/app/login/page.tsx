@@ -56,6 +56,9 @@ export default function LoginPage() {
         client_id: GOOGLE_CLIENT_ID,
         callback: handleGoogleCallback,
         auto_select: false,
+        // Force traditional popup. FedCM can be disabled by user/browser
+        // settings and silently fails — never fall back to it.
+        use_fedcm_for_prompt: false,
       })
       googleInitialized.current = true
     }
