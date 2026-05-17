@@ -204,7 +204,7 @@ function LiveStatusTab() {
 
 // ─── Tab: Configuration ──────────────────────────────────────────────────────
 
-const INTERVAL_OPTIONS = [5, 10, 15, 30]
+const INTERVAL_OPTIONS = [5, 10, 15, 30, 60]
 
 const DEFAULT_CONFIG_INPUT: MonitoringConfigInput = {
   version: 1,
@@ -297,7 +297,7 @@ function ConfigurationTab() {
               className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             >
               {INTERVAL_OPTIONS.map(m => (
-                <option key={m} value={m}>{m} minutos</option>
+                <option key={m} value={m}>{m === 60 ? '1 hora' : `${m} minutos`}</option>
               ))}
             </select>
           </div>
