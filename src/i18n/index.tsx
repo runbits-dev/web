@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react'
 import es from './es.json'
 import en from './en.json'
 
@@ -20,15 +20,24 @@ const I18nContext = createContext<I18nContextValue>({
   setLocale: () => {},
 })
 
-function detectInitialLocale(): SupportedLocale {
-  if (typeof window === 'undefined') return 'es'
-  const stored = localStorage.getItem('locale') as SupportedLocale | null
-  if (stored && (stored === 'es' || stored === 'en')) return stored
-  return navigator.language.startsWith('en') ? 'en' : 'es'
-}
-
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<SupportedLocale>(detectInitialLocale)
+  // Initial state MUST match the SSR / pre-render output ('es') to avoid React
+  // #418 hydration mismatch. We adjust to the user's preferred locale in
+  // useEffect after the first paint — the client-only read of
+  // localStorage/navigator.language happens AFTER hydration completes.
+  const [locale, setLocaleState] = useState<SupportedLocale>('es')
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const stored = localStorage.getItem('locale') as SupportedLocale | null
+    if (stored === 'es' || stored === 'en') {
+      if (stored !== 'es') setLocaleState(stored)
+      return
+    }
+    if (navigator.language && navigator.language.startsWith('en')) {
+      setLocaleState('en')
+    }
+  }, [])
 
   const setLocale = useCallback((newLocale: SupportedLocale) => {
     setLocaleState(newLocale)
