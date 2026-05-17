@@ -208,13 +208,26 @@ export const api = {
   me: async (): Promise<User> => {
     const raw = await request<any>('/api/auth/me')
     const account = raw.account ?? raw
-    const activeRole = raw.activeRole ?? 'customer'
+    // Resolve role with priority: activeRole > primary role in roles[] >
+    // superadmin if present > first role > 'customer' default. Prevents the
+    // bug where a superadmin without an explicit activeRole was mapped to
+    // 'customer' and routed into the merchant onboarding wizard.
+    let role = raw.activeRole
+    if (!role && Array.isArray(raw.roles) && raw.roles.length > 0) {
+      const rolesList = raw.roles as Array<{ role?: string; isPrimary?: boolean } | string>
+      const normalize = (r: any) => (typeof r === 'string' ? { role: r, isPrimary: false } : r)
+      const normalized = rolesList.map(normalize).filter(r => r.role)
+      const primary = normalized.find(r => r.isPrimary)
+      const superadmin = normalized.find(r => r.role === 'superadmin')
+      role = primary?.role ?? superadmin?.role ?? normalized[0]?.role
+    }
+    if (!role) role = 'customer'
     return {
       id: account.id,
       email: account.email,
       name: account.name,
       phone: account.phone,
-      role: activeRole as User['role'],
+      role: role as User['role'],
       restaurant_id: account.restaurant_id ?? raw.entityId ?? raw.storeId,
       store_name: account.store_name,
       profiles: raw.profiles ?? [],
