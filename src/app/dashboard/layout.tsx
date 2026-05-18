@@ -40,6 +40,7 @@ const adminNav = [
   { href: '/dashboard/admin/sales', label: 'Sales Agent', Icon: Megaphone },
   { href: '/dashboard/admin/vitals', label: 'Web Vitals', Icon: Activity },
   { href: '/dashboard/admin/monitoring', label: 'Monitoring & Alerts', Icon: Activity },
+  { href: '/dashboard/admin/pulse', label: 'Pulse', Icon: Activity, badge: 'NEW' },
   { href: '/dashboard/runtics', label: 'Runtics', Icon: Bot },
   { href: '/dashboard/roadmap', label: 'Roadmap', Icon: Map },
   { href: '/dashboard/settings', label: 'Mi cuenta', Icon: Settings },
@@ -227,7 +228,12 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
                   const IconComp = ('Icon' in item && (item as any).Icon) ? (item as any).Icon : ('iconName' in item ? iconMap[(item as any).iconName] : null)
                   return IconComp ? <IconComp className="w-5 h-5" /> : null
                 })()}
-                {item.label}
+                <span className="flex-1">{item.label}</span>
+                {(item as any).badge && (
+                  <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700">
+                    {(item as any).badge}
+                  </span>
+                )}
               </Link>
             )
           })}
