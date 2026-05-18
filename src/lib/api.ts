@@ -382,7 +382,19 @@ export const api = {
       method: 'POST', body: JSON.stringify({ agentId, commissionIds }),
     }),
 
-  getSubscriptions: () => request<any[]>('/api/admin/subscriptions'),
+  // Admin subscriptions endpoint returns `{ data, total, limit, offset }` —
+  // unwrap to an array here so existing call sites can keep treating the
+  // result as `any[]`.
+  getSubscriptions: async (): Promise<any[]> => {
+    const res = await request<{ data: any[]; total: number } | any[]>('/api/admin/subscriptions')
+    if (Array.isArray(res)) return res
+    return res?.data ?? []
+  },
+
+  getAdminSubscriptions: (params?: Record<string, string>) => {
+    const qs = params ? '?' + new URLSearchParams(params).toString() : ''
+    return request<{ data: any[]; total: number }>(`/api/admin/subscriptions${qs}`)
+  },
 
   // Modules
   getModules: (restaurantId: string) =>
