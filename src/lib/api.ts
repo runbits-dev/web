@@ -442,8 +442,17 @@ export const api = {
     request<{ ok: boolean; config: MonitoringConfig }>('/api/monitoring/config', {
       method: 'PUT', body: JSON.stringify(config),
     }),
-  getMonitoringHealthSnapshot: () =>
-    request<{ ts: number; services: MonitoringService[] }>('/api/monitoring/health-snapshot'),
+  getMonitoringHealthSnapshot: async () => {
+    // Hit status.runbits.dev directly (no gateway). The status worker is
+    // public and CORS-allows runbits.io. Going via api.runbits.dev creates
+    // a request loop: gateway → status binding → checkAll() → 17x fetch back
+    // to api.runbits.dev → cascading 522 timeouts. Direct call is the fix.
+    const res = await fetch('https://status.runbits.dev/api/monitoring/health-snapshot', {
+      cache: 'no-store',
+    })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    return res.json() as Promise<{ ts: number; services: MonitoringService[] }>
+  },
 
   // ── Monitoring agent: alerts / findings / reports ────────────────────────
   // Backed by runtics-control via /api/runtics/monitoring/*.
