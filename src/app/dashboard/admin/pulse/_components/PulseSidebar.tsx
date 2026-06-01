@@ -14,9 +14,10 @@ const TYPE_ICONS: Record<ResourceType, typeof Zap> = {
   queue: Inbox,
   pages: Globe,
   secret: Key,
+  zone: Globe,
 }
 
-const ALL_TYPES: ResourceType[] = ['worker', 'd1', 'kv', 'r2', 'queue', 'pages', 'secret']
+const ALL_TYPES: ResourceType[] = ['worker', 'd1', 'kv', 'r2', 'queue', 'pages', 'secret', 'zone']
 
 interface SidebarProps {
   state: PulseState
@@ -62,7 +63,7 @@ export function PulseSidebar({
   const dbCount = state.resources.filter((r) => r.type === 'd1').length
 
   const typeCounts: Record<ResourceType, number> = {
-    worker: 0, d1: 0, kv: 0, r2: 0, queue: 0, pages: 0, secret: 0,
+    worker: 0, d1: 0, kv: 0, r2: 0, queue: 0, pages: 0, secret: 0, zone: 0,
   }
   for (const r of state.resources) typeCounts[r.type]++
 

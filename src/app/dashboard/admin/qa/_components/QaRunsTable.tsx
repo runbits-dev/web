@@ -67,7 +67,7 @@ export function QaRunsTable({ runs }: QaRunsTableProps) {
               </td>
               <td className="px-5 py-3 text-right">
                 <Link
-                  href={`/dashboard/admin/qa/${encodeURIComponent(r.id)}`}
+                  href={`/dashboard/admin/qa/run?id=${encodeURIComponent(r.id)}`}
                   className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-800"
                 >
                   Ver <ArrowRight className="w-3 h-3" />
@@ -83,7 +83,7 @@ export function QaRunsTable({ runs }: QaRunsTableProps) {
         {runs.map((r) => (
           <li key={r.id}>
             <Link
-              href={`/dashboard/admin/qa/${encodeURIComponent(r.id)}`}
+              href={`/dashboard/admin/qa/run?id=${encodeURIComponent(r.id)}`}
               className="block px-5 py-4 hover:bg-slate-50/60"
             >
               <div className="flex items-start justify-between gap-3">

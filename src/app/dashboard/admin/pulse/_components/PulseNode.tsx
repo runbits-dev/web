@@ -27,6 +27,7 @@ const ICONS: Record<ResourceType, typeof Zap> = {
   queue: Inbox,
   pages: Globe,
   secret: Key,
+  zone: Globe,
 }
 
 function PulseNodeImpl({ data, selected }: NodeProps) {

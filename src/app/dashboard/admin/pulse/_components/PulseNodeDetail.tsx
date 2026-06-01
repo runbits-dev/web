@@ -10,7 +10,7 @@ import styles from '../_styles/pulse.module.css'
 
 const TYPE_ICONS: Record<ResourceType, typeof Zap> = {
   worker: Zap, d1: Database, kv: Layers, r2: Box,
-  queue: Inbox, pages: Globe, secret: Key,
+  queue: Inbox, pages: Globe, secret: Key, zone: Globe,
 }
 
 interface Props {

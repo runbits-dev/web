@@ -4,11 +4,15 @@ import { useMemo } from 'react'
 import styles from '../_styles/pulse.module.css'
 
 interface DiffViewProps {
-  before: string
-  after: string
+  // Backend stores spec_json / observed_json as nullable TEXT — events like
+  // BINDING_DECLARED_NOT_DEPLOYED legitimately have a NULL observation.
+  before: string | null | undefined
+  after: string | null | undefined
   labelBefore?: string
   labelAfter?: string
 }
+
+const EMPTY_PLACEHOLDER = '(vacío — sin datos para este lado)'
 
 /**
  * Lightweight line-diff. Not a full LCS — we tokenize each side by line and
@@ -33,7 +37,9 @@ function diffLines(beforeText: string, afterText: string) {
 }
 
 export function DiffView({ before, after, labelBefore = 'Declarado', labelAfter = 'Observado' }: DiffViewProps) {
-  const diff = useMemo(() => diffLines(before, after), [before, after])
+  const beforeText = (before && before.length > 0) ? before : EMPTY_PLACEHOLDER
+  const afterText = (after && after.length > 0) ? after : EMPTY_PLACEHOLDER
+  const diff = useMemo(() => diffLines(beforeText, afterText), [beforeText, afterText])
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">

@@ -52,6 +52,13 @@ export const RESOURCE_COLORS: Record<ResourceType, { bg: string; border: string;
     text: '#fecdd3',
     chip: 'bg-rose-500/15 text-rose-300 border-rose-400/30',
   },
+  zone: {
+    bg: 'rgba(20, 184, 166, 0.12)',
+    border: 'rgba(45, 212, 191, 0.55)',
+    glow: 'rgba(20, 184, 166, 0.45)',
+    text: '#99f6e4',
+    chip: 'bg-teal-500/15 text-teal-300 border-teal-400/30',
+  },
 }
 
 export const EDGE_COLORS: Record<EdgeType, { stroke: string; label: string }> = {
@@ -97,4 +104,5 @@ export const RESOURCE_LABEL: Record<ResourceType, string> = {
   queue: 'Queue',
   pages: 'Pages',
   secret: 'Secret',
+  zone: 'Zone',
 }

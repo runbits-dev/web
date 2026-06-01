@@ -8,6 +8,7 @@ export type ResourceType =
   | 'queue'
   | 'pages'
   | 'secret'
+  | 'zone'
 
 export type EdgeType =
   | 'service_binding'
@@ -24,12 +25,22 @@ export type EdgeSource = 'wrangler.toml' | 'src_grep' | 'inferred'
 export type DriftEventType =
   | 'SECRET_BROKEN'
   | 'BINDING_DECLARED_NOT_DEPLOYED'
+  | 'BINDING_COMMENTED_BUT_USED'
   | 'CONFIG_DIVERGENT'
   | 'MIGRATION_NOT_APPLIED'
   | 'CRON_DECLARED_NOT_ACTIVE'
+  | 'CRON_ACTIVE_NOT_DECLARED'
   | 'CIRCULAR_DEPENDENCY'
   | 'WORKER_DEPLOYED_NOT_DECLARED'
   | 'AUTH_PATTERN_DIVERGENT'
+  | 'D1_DECLARED_NOT_FOUND'
+  | 'R2_DECLARED_NOT_FOUND'
+  // Phase 3 — relationship-level contract checks.
+  | 'SERVICE_BINDING_ORPHAN'
+  | 'SERVICE_BINDING_UNRESPONSIVE'
+  | 'SECRET_NOT_PROVISIONED'
+  | 'QUEUE_PAIR_BROKEN'
+  | 'D1_BINDING_DATABASE_MISMATCH'
 
 export type DriftSeverity = 'critical' | 'warning' | 'info'
 export type DriftStatus = 'open' | 'acknowledged' | 'resolved'
@@ -61,8 +72,9 @@ export interface PulseDriftEvent {
   severity: DriftSeverity
   title: string
   description: string
-  spec_json: string
-  observed_json: string
+  // Nullable: events like BINDING_DECLARED_NOT_DEPLOYED have no observation.
+  spec_json: string | null
+  observed_json: string | null
   status: DriftStatus
   created_at: number
 }

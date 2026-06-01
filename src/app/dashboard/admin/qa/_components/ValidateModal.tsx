@@ -58,7 +58,7 @@ export function ValidateModal({
     try {
       const { run_id } = await qaApi.validate(subject.trim(), scope)
       onClose()
-      router.push(`/dashboard/admin/qa/${encodeURIComponent(run_id)}`)
+      router.push(`/dashboard/admin/qa/run?id=${encodeURIComponent(run_id)}`)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Error desconocido'
       setError(message)

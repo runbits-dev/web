@@ -1,22 +1,16 @@
 "use client"
 
-import { useParams } from 'next/navigation'
+import { Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
 import { QaRunDetail } from '../_components/QaRunDetail'
 
-export default function QaRunDetailClient() {
-  const params = useParams<{ id: string }>()
-  const raw = params?.id
-  const id =
-    typeof raw === 'string'
-      ? decodeURIComponent(raw)
-      : Array.isArray(raw)
-        ? decodeURIComponent(raw[0])
-        : ''
+function QaRunDetailInner() {
+  const sp = useSearchParams()
+  const id = sp.get('id') ?? ''
 
-  // Avoid rendering against the static-export placeholder.
-  if (!id || id === 'placeholder') {
+  if (!id) {
     return (
       <div className="space-y-4">
         <Link
@@ -26,11 +20,19 @@ export default function QaRunDetailClient() {
           ← QA Runs
         </Link>
         <div className="bg-white rounded-2xl border border-slate-200 p-6 text-center">
-          <p className="text-sm text-slate-500">Esperando id de run…</p>
+          <p className="text-sm text-slate-500">No se encontró el id del run.</p>
         </div>
       </div>
     )
   }
 
   return <QaRunDetail runId={id} />
+}
+
+export default function QaRunDetailPage() {
+  return (
+    <Suspense fallback={<div className="p-6 text-sm text-slate-500">Cargando…</div>}>
+      <QaRunDetailInner />
+    </Suspense>
+  )
 }
