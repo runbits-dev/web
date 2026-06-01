@@ -15,7 +15,7 @@ import { ProfileSelector } from '@/components/ProfileSelector'
 import { ProfileSwitcher } from '@/components/ProfileSwitcher'
 import { OnboardingChecklistSidebar } from '@/components/OnboardingChecklist'
 import { OnboardingHelpButton } from '@/components/OnboardingHelpButton'
-import { Home, ShoppingBag, PackageCheck, BarChart3, Megaphone, CreditCard, Settings, LayoutDashboard, MapPin, Store, Bike, ClipboardList, Users, DollarSign, Wallet, Receipt, Map, CalendarCheck, Puzzle, Menu, MessageSquare, Bot, Activity } from 'lucide-react'
+import { Home, ShoppingBag, PackageCheck, BarChart3, Megaphone, CreditCard, Settings, LayoutDashboard, MapPin, Store, Bike, ClipboardList, Users, DollarSign, Wallet, Receipt, Map, CalendarCheck, Puzzle, Menu, MessageSquare, Bot, Activity, ShieldCheck } from 'lucide-react'
 
 const storeNav = [
   { href: '/dashboard', label: 'Inicio', Icon: Home, exact: true, tour: 'home' },
@@ -41,6 +41,7 @@ const adminNav = [
   { href: '/dashboard/admin/vitals', label: 'Web Vitals', Icon: Activity },
   { href: '/dashboard/admin/monitoring', label: 'Monitoring & Alerts', Icon: Activity },
   { href: '/dashboard/admin/pulse', label: 'Pulse', Icon: Activity, badge: 'NEW' },
+  { href: '/dashboard/admin/qa', label: 'QA Runs', Icon: ShieldCheck, badge: 'NEW' },
   { href: '/dashboard/runtics', label: 'Runtics', Icon: Bot },
   { href: '/dashboard/roadmap', label: 'Roadmap', Icon: Map },
   { href: '/dashboard/settings', label: 'Mi cuenta', Icon: Settings },
