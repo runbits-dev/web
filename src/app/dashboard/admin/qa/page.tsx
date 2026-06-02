@@ -16,6 +16,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Plus, RefreshCw, Search, ShieldCheck } from 'lucide-react'
 
 import { QaRunsTable, QaRunsTableSkeleton } from './_components/QaRunsTable'
+import { QaSchedulesCard } from './_components/QaSchedulesCard'
 import { ValidateModal } from './_components/ValidateModal'
 import { isActiveStatus, qaApi, sinceWindowToEpoch } from './_lib/api'
 import type { QaRun, QaRunStatus, QaSinceWindow } from './_lib/types'
@@ -118,6 +119,9 @@ export default function QaRunsListPage() {
           <Plus className="w-4 h-4" /> Validate
         </button>
       </div>
+
+      {/* Schedules — cron triggers with runtime toggle */}
+      <QaSchedulesCard onChange={() => setReload((x) => x + 1)} />
 
       {/* Filters */}
       <div className="bg-white rounded-2xl border border-slate-200 p-4 space-y-3">

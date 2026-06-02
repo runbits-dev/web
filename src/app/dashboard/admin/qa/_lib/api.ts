@@ -16,6 +16,9 @@ import type {
   QaRunDetailResponse,
   QaRunsListResponse,
   QaRunStatus,
+  QaScheduleUpdate,
+  QaScheduleUpdateResponse,
+  QaSchedulesListResponse,
   QaScope,
   QaSinceWindow,
   QaValidateResponse,
@@ -54,6 +57,20 @@ async function qaPost<T>(path: string, body?: unknown): Promise<T> {
   return (await res.json()) as T
 }
 
+async function qaPatch<T>(path: string, body: unknown): Promise<T> {
+  const res = await fetch(`${API_BASE}/api/runtics/qa${path}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify(body),
+  })
+  if (res.status === 401) throw new Error('Sesión expirada')
+  if (!res.ok) {
+    const text = await res.text().catch(() => '')
+    throw new Error(`HTTP ${res.status}: ${text.slice(0, 200)}`)
+  }
+  return (await res.json()) as T
+}
+
 export interface QaRunsQuery {
   status?: QaRunStatus | ''
   limit?: number
@@ -81,6 +98,16 @@ export const qaApi = {
   /** POST /api/runtics/qa/runs/:id/approve — mark a passed run as approved. */
   approve: (id: string) =>
     qaPost<QaApproveResponse>(`/runs/${encodeURIComponent(id)}/approve`),
+
+  /** GET /api/runtics/qa/schedules — list cron schedules and their toggle state. */
+  listSchedules: () => qaGet<QaSchedulesListResponse>('/schedules'),
+
+  /** PATCH /api/runtics/qa/schedules/:id — flip toggle or tweak fields. */
+  updateSchedule: (id: string, patch: QaScheduleUpdate) =>
+    qaPatch<QaScheduleUpdateResponse>(
+      `/schedules/${encodeURIComponent(id)}`,
+      patch,
+    ),
 }
 
 // ─── Display helpers ────────────────────────────────────────────────────────

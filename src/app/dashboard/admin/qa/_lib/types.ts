@@ -66,3 +66,40 @@ export interface QaApproveResponse {
 }
 
 export type QaSinceWindow = 'all' | '24h' | '7d' | '30d'
+
+// ─── Schedules ───────────────────────────────────────────────────────────────
+
+/**
+ * One row from qa_schedules. Mirrors the shape returned by GET
+ * /api/runtics/qa/schedules. `enabled` is the user-facing toggle; the actual
+ * cron trigger is declared statically in wrangler.toml.
+ */
+export interface QaSchedule {
+  id: string
+  name: string
+  description: string
+  cron_expression: string
+  subject: string
+  scope: QaScope
+  enabled: boolean
+  last_run_id: string | null
+  last_run_at: number | null
+  last_run_status: string | null
+  updated_at: number
+  created_at: number
+}
+
+export interface QaSchedulesListResponse {
+  schedules: QaSchedule[]
+}
+
+export interface QaScheduleUpdateResponse {
+  schedule: QaSchedule
+}
+
+export interface QaScheduleUpdate {
+  enabled?: boolean
+  subject?: string
+  scope?: QaScope
+  cron_expression?: string
+}
