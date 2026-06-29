@@ -304,7 +304,6 @@ export const runticsApi = {
   deleteFlow: (id: string) => rmut<{ ok: boolean }>(`/flows/${encodeURIComponent(id)}`, 'DELETE'),
   flowRuns: (id: string, limit = 20) =>
     rget<{ runs: FlowRun[] }>(`/flows/${encodeURIComponent(id)}/runs?limit=${limit}`),
-  agentsCatalog: () => rget<{ agents: Array<{ id: string; description: string | null }> }>('/agents'),
   // ─── Webhooks ───────────────────────────────────────────────────────────
   webhooks: () => rget<{ webhooks: TenantWebhook[] }>('/webhooks'),
   createWebhook: (body: { connection_id: string; source_external_id: string; events: string[] }) =>

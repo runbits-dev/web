@@ -1,14 +1,28 @@
 "use client"
 
-import { useEffect, useState, useCallback, use } from 'react'
+import { useEffect, useState, useCallback, Suspense } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft, Trash2, Save, AlertTriangle, CheckCircle2 } from 'lucide-react'
-import { runticsApi, type Flow, type FlowRun, formatRelative, statusColor } from '../../_lib'
+import { runticsApi, type Flow, type FlowRun, type FlowDsl, type Agent, formatRelative, statusColor } from '../../_lib'
+import { FlowCanvas } from './FlowCanvas'
 
-export default function FlowDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params)
+// Next.js static export doesn't allow `[id]` dynamic segments without
+// generateStaticParams. Using a query param (?id=xxx) keeps the page
+// statically exportable while still letting us link to a specific flow.
+
+export default function FlowEditPageWrapper() {
+  return (
+    <Suspense fallback={<div className="animate-pulse h-32 bg-slate-100 rounded-2xl" />}>
+      <FlowEditPage />
+    </Suspense>
+  )
+}
+
+function FlowEditPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const id = searchParams.get('id') ?? ''
   const [flow, setFlow] = useState<Flow | null>(null)
   const [runs, setRuns] = useState<FlowRun[]>([])
   const [loading, setLoading] = useState(true)
@@ -17,21 +31,38 @@ export default function FlowDetailPage({ params }: { params: Promise<{ id: strin
 
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
-  const [dslText, setDslText] = useState('')
+  const [dsl, setDsl] = useState<FlowDsl>({ nodes: [] })
+  const [initialDsl, setInitialDsl] = useState<FlowDsl>({ nodes: [] })
+  const [agents, setAgents] = useState<Agent[]>([])
   const [saving, setSaving] = useState(false)
   const [dirty, setDirty] = useState(false)
 
   const load = useCallback(async () => {
+    if (!id) {
+      setError('Falta ?id=… en la URL')
+      setLoading(false)
+      return
+    }
     setLoading(true)
     setError(null)
     try {
-      const res = await runticsApi.flow(id)
+      const [res, agentsRes] = await Promise.all([
+        runticsApi.flow(id),
+        runticsApi.agents().catch(() => ({ agents: [] as Agent[] })),
+      ])
       setFlow(res.flow)
       setRuns(res.recent_runs)
       setName(res.flow.name)
       setDescription(res.flow.description ?? '')
-      const parsed = (() => { try { return JSON.stringify(JSON.parse(res.flow.dsl_json), null, 2) } catch { return res.flow.dsl_json } })()
-      setDslText(parsed)
+      const parsedDsl = (() => {
+        try {
+          const d = JSON.parse(res.flow.dsl_json) as FlowDsl
+          return { nodes: Array.isArray(d.nodes) ? d.nodes : [] }
+        } catch { return { nodes: [] } }
+      })()
+      setDsl(parsedDsl)
+      setInitialDsl(parsedDsl)
+      setAgents(agentsRes.agents)
       setDirty(false)
     } catch (err) {
       setError((err as Error).message)
@@ -45,18 +76,11 @@ export default function FlowDetailPage({ params }: { params: Promise<{ id: strin
   async function save() {
     setSaving(true)
     setError(null)
-    let dsl: unknown
     try {
-      dsl = JSON.parse(dslText)
-    } catch {
-      setError('El DSL no es JSON válido')
-      setSaving(false)
-      return
-    }
-    try {
-      await runticsApi.updateFlow(id, { name, description, dsl: dsl as { nodes: Array<{ id: string; agent: string }> } })
+      await runticsApi.updateFlow(id, { name, description, dsl })
       setFlash('Guardado')
       setDirty(false)
+      setInitialDsl(dsl)
       setTimeout(() => setFlash(null), 2000)
       void load()
     } catch (err) {
@@ -64,6 +88,11 @@ export default function FlowDetailPage({ params }: { params: Promise<{ id: strin
     } finally {
       setSaving(false)
     }
+  }
+
+  function onDslChange(next: FlowDsl) {
+    setDsl(next)
+    if (JSON.stringify(next) !== JSON.stringify(initialDsl)) setDirty(true)
   }
 
   async function remove() {
@@ -86,7 +115,7 @@ export default function FlowDetailPage({ params }: { params: Promise<{ id: strin
     )
   }
 
-  if (!flow) return <div className="text-sm text-slate-500">Flow no encontrado.</div>
+  if (!flow) return <div className="text-sm text-slate-500">{error ?? 'Flow no encontrado.'}</div>
 
   return (
     <div className="space-y-6">
@@ -149,22 +178,13 @@ export default function FlowDetailPage({ params }: { params: Promise<{ id: strin
           />
         </div>
         <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label className="text-xs font-semibold text-slate-700">DSL (JSON)</label>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-xs font-semibold text-slate-700">Flow (visual)</label>
             <span className="text-[10px] text-slate-400">
-              Editor visual con drag-and-drop próximamente
+              Arrastrá nodos para reordenar · click para editar args
             </span>
           </div>
-          <textarea
-            value={dslText}
-            onChange={(e) => { setDslText(e.target.value); setDirty(true) }}
-            rows={14}
-            spellCheck={false}
-            className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-          <p className="text-[11px] text-slate-400 mt-1">
-            Formato: <code>{`{ "nodes": [{ "id": "step1", "agent": "project-manager", "args_template": { "note": "{{input.note}}" } }] }`}</code>
-          </p>
+          <FlowCanvas initialDsl={initialDsl} agents={agents} onChange={onDslChange} />
         </div>
         <div className="flex justify-end">
           <button

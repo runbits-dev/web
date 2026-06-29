@@ -89,7 +89,7 @@ export default function RunticsFlowsPage() {
                 <div key={f.id} className="px-5 py-4 hover:bg-slate-50 transition-colors">
                   <div className="flex items-center justify-between gap-3">
                     <Link
-                      href={`/dashboard/runtics/flows/${encodeURIComponent(f.id)}`}
+                      href={`/dashboard/runtics/flows/edit?id=${encodeURIComponent(f.id)}`}
                       className="flex-1 min-w-0"
                     >
                       <div className="flex items-center gap-2 mb-1">
@@ -124,7 +124,7 @@ export default function RunticsFlowsPage() {
                       <Power className="w-4 h-4" />
                     </button>
                     <Link
-                      href={`/dashboard/runtics/flows/${encodeURIComponent(f.id)}`}
+                      href={`/dashboard/runtics/flows/edit?id=${encodeURIComponent(f.id)}`}
                       className="text-slate-400 hover:text-slate-600"
                     >
                       <ChevronRight className="w-5 h-5" />
