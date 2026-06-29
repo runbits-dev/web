@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Bot, Play, AlertTriangle, ArrowRight, Activity, DollarSign, Plug } from 'lucide-react'
+import { Bot, Play, AlertTriangle, ArrowRight, Activity, DollarSign, Plug, Zap } from 'lucide-react'
 import {
   runticsApi,
   type Overview,
@@ -79,6 +79,12 @@ export default function RunticsOverviewPage() {
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-full px-3 py-1.5 transition-colors"
           >
             <Plug className="w-3 h-3" /> Conexiones
+          </Link>
+          <Link
+            href="/dashboard/runtics/flows"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-full px-3 py-1.5 transition-colors"
+          >
+            <Zap className="w-3 h-3" /> Flows
           </Link>
         </div>
       </div>

@@ -166,6 +166,43 @@ export interface WebhookDelivery {
   received_at: number
 }
 
+// ─── Flows ────────────────────────────────────────────────────────────────
+
+export type FlowStatus = 'enabled' | 'disabled'
+
+export interface FlowNode {
+  id: string
+  agent: string
+  args_template?: Record<string, unknown>
+}
+
+export interface FlowDsl {
+  nodes: FlowNode[]
+}
+
+export interface Flow {
+  id: string
+  tenant_id: string
+  name: string
+  description: string | null
+  dsl_json: string
+  status: FlowStatus
+  created_at: number
+  updated_at: number
+}
+
+export interface FlowRun {
+  id: string
+  flow_id: string
+  tenant_id: string
+  status: 'queued' | 'running' | 'completed' | 'failed' | 'cancelled'
+  trigger_source: string
+  started_at: number
+  finished_at: number | null
+  duration_ms: number | null
+  error_message: string | null
+}
+
 export interface DiscoveredRepo {
   id: number
   full_name: string
@@ -251,6 +288,23 @@ export const runticsApi = {
   deleteConnection: (id: string) =>
     rmut<{ ok: boolean }>(`/connections/${encodeURIComponent(id)}`, 'DELETE'),
   githubInstallUrl: () => rget<{ install_url: string; state: string }>('/connections/github/install'),
+  connectLinear: (body: { api_key: string; display_name?: string }) =>
+    rmut<{ ok: boolean; connection_id: string; organization: string }>(
+      '/connections/linear',
+      'POST',
+      body,
+    ),
+  // ─── Flows ──────────────────────────────────────────────────────────────
+  flows: () => rget<{ flows: Flow[] }>('/flows'),
+  flow: (id: string) => rget<{ flow: Flow; recent_runs: FlowRun[] }>(`/flows/${encodeURIComponent(id)}`),
+  createFlow: (body: { id: string; name: string; description?: string; dsl: FlowDsl; status?: FlowStatus }) =>
+    rmut<{ ok: boolean; flow: Flow }>('/flows', 'POST', body),
+  updateFlow: (id: string, body: { name?: string; description?: string; dsl?: FlowDsl; status?: FlowStatus }) =>
+    rmut<{ ok: boolean; flow: Flow }>(`/flows/${encodeURIComponent(id)}`, 'PATCH', body),
+  deleteFlow: (id: string) => rmut<{ ok: boolean }>(`/flows/${encodeURIComponent(id)}`, 'DELETE'),
+  flowRuns: (id: string, limit = 20) =>
+    rget<{ runs: FlowRun[] }>(`/flows/${encodeURIComponent(id)}/runs?limit=${limit}`),
+  agentsCatalog: () => rget<{ agents: Array<{ id: string; description: string | null }> }>('/agents'),
   // ─── Webhooks ───────────────────────────────────────────────────────────
   webhooks: () => rget<{ webhooks: TenantWebhook[] }>('/webhooks'),
   createWebhook: (body: { connection_id: string; source_external_id: string; events: string[] }) =>

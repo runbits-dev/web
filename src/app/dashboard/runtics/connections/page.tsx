@@ -11,6 +11,7 @@ import {
 import { ConnectionCard } from './ConnectionCard'
 import { WebhookList } from './WebhookList'
 import { ConnectGitHubFlow } from './ConnectGitHubFlow'
+import { ConnectLinearFlow } from './ConnectLinearFlow'
 
 export default function RunticsConnectionsPage() {
   const [providers, setProviders] = useState<ConnectionProvider[]>([])
@@ -108,11 +109,20 @@ export default function RunticsConnectionsPage() {
             Icon={GitBranch}
             active={providers.some((p) => p.id === 'github' && p.status === 'active')}
             connected={connections.some((c) => c.provider_id === 'github' && c.status === 'active')}
+            onReload={loadAll}
+          />
+          {/* Linear (api_key) */}
+          <ProviderTile
+            providerId="linear"
+            label="Linear"
+            Icon={GitBranch}
+            active={providers.some((p) => p.id === 'linear' && p.status === 'active')}
+            connected={connections.some((c) => c.provider_id === 'linear' && c.status === 'active')}
+            onReload={loadAll}
           />
           {/* Future placeholders — visible but disabled */}
           <ProviderTile providerId="gitlab" label="GitLab" Icon={GitBranch} active={false} connected={false} />
           <ProviderTile providerId="bitbucket" label="Bitbucket" Icon={GitBranch} active={false} connected={false} />
-          <ProviderTile providerId="linear" label="Linear" Icon={GitBranch} active={false} connected={false} />
         </div>
       </div>
 
@@ -167,16 +177,18 @@ function ProviderTile({
   Icon,
   active,
   connected,
+  onReload,
 }: {
   providerId: string
   label: string
   Icon: typeof GitBranch
   active: boolean
   connected: boolean
+  onReload?: () => void
 }) {
   const [showFlow, setShowFlow] = useState(false)
 
-  if (providerId === 'github' && active) {
+  if (active && (providerId === 'github' || providerId === 'linear')) {
     return (
       <>
         <button
@@ -197,7 +209,15 @@ function ProviderTile({
             {connected ? 'Agregar otra cuenta' : 'Conectar'}
           </p>
         </button>
-        {showFlow && <ConnectGitHubFlow onClose={() => setShowFlow(false)} />}
+        {showFlow && providerId === 'github' && (
+          <ConnectGitHubFlow onClose={() => setShowFlow(false)} />
+        )}
+        {showFlow && providerId === 'linear' && (
+          <ConnectLinearFlow
+            onClose={() => setShowFlow(false)}
+            onConnected={onReload}
+          />
+        )}
       </>
     )
   }
