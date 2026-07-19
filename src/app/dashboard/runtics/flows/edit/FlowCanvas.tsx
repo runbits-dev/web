@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ReactFlow,
   Background,
@@ -85,14 +85,13 @@ export function FlowCanvas({ initialDsl, agents, onChange }: FlowCanvasProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [showAddPicker, setShowAddPicker] = useState(false)
 
-  // Bubble changes upward so parent's save button knows the latest DSL.
-  useEffect(() => {
-    onChange(canvasNodesToDsl(nodes))
-  }, [nodes, onChange])
+  // Keep latest `onChange` in a ref so we never have to put it in effect deps
+  // (avoiding the parent-recreates-callback-on-every-render → loop trap).
+  const onChangeRef = useRef(onChange)
+  useEffect(() => { onChangeRef.current = onChange }, [onChange])
 
-  // Auto-rebuild linear edges every time nodes change (order or add/remove).
-  useEffect(() => {
-    const ordered = [...nodes].sort((a, b) => (a.position?.y ?? 0) - (b.position?.y ?? 0))
+  function rebuildEdges(updatedNodes: Node[]): Edge[] {
+    const ordered = [...updatedNodes].sort((a, b) => (a.position?.y ?? 0) - (b.position?.y ?? 0))
     const next: Edge[] = []
     for (let i = 0; i < ordered.length - 1; i++) {
       next.push({
@@ -102,24 +101,43 @@ export function FlowCanvas({ initialDsl, agents, onChange }: FlowCanvasProps) {
         animated: true,
       })
     }
-    setEdges(next)
-  }, [nodes])
+    return next
+  }
+
+  // Commit a node update: applies the change, rebuilds edges, and bubbles
+  // the DSL up. Doing this in a single transactional helper avoids cascading
+  // useEffects (and the React #185 loop they caused).
+  const commitNodes = useCallback((updater: (prev: Node[]) => Node[]) => {
+    setNodes((prev) => {
+      const next = updater(prev)
+      setEdges(rebuildEdges(next))
+      onChangeRef.current(canvasNodesToDsl(next))
+      return next
+    })
+  }, [])
 
   const onNodesChange = useCallback((changes: NodeChange[]) => {
-    setNodes((nds) => applyNodeChanges(changes, nds))
-  }, [])
+    // Only bubble DSL changes for changes that meaningfully affect persisted
+    // state (position, data, add/remove). Skip pure UI noise (select, dimensions)
+    // to keep parent re-renders minimal.
+    const meaningful = changes.some((c) => c.type === 'position' || c.type === 'add' || c.type === 'remove')
+    if (meaningful) {
+      commitNodes((nds) => applyNodeChanges(changes, nds))
+    } else {
+      setNodes((nds) => applyNodeChanges(changes, nds))
+    }
+  }, [commitNodes])
   const onEdgesChange = useCallback((changes: EdgeChange[]) => {
     setEdges((eds) => applyEdgeChanges(changes, eds))
   }, [])
 
   function addNode(agentId: string) {
     const id = `node_${Date.now().toString(36)}`
-    const y = nodes.length * NODE_VERTICAL_GAP
-    setNodes((nds) => [
+    commitNodes((nds) => [
       ...nds,
       {
         id,
-        position: { x: NODE_HORIZONTAL_OFFSET, y },
+        position: { x: NODE_HORIZONTAL_OFFSET, y: nds.length * NODE_VERTICAL_GAP },
         data: { agent: agentId, args_template: {} },
         type: 'agent',
         sourcePosition: Position.Bottom,
@@ -131,12 +149,12 @@ export function FlowCanvas({ initialDsl, agents, onChange }: FlowCanvasProps) {
   }
 
   function deleteNode(id: string) {
-    setNodes((nds) => nds.filter((n) => n.id !== id))
+    commitNodes((nds) => nds.filter((n) => n.id !== id))
     setSelectedId(null)
   }
 
   function updateNode(id: string, patch: Partial<{ agent: string; args_template: Record<string, unknown>; id: string }>) {
-    setNodes((nds) => nds.map((n) => {
+    commitNodes((nds) => nds.map((n) => {
       if (n.id !== id) return n
       const data = { ...n.data, ...patch } as { agent: string; args_template: Record<string, unknown> }
       return { ...n, id: patch.id ?? n.id, data }
