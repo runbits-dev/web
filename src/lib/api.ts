@@ -315,10 +315,9 @@ export const api = {
     request<void>(`/api/chat/orders/${orderId}/messages/read`, { method: 'PATCH' }),
   getUnreadCount: () => request<{ count: number }>('/api/chat/unread-count'),
 
-  // Ratings — order-service for writing a rating; social-service for reading
-  // the aggregated per-store review summary (real review data).
-  rateOrder: (orderId: string, rating: number, comment?: string) =>
-    request<any>(`/api/orders/${orderId}/rate`, { method: 'POST', body: JSON.stringify({ rating, comment }) }),
+  // Ratings — read-only per-store review summary from social-service. Writing a
+  // rating goes through the verified-purchase review flow (review-eligibility
+  // token -> POST /api/reviews); the legacy /api/orders/:id/rate path is retired.
   // Per-store review summary from social-service's distribution endpoint
   // (GET /api/reviews/distribution?store_id=). Returns { distribution, total,
   // average } — average is null when there are no visible reviews. We normalize
