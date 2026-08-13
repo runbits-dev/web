@@ -315,11 +315,20 @@ export const api = {
     request<void>(`/api/chat/orders/${orderId}/messages/read`, { method: 'PATCH' }),
   getUnreadCount: () => request<{ count: number }>('/api/chat/unread-count'),
 
-  // Ratings (order-service via gateway)
+  // Ratings — order-service for writing a rating; social-service for reading
+  // the aggregated per-store review summary (real review data).
   rateOrder: (orderId: string, rating: number, comment?: string) =>
     request<any>(`/api/orders/${orderId}/rate`, { method: 'POST', body: JSON.stringify({ rating, comment }) }),
-  getRestaurantRatings: (restaurantId: string) =>
-    request<any[]>(`/api/orders/restaurants/${restaurantId}/ratings`),
+  // Per-store review summary from social-service's distribution endpoint
+  // (GET /api/reviews/distribution?store_id=). Returns { distribution, total,
+  // average } — average is null when there are no visible reviews. We normalize
+  // to a typed { avg, count } the dashboard can consume directly.
+  getStoreReviewSummary: async (storeId: string): Promise<{ avg: number; count: number }> => {
+    const res = await request<{ distribution: Record<string, number>; total: number; average: number | null }>(
+      `/api/reviews/distribution?store_id=${encodeURIComponent(storeId)}`,
+    )
+    return { avg: res.average ?? 0, count: res.total ?? 0 }
+  },
 
   getRiders: (zoneId?: string) =>
     request<any[]>(`/api/riders${zoneId ? `?zoneId=${zoneId}` : ''}`),

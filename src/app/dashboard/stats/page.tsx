@@ -66,7 +66,7 @@ export default function StatsPage() {
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
   const [restaurantId, setRestaurantId] = useState<string | null>(null)
-  const [ratings, setRatings] = useState<any[]>([])
+  const [reviewSummary, setReviewSummary] = useState<{ avg: number; count: number }>({ avg: 0, count: 0 })
 
   useEffect(() => {
     const storeId = activeProfile?.store_id
@@ -74,10 +74,10 @@ export default function StatsPage() {
       setRestaurantId(storeId)
       Promise.all([
         api.getRestaurantStats(storeId),
-        api.getRestaurantRatings(storeId).catch(() => []),
+        api.getStoreReviewSummary(storeId).catch(() => ({ avg: 0, count: 0 })),
       ]).then(([s, r]) => {
         setStats(s as Stats)
-        setRatings(r as any[])
+        setReviewSummary(r as { avg: number; count: number })
       }).finally(() => setLoading(false))
     } else {
       // Fallback: check via api.me()
@@ -86,10 +86,10 @@ export default function StatsPage() {
           setRestaurantId(u.restaurant_id)
           Promise.all([
             api.getRestaurantStats(u.restaurant_id),
-            api.getRestaurantRatings(u.restaurant_id).catch(() => []),
+            api.getStoreReviewSummary(u.restaurant_id).catch(() => ({ avg: 0, count: 0 })),
           ]).then(([s, r]) => {
             setStats(s as Stats)
-            setRatings(r as any[])
+            setReviewSummary(r as { avg: number; count: number })
           }).finally(() => setLoading(false))
         } else {
           setLoading(false)
@@ -98,9 +98,7 @@ export default function StatsPage() {
     }
   }, [activeProfile?.store_id])
 
-  const avgRating = ratings.length > 0
-    ? (ratings.reduce((sum, r) => sum + (r.rating ?? 0), 0) / ratings.length).toFixed(1)
-    : null
+  const avgRating = reviewSummary.count > 0 ? reviewSummary.avg.toFixed(1) : null
 
   const weeklyData = stats
     ? generateWeeklyData(stats.orders.revenue_today, stats.orders.today)
@@ -151,7 +149,7 @@ export default function StatsPage() {
               label="Rating promedio"
               value={avgRating ? `★ ${avgRating}` : '—'}
               accent="amber"
-              sub={avgRating ? `${ratings.length} reseñas` : 'Sin reseñas'}
+              sub={reviewSummary.count > 0 ? `${reviewSummary.count} reseñas` : 'Sin reseñas'}
             />
           </div>
 
