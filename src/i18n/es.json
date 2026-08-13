@@ -1412,5 +1412,15 @@
         "body": "Si cancelás antes de que empiece la promoción te reembolsamos el monto completo. Si ya empezó, no hay reembolso del período corrido."
       }
     }
+  },
+  "track": {
+    "mapTitle": "Ubicación del repartidor",
+    "locating": "Buscando al repartidor…",
+    "locatingHint": "En cuanto el repartidor comparta su ubicación la vas a ver acá.",
+    "notInTransit": "Tu pedido aún no salió",
+    "notInTransitHint": "Cuando el repartidor lo retire vas a poder seguirlo en el mapa.",
+    "loadingStatus": "Cargando estado del envío…",
+    "statusUnavailable": "No pudimos obtener el estado del envío. Reintentando…",
+    "updateError": "No pudimos actualizar la ubicación. Mostramos la última conocida."
   }
 }

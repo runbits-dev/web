@@ -3,7 +3,8 @@
 import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { ClipboardList, CheckCircle, ChefHat, Package, Bike, PartyPopper, LucideIcon } from 'lucide-react'
+import { ClipboardList, CheckCircle, ChefHat, Package, Bike, PartyPopper } from 'lucide-react'
+import { useI18n } from '@/i18n'
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'https://api.runbits.dev'
 
@@ -20,14 +21,21 @@ const STATUS_INDEX: Record<string, number> = {}
 STATUS_STEPS.forEach((s, i) => { STATUS_INDEX[s.key] = i })
 
 function TrackContent() {
+  const { t } = useI18n()
   const searchParams = useSearchParams()
   const orderId = searchParams.get('id')
   const [order, setOrder] = useState<any>(null)
+  // Live rider position comes exclusively from the public /tracking endpoint.
   const [riderPos, setRiderPos] = useState<{ lat: number; lng: number } | null>(null)
+  const [trackable, setTrackable] = useState(false)
+  // Distinguishes "no successful /tracking response yet" from "server said trackable:false".
+  const [trackLoaded, setTrackLoaded] = useState(false)
+  const [trackError, setTrackError] = useState(false)
   const [error, setError] = useState(false)
   const [loading, setLoading] = useState(true)
   const [whiteLabel, setWhiteLabel] = useState(false)
 
+  // Order summary + status (auth-free, order-scoped). Polled for status changes.
   useEffect(() => {
     if (!orderId) { setError(true); setLoading(false); return }
 
@@ -44,22 +52,40 @@ function TrackContent() {
             .then(limitsData => { if (limitsData?.limits?.whiteLabel) setWhiteLabel(true) })
             .catch(() => {})
         }
-
-        if (data.rider_id && ['PICKED_UP', 'IN_TRANSIT'].includes(data.status)) {
-          try {
-            const riderRes = await fetch(`${API}/api/riders/${data.rider_id}`)
-            if (riderRes.ok) {
-              const rider = await riderRes.json()
-              if (rider.gps) setRiderPos({ lat: rider.gps.lat, lng: rider.gps.lng })
-            }
-          } catch {}
-        }
       } catch { setError(true) }
       finally { setLoading(false) }
     }
 
     loadOrder()
     const interval = setInterval(loadOrder, 15000)
+    return () => clearInterval(interval)
+  }, [orderId])
+
+  // Live tracking (public endpoint, no auth). The rider pushes ~every 30s, so
+  // we poll at the same cadence. A failed refetch keeps the last known position.
+  useEffect(() => {
+    if (!orderId) return
+
+    const loadTracking = async () => {
+      try {
+        const res = await fetch(`${API}/api/orders/${orderId}/tracking`)
+        if (!res.ok) { setTrackError(true); return }
+        const data = await res.json()
+        setTrackable(Boolean(data?.trackable))
+        const pos = data?.position
+        if (pos && typeof pos.lat === 'number' && typeof pos.lng === 'number') {
+          setRiderPos({ lat: pos.lat, lng: pos.lng })
+        }
+        setTrackLoaded(true)
+        setTrackError(false)
+      } catch {
+        // Resilient: keep the last known position, just flag the stale update.
+        setTrackError(true)
+      }
+    }
+
+    loadTracking()
+    const interval = setInterval(loadTracking, 30000)
     return () => clearInterval(interval)
   }, [orderId])
 
@@ -81,7 +107,6 @@ function TrackContent() {
   const currentStep = STATUS_INDEX[order.status] ?? 0
   const isCancelled = order.status === 'CANCELLED'
   const isCompleted = order.status === 'COMPLETED' || order.status === 'DELIVERED'
-  const isInTransit = ['PICKED_UP', 'IN_TRANSIT'].includes(order.status)
 
   // ETA estimation
   const avgDeliveryMin = 30
@@ -162,17 +187,62 @@ function TrackContent() {
           </div>
         )}
 
-        {/* Rider map */}
-        {isInTransit && riderPos && (
-          <div className="bg-white rounded-2xl border border-gray-200 p-5">
-            <h2 className="font-semibold text-gray-900 mb-3">Ubicación del repartidor</h2>
-            <iframe
-              src={`https://www.openstreetmap.org/export/embed.html?bbox=${riderPos.lng-0.008},${riderPos.lat-0.008},${riderPos.lng+0.008},${riderPos.lat+0.008}&layer=mapnik&marker=${riderPos.lat},${riderPos.lng}`}
-              className="w-full h-52 rounded-xl border border-gray-200"
-              style={{ border: 0 }}
-              loading="lazy"
-            />
-          </div>
+        {/* Live tracking states (mutually exclusive) */}
+        {!isCancelled && !isCompleted && (
+          <>
+            {/* Trackable + position available → map (persists last-known position) */}
+            {trackable && riderPos && (
+              <div className="bg-white rounded-2xl border border-gray-200 p-5">
+                <h2 className="font-semibold text-gray-900 mb-3">{t('track.mapTitle')}</h2>
+                <iframe
+                  src={`https://www.openstreetmap.org/export/embed.html?bbox=${riderPos.lng-0.008},${riderPos.lat-0.008},${riderPos.lng+0.008},${riderPos.lat+0.008}&layer=mapnik&marker=${riderPos.lat},${riderPos.lng}`}
+                  className="w-full h-52 rounded-xl border border-gray-200"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                />
+                {trackError && (
+                  <p className="text-xs text-amber-600 mt-2">{t('track.updateError')}</p>
+                )}
+              </div>
+            )}
+
+            {/* Trackable but no position yet → locating the rider */}
+            {trackable && !riderPos && (
+              <div className="bg-white rounded-2xl border border-gray-200 p-5 text-center">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600 mx-auto mb-3" />
+                <p className="text-sm font-medium text-gray-900">{t('track.locating')}</p>
+                <p className="text-xs text-gray-500 mt-1">{t('track.locatingHint')}</p>
+                {trackError && (
+                  <p className="text-xs text-amber-600 mt-2">{t('track.updateError')}</p>
+                )}
+              </div>
+            )}
+
+            {/* Loaded and server says not trackable → order hasn't left */}
+            {trackLoaded && !trackable && (
+              <div className="bg-white rounded-2xl border border-gray-200 p-5 text-center">
+                <Bike className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                <p className="text-sm font-medium text-gray-900">{t('track.notInTransit')}</p>
+                <p className="text-xs text-gray-500 mt-1">{t('track.notInTransitHint')}</p>
+              </div>
+            )}
+
+            {/* No successful tracking response yet + error → neutral retry state (never "no salió") */}
+            {!trackLoaded && trackError && (
+              <div className="bg-white rounded-2xl border border-gray-200 p-5 text-center">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600 mx-auto mb-3" />
+                <p className="text-sm text-amber-600">{t('track.statusUnavailable')}</p>
+              </div>
+            )}
+
+            {/* No successful tracking response yet, no error → loading */}
+            {!trackLoaded && !trackError && (
+              <div className="bg-white rounded-2xl border border-gray-200 p-5 text-center">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600 mx-auto mb-3" />
+                <p className="text-sm text-gray-500">{t('track.loadingStatus')}</p>
+              </div>
+            )}
+          </>
         )}
 
         {/* Order summary */}

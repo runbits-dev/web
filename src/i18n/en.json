@@ -1412,5 +1412,15 @@
         "body": "If you cancel before the promotion starts, we refund in full. Once it has started, the elapsed period is NOT refunded."
       }
     }
+  },
+  "track": {
+    "mapTitle": "Rider location",
+    "locating": "Locating your rider…",
+    "locatingHint": "As soon as the rider shares their location you'll see it here.",
+    "notInTransit": "Your order hasn't left yet",
+    "notInTransitHint": "Once the rider picks it up you'll be able to follow it on the map.",
+    "loadingStatus": "Loading delivery status…",
+    "statusUnavailable": "We couldn't get the delivery status. Retrying…",
+    "updateError": "We couldn't update the location. Showing the last known one."
   }
 }
