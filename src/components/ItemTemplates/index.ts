@@ -26,13 +26,6 @@ const FOOD_TEMPLATES: ItemTemplate[] = [
   { label: 'Postre',     name: 'Flan casero',      description: 'Flan con dulce de leche y crema.', price: 4.50, category: 'Postres', unit: 'porción' },
 ]
 
-const GOODS_TEMPLATES: ItemTemplate[] = [
-  { label: 'Producto básico', name: 'Producto', description: 'Descripción de tu producto.', price: 10.00, category: 'Destacados', unit: 'unidad', track_stock: true },
-  { label: 'Indumentaria', name: 'Remera estampada', description: 'Remera 100% algodón, talles S al XL.', price: 18.00, category: 'Indumentaria', unit: 'unidad', track_stock: true },
-  { label: 'Accesorio',  name: 'Accesorio',        description: 'Accesorio premium con garantía.', price: 25.00, category: 'Accesorios', unit: 'unidad', track_stock: true },
-  { label: 'Combo',      name: 'Combo destacado',  description: '2 productos por el precio de uno.', price: 30.00, category: 'Ofertas', unit: 'pack', track_stock: true },
-]
-
 const APPOINTMENT_TEMPLATES: ItemTemplate[] = [
   { label: 'Corte de pelo', name: 'Corte de pelo', description: 'Corte clásico con lavado incluido.',   price: 15.00, category: 'Cortes', duration_minutes: 30 },
   { label: 'Color',         name: 'Coloración',     description: 'Coloración completa con productos premium.', price: 50.00, category: 'Color', duration_minutes: 90 },
@@ -59,14 +52,11 @@ const REALTIME_TEMPLATES: ItemTemplate[] = [
 export function getTemplatesForBusinessType(type: string | null | undefined): ItemTemplate[] {
   switch (type) {
     case 'food': return FOOD_TEMPLATES
-    case 'goods': return GOODS_TEMPLATES
     case 'appointment': return APPOINTMENT_TEMPLATES
     case 'task': return TASK_TEMPLATES
     case 'realtime': return REALTIME_TEMPLATES
     case 'food+appointment': return [...FOOD_TEMPLATES, ...APPOINTMENT_TEMPLATES]
-    case 'goods+appointment': return [...GOODS_TEMPLATES, ...APPOINTMENT_TEMPLATES]
-    case 'goods+task': return [...GOODS_TEMPLATES, ...TASK_TEMPLATES]
-    default: return GOODS_TEMPLATES
+    default: return FOOD_TEMPLATES
   }
 }
 
@@ -74,10 +64,9 @@ export function getTemplatesForBusinessType(type: string | null | undefined): It
 export function getNamePlaceholder(type: string | null | undefined): string {
   switch (type) {
     case 'food': return 'Ej: Pizza Margarita'
-    case 'goods': return 'Ej: Remera estampada'
     case 'appointment': return 'Ej: Corte de pelo'
     case 'task': return 'Ej: Visita técnica'
     case 'realtime': return 'Ej: Cancha de fútbol 60 min'
-    default: return 'Ej: Producto'
+    default: return 'Ej: Pizza Margarita'
   }
 }

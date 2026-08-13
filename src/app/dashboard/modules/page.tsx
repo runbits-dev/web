@@ -48,6 +48,8 @@ type AddonInfo = {
   unlocksModules: string[]
 }
 
+type ModuleStatus = 'available' | 'coming_soon' | 'hidden'
+
 type MyModulesResponse = {
   tier: Tier
   business_type: string
@@ -56,6 +58,7 @@ type MyModulesResponse = {
   limits: PlanLimits
   addons: string[]
   restaurantId: string
+  moduleStatus?: Record<string, ModuleStatus>
 }
 
 const TIER_ORDER: Tier[] = ['free', 'starter', 'growth', 'business']
@@ -298,7 +301,7 @@ export default function ModulesPage() {
     return () => { cancelled = true }
   }, [restaurantId])
 
-  const businessType = me?.business_type ?? activeProfile?.business_type ?? 'goods'
+  const businessType = me?.business_type ?? activeProfile?.business_type ?? 'food'
   const currentTier: Tier = me?.tier ?? 'free'
   const activeModules = useMemo(() => new Set(me?.modules ?? []), [me])
   const categorize = useMemo(() => buildCategorizer(plans, businessType), [plans, businessType])
@@ -336,6 +339,10 @@ export default function ModulesPage() {
   const businessTypeLabel = businessType.charAt(0).toUpperCase() + businessType.slice(1)
   const planLabel = currentTier.charAt(0).toUpperCase() + currentTier.slice(1)
 
+  // Module availability, as reported by billing. Missing → treated as available.
+  const statusOf = (id: string): ModuleStatus => me?.moduleStatus?.[id] ?? 'available'
+  const visibleActive = Array.from(activeModules).filter(id => statusOf(id) !== 'hidden')
+
   return (
     <div>
       {/* ── Header ─────────────────────────────────────────────────── */}
@@ -351,22 +358,24 @@ export default function ModulesPage() {
       {/* ── Active modules ─────────────────────────────────────────── */}
       <section className="bg-white rounded-2xl border border-slate-200 p-5 mb-6">
         <h2 className="font-semibold text-slate-900 mb-1">
-          Módulos activos <span className="text-slate-400 font-normal">({activeModules.size})</span>
+          Módulos activos <span className="text-slate-400 font-normal">({visibleActive.length})</span>
         </h2>
         <p className="text-xs text-slate-500 mb-4">
           Todo lo que tu negocio puede hacer hoy con el plan {planLabel}.
         </p>
-        {activeModules.size === 0 ? (
+        {visibleActive.length === 0 ? (
           <p className="text-sm text-slate-400">No tenés módulos activos todavía.</p>
         ) : (
           <ul className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-6">
-            {Array.from(activeModules).map(id => {
+            {visibleActive.map(id => {
               const cat = categorize(id)
+              const soon = statusOf(id) === 'coming_soon'
               return (
-                <li key={id} className="flex items-center justify-between gap-3 py-1.5">
+                <li key={id} className={`flex items-center justify-between gap-3 py-1.5 ${soon ? 'opacity-60' : ''}`}>
                   <div className="flex items-center gap-2 min-w-0">
                     <Check className="w-4 h-4 text-emerald-500 shrink-0" />
                     <span className="text-sm text-slate-700 truncate">{moduleLabel(id)}</span>
+                    {soon && <ComingSoonBadge />}
                   </div>
                   <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold whitespace-nowrap">
                     {categoryLabel(cat)}
@@ -383,6 +392,7 @@ export default function ModulesPage() {
         const plan = plans.plans.find(p => p.tier === t)
         if (!plan) return null
         const newModules = modulesUnlockedByTier(t, plans, businessType, activeModules)
+          .filter(id => statusOf(id) !== 'hidden')
         if (newModules.length === 0) return null
         return (
           <section key={t} className="bg-white rounded-2xl border border-slate-200 p-5 mb-6">
@@ -404,12 +414,16 @@ export default function ModulesPage() {
               </Link>
             </div>
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-6 mt-3">
-              {newModules.map(id => (
-                <li key={id} className="flex items-center gap-2 py-1.5">
-                  <Lock className="w-4 h-4 text-slate-300 shrink-0" />
-                  <span className="text-sm text-slate-600">{moduleLabel(id)}</span>
-                </li>
-              ))}
+              {newModules.map(id => {
+                const soon = statusOf(id) === 'coming_soon'
+                return (
+                  <li key={id} className={`flex items-center gap-2 py-1.5 ${soon ? 'opacity-60' : ''}`}>
+                    <Lock className="w-4 h-4 text-slate-300 shrink-0" />
+                    <span className="text-sm text-slate-600">{moduleLabel(id)}</span>
+                    {soon && <ComingSoonBadge />}
+                  </li>
+                )
+              })}
             </ul>
           </section>
         )
@@ -422,14 +436,18 @@ export default function ModulesPage() {
           Funcionalidades opt-in disponibles en cualquier tier.
         </p>
         <ul className="space-y-3">
-          {plans.addons.map(a => {
+          {plans.addons.filter(a => statusOf(a.id) !== 'hidden').map(a => {
             const isActive = me?.addons.includes(a.id) ?? false
+            const soon = statusOf(a.id) === 'coming_soon'
             return (
-              <li key={a.id} className="flex items-start justify-between gap-4 py-2 border-b border-slate-100 last:border-0">
+              <li key={a.id} className={`flex items-start justify-between gap-4 py-2 border-b border-slate-100 last:border-0 ${soon ? 'opacity-60' : ''}`}>
                 <div className="flex items-start gap-3 min-w-0">
                   <Plus className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-slate-800">{a.name}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-semibold text-slate-800">{a.name}</p>
+                      {soon && <ComingSoonBadge />}
+                    </div>
                     <p className="text-xs text-slate-500 mt-0.5">{a.description}</p>
                   </div>
                 </div>
@@ -437,7 +455,14 @@ export default function ModulesPage() {
                   <span className="text-sm font-bold text-slate-700 whitespace-nowrap">
                     ${a.monthlyPriceUsd}/mo
                   </span>
-                  {isActive ? (
+                  {soon ? (
+                    <span
+                      aria-disabled="true"
+                      className="text-xs font-semibold bg-slate-100 text-slate-400 px-3 py-1.5 rounded-lg cursor-not-allowed select-none"
+                    >
+                      Activar
+                    </span>
+                  ) : isActive ? (
                     <span className="text-xs font-semibold text-emerald-600 inline-flex items-center gap-1">
                       <Check className="w-3 h-3" /> Activo
                     </span>
@@ -456,6 +481,16 @@ export default function ModulesPage() {
         </ul>
       </section>
     </div>
+  )
+}
+
+// ─── Coming-soon badge ───────────────────────────────────────────────────────
+
+function ComingSoonBadge() {
+  return (
+    <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-semibold whitespace-nowrap">
+      Próximamente
+    </span>
   )
 }
 

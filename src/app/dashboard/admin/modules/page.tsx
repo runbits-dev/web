@@ -47,7 +47,14 @@ export default function AdminModulesPage() {
                     {mods.map(mod => (
                       <tr key={mod.id} className="hover:bg-slate-50">
                         <td className="px-6 py-4">
-                          <p className="font-medium text-slate-800">{mod.name}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium text-slate-800">{mod.name}</p>
+                            {mod.comingSoon && (
+                              <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-semibold whitespace-nowrap">
+                                Próximamente
+                              </span>
+                            )}
+                          </div>
                           <p className="text-xs text-slate-400 font-mono mt-0.5">{mod.id}</p>
                         </td>
                         <td className="px-6 py-4 text-slate-600 max-w-xs">{mod.description}</td>
@@ -57,7 +64,9 @@ export default function AdminModulesPage() {
                           </span>
                         </td>
                         <td className="px-6 py-4 text-right">
-                          {mod.price === 0 ? (
+                          {mod.comingSoon ? (
+                            <span className="text-slate-400 font-medium text-xs">Próximamente</span>
+                          ) : mod.price === 0 ? (
                             <span className="text-green-600 font-medium text-xs">Incluido</span>
                           ) : (
                             <span className="text-slate-700 font-semibold">${mod.price}<span className="text-slate-400 font-normal text-xs">/mes</span></span>

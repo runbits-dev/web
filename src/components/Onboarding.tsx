@@ -13,8 +13,6 @@ function getStepsForType(businessType: string, profileDone: boolean, menuCount: 
   switch (businessType) {
     case 'food':
       return [profile, { label: 'Cargar tu menú', href: '/dashboard/menu', done: menuCount > 0 }, openStore]
-    case 'goods':
-      return [profile, { label: 'Cargar tu catálogo', href: '/dashboard/menu', done: menuCount > 0 }, openStore]
     case 'appointment':
       return [profile, { label: 'Cargar tus servicios', href: '/dashboard/menu', done: menuCount > 0 }, openStore]
     case 'task':
@@ -32,7 +30,7 @@ export function OnboardingBanner({ status, menuCount, hasPhone, hasAddress, isOp
   const storeDone = !!isOpen || status === 'live'
 
   const { activeProfile } = useProfile()
-  const businessType = activeProfile?.business_type ?? 'goods'
+  const businessType = activeProfile?.business_type ?? 'food'
   const steps = getStepsForType(businessType, profileDone, menuCount, storeDone)
 
   if (steps.every(s => s.done)) return null

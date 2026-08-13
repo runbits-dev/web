@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { ChevronDown, Utensils, ShoppingBag, Calendar, Briefcase, Building2, ShieldCheck } from 'lucide-react'
+import { ChevronDown, Utensils, Calendar, Briefcase, Building2, ShieldCheck } from 'lucide-react'
 import { LocaleSwitcher } from '@/components/LocaleSwitcher'
 import { useI18n } from '@/i18n'
 
@@ -14,7 +14,6 @@ type SolutionItem = {
 
 const VERTICALS: SolutionItem[] = [
   { href: '/food', labelKey: 'verticals.food.short', Icon: Utensils },
-  { href: '/goods', labelKey: 'verticals.goods.short', Icon: ShoppingBag },
   { href: '/appointment', labelKey: 'verticals.appointment.short', Icon: Calendar },
   { href: '/task', labelKey: 'verticals.task.short', Icon: Briefcase },
   { href: '/realtime', labelKey: 'verticals.realtime.short', Icon: Building2 },

@@ -22,13 +22,6 @@ function getStepsForBusinessType(type: string): TutorialStep[] {
         { selector: '[data-tour="orders"]', title: 'Pedidos', description: 'Cuando un cliente hace un pedido, aparece acá. Podés confirmar, preparar y marcar como listo.' },
         stats, marketing, modules, subscription, settings,
       ]
-    case 'goods':
-      return [
-        home,
-        { selector: '[data-tour="menu"]', title: 'Catálogo', description: 'Cargá tus productos con nombre, precio, foto y categoría.' },
-        { selector: '[data-tour="orders"]', title: 'Pedidos', description: 'Cuando un cliente compra, el pedido aparece acá. Gestioná envíos y estados.' },
-        stats, marketing, modules, subscription, settings,
-      ]
     case 'appointment':
       return [
         home,
@@ -68,7 +61,7 @@ export function Tutorial() {
   const [mounted, setMounted] = useState(false)
 
   const steps = useMemo(() =>
-    getStepsForBusinessType(activeProfile?.business_type ?? 'goods'),
+    getStepsForBusinessType(activeProfile?.business_type ?? 'food'),
     [activeProfile?.business_type]
   )
 

@@ -5,24 +5,18 @@ import { Store, User, Layers, ChevronRight, Plus } from 'lucide-react'
 
 const BUSINESS_TYPE_LABELS: Record<string, string> = {
   food: 'Comida',
-  goods: 'Productos',
   appointment: 'Turnos',
   task: 'Servicios',
   realtime: 'Viajes',
   'food+appointment': 'Comida + Turnos',
-  'goods+appointment': 'Productos + Turnos',
-  'goods+task': 'Productos + Servicios',
 }
 
 const BUSINESS_TYPE_COLORS: Record<string, string> = {
   food: 'bg-orange-100 text-orange-700',
-  goods: 'bg-blue-100 text-blue-700',
   appointment: 'bg-purple-100 text-purple-700',
   task: 'bg-teal-100 text-teal-700',
   realtime: 'bg-sky-100 text-sky-700',
   'food+appointment': 'bg-pink-100 text-pink-700',
-  'goods+appointment': 'bg-indigo-100 text-indigo-700',
-  'goods+task': 'bg-cyan-100 text-cyan-700',
 }
 
 function ProfileIcon({ operationType }: { operationType: string }) {

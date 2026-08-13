@@ -11,7 +11,7 @@ type BusinessCategory = {
   featured: boolean
 }
 
-type FunctionalType = 'food' | 'goods' | 'appointment' | 'task' | 'realtime' | 'food+appointment' | 'goods+appointment' | 'goods+task'
+type FunctionalType = 'food' | 'appointment' | 'task' | 'realtime' | 'food+appointment'
 type OfferType = 'products' | 'services' | 'both'
 type OperationType = 'independent' | 'business'
 
@@ -21,31 +21,13 @@ const PRODUCT_CATEGORIES: BusinessCategory[] = [
   { id: 'cafe', label: 'Café', functionalType: 'food', featured: true },
   { id: 'heladeria', label: 'Heladería', functionalType: 'food', featured: true },
   { id: 'panaderia', label: 'Panadería', functionalType: 'food', featured: true },
-  { id: 'almacen', label: 'Almacén', functionalType: 'goods', featured: true },
-  { id: 'farmacia', label: 'Farmacia', functionalType: 'goods', featured: true },
-  { id: 'tienda-ropa', label: 'Tienda de ropa', functionalType: 'goods', featured: true },
-  { id: 'ferreteria', label: 'Ferretería', functionalType: 'goods', featured: true },
-  { id: 'pet-shop', label: 'Pet Shop', functionalType: 'goods', featured: true },
   { id: 'hamburgueseria', label: 'Hamburguesería', functionalType: 'food', featured: false },
   { id: 'sushi', label: 'Sushi', functionalType: 'food', featured: false },
   { id: 'empanadas', label: 'Empanadas', functionalType: 'food', featured: false },
   { id: 'rotiseria', label: 'Rotisería', functionalType: 'food', featured: false },
   { id: 'food-truck', label: 'Food Truck', functionalType: 'food', featured: false },
-  { id: 'vinoteca', label: 'Vinoteca', functionalType: 'goods', featured: false },
-  { id: 'dietetica', label: 'Dietética', functionalType: 'goods', featured: false },
-  { id: 'libreria', label: 'Librería', functionalType: 'goods', featured: false },
-  { id: 'bazar', label: 'Bazar', functionalType: 'goods', featured: false },
-  { id: 'perfumeria', label: 'Perfumería', functionalType: 'goods', featured: false },
-  { id: 'optica', label: 'Óptica', functionalType: 'goods', featured: false },
-  { id: 'jugueteria', label: 'Juguetería', functionalType: 'goods', featured: false },
-  { id: 'floreria', label: 'Florería', functionalType: 'goods', featured: false },
-  { id: 'electronica', label: 'Electrónica', functionalType: 'goods', featured: false },
-  { id: 'muebleria', label: 'Mueblería', functionalType: 'goods', featured: false },
-  { id: 'verduleria', label: 'Verdulería', functionalType: 'goods', featured: false },
-  { id: 'carniceria', label: 'Carnicería', functionalType: 'goods', featured: false },
   { id: 'pasteleria', label: 'Pastelería', functionalType: 'food', featured: false },
   { id: 'bar', label: 'Bar', functionalType: 'food', featured: false },
-  { id: 'producto-otro', label: 'Otro negocio de productos', functionalType: 'goods', featured: false },
 ]
 
 const SERVICE_CATEGORIES: BusinessCategory[] = [
@@ -77,14 +59,7 @@ const SERVICE_CATEGORIES: BusinessCategory[] = [
 ]
 
 const BOTH_CATEGORIES: BusinessCategory[] = [
-  { id: 'pet-shop-peluqueria', label: 'Pet Shop + Peluquería canina', functionalType: 'goods+appointment', featured: true },
-  { id: 'salon-productos', label: 'Salón de belleza + Productos', functionalType: 'goods+appointment', featured: true },
-  { id: 'farmacia-turnos', label: 'Farmacia + Turnos', functionalType: 'goods+appointment', featured: true },
-  { id: 'taller-repuestos', label: 'Taller + Venta de repuestos', functionalType: 'goods+task', featured: true },
-  { id: 'gym-tienda', label: 'Gimnasio + Tienda', functionalType: 'goods+appointment', featured: true },
-  { id: 'veterinaria-petshop', label: 'Veterinaria + Pet Shop', functionalType: 'goods+appointment', featured: true },
   { id: 'cafe-coworking', label: 'Café + Coworking', functionalType: 'food+appointment', featured: true },
-  { id: 'ambos-otro', label: 'Otro negocio mixto', functionalType: 'goods+appointment', featured: false },
 ]
 
 function getCategoriesForType(type: OfferType): BusinessCategory[] {
@@ -435,13 +410,10 @@ export function InitialOnboarding({ onComplete, isFirstProfile = true }: { onCom
 function getDashboardPreview(type: FunctionalType): string {
   switch (type) {
     case 'food': return 'Menú + Pedidos'
-    case 'goods': return 'Catálogo + Pedidos'
     case 'appointment': return 'Servicios + Turnos'
     case 'task': return 'Servicios + Trabajos'
     case 'realtime': return 'Servicios + Viajes'
     case 'food+appointment': return 'Menú + Pedidos + Turnos'
-    case 'goods+appointment': return 'Catálogo + Pedidos + Turnos'
-    case 'goods+task': return 'Catálogo + Pedidos + Trabajos'
   }
 }
 
@@ -464,8 +436,6 @@ export function getNavForBusinessType(type: string) {
   switch (type) {
     case 'food':
       return [common[0], menuItem('Menú'), ordersItem('Pedidos'), ...common.slice(1)]
-    case 'goods':
-      return [common[0], menuItem('Catálogo'), ordersItem('Pedidos'), ...common.slice(1)]
     case 'appointment':
       return [common[0], menuItem('Servicios'), ordersItem('Turnos'), ...common.slice(1)]
     case 'task':
@@ -474,10 +444,6 @@ export function getNavForBusinessType(type: string) {
       return [common[0], menuItem('Servicios'), ordersItem('Viajes'), ...common.slice(1)]
     case 'food+appointment':
       return [common[0], menuItem('Menú'), ordersItem('Pedidos'), { href: '/dashboard/bookings', label: 'Turnos', iconName: 'CalendarCheck', tour: 'bookings' }, ...common.slice(1)]
-    case 'goods+appointment':
-      return [common[0], menuItem('Catálogo'), ordersItem('Pedidos'), { href: '/dashboard/bookings', label: 'Turnos', iconName: 'CalendarCheck', tour: 'bookings' }, ...common.slice(1)]
-    case 'goods+task':
-      return [common[0], menuItem('Catálogo'), ordersItem('Pedidos'), { href: '/dashboard/bookings', label: 'Trabajos', iconName: 'ClipboardList', tour: 'bookings' }, ...common.slice(1)]
     default:
       return [common[0], menuItem('Catálogo'), ordersItem('Pedidos'), ...common.slice(1)]
   }

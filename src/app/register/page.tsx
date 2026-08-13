@@ -12,7 +12,7 @@ const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''
 // ─── Business categories ────────────────────────────────────────────────────
 
 type OfferType = 'products' | 'services' | 'both'
-type FunctionalType = 'food' | 'goods' | 'appointment' | 'task' | 'realtime' | 'food+appointment' | 'goods+appointment' | 'goods+task'
+type FunctionalType = 'food' | 'appointment' | 'task' | 'realtime' | 'food+appointment'
 type OperationType = 'independent' | 'business'
 type BusinessCategory = { id: string; functionalType: FunctionalType; featured: boolean }
 
@@ -22,20 +22,9 @@ const PRODUCT_CATEGORIES: BusinessCategory[] = [
   { id: 'cafe', functionalType: 'food', featured: true },
   { id: 'heladeria', functionalType: 'food', featured: true },
   { id: 'panaderia', functionalType: 'food', featured: true },
-  { id: 'almacen', functionalType: 'goods', featured: true },
-  { id: 'farmacia', functionalType: 'goods', featured: true },
-  { id: 'tienda-ropa', functionalType: 'goods', featured: true },
-  { id: 'ferreteria', functionalType: 'goods', featured: true },
-  { id: 'pet-shop', functionalType: 'goods', featured: true },
   { id: 'hamburgueseria', functionalType: 'food', featured: false },
   { id: 'sushi', functionalType: 'food', featured: false },
   { id: 'rotiseria', functionalType: 'food', featured: false },
-  { id: 'vinoteca', functionalType: 'goods', featured: false },
-  { id: 'dietetica', functionalType: 'goods', featured: false },
-  { id: 'libreria', functionalType: 'goods', featured: false },
-  { id: 'bazar', functionalType: 'goods', featured: false },
-  { id: 'electronica', functionalType: 'goods', featured: false },
-  { id: 'producto-otro', functionalType: 'goods', featured: false },
 ]
 
 const SERVICE_CATEGORIES: BusinessCategory[] = [
@@ -58,12 +47,7 @@ const SERVICE_CATEGORIES: BusinessCategory[] = [
 ]
 
 const BOTH_CATEGORIES: BusinessCategory[] = [
-  { id: 'pet-shop-peluqueria', functionalType: 'goods+appointment', featured: true },
-  { id: 'salon-productos', functionalType: 'goods+appointment', featured: true },
-  { id: 'farmacia-turnos', functionalType: 'goods+appointment', featured: true },
-  { id: 'taller-repuestos', functionalType: 'goods+task', featured: true },
-  { id: 'veterinaria-petshop', functionalType: 'goods+appointment', featured: true },
-  { id: 'ambos-otro', functionalType: 'goods+appointment', featured: true },
+  { id: 'cafe-coworking', functionalType: 'food+appointment', featured: true },
 ]
 
 function getCategoriesForType(type: OfferType): BusinessCategory[] {

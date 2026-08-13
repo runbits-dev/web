@@ -133,20 +133,9 @@
       "cafe": "Cafe",
       "heladeria": "Ice Cream Shop",
       "panaderia": "Bakery",
-      "almacen": "Grocery Store",
-      "farmacia": "Pharmacy",
-      "tienda-ropa": "Clothing Store",
-      "ferreteria": "Hardware Store",
-      "pet-shop": "Pet Shop",
       "hamburgueseria": "Burger Joint",
       "sushi": "Sushi",
       "rotiseria": "Rotisserie",
-      "vinoteca": "Wine Shop",
-      "dietetica": "Health Food Store",
-      "libreria": "Bookstore",
-      "bazar": "Bazaar",
-      "electronica": "Electronics",
-      "producto-otro": "Other product",
       "peluqueria": "Hair Salon",
       "barberia": "Barber Shop",
       "medico": "Doctor / Clinic",
@@ -163,22 +152,14 @@
       "limpieza": "Cleaning",
       "taller-mecanico": "Auto Repair Shop",
       "servicio-otro": "Other service",
-      "pet-shop-peluqueria": "Pet Shop + Pet Grooming",
-      "salon-productos": "Salon + Products",
-      "farmacia-turnos": "Pharmacy + Appointments",
-      "taller-repuestos": "Workshop + Spare Parts",
-      "veterinaria-petshop": "Vet + Pet Shop",
-      "ambos-otro": "Other mixed"
+      "cafe-coworking": "Cafe + Coworking"
     },
     "dashboardPreview": {
       "food": "Menu + Orders",
-      "goods": "Catalog + Orders",
       "appointment": "Services + Appointments",
       "task": "Services + Jobs",
       "realtime": "Services + Rides",
-      "food+appointment": "Menu + Orders + Appointments",
-      "goods+appointment": "Catalog + Orders + Appointments",
-      "goods+task": "Catalog + Orders + Jobs"
+      "food+appointment": "Menu + Orders + Appointments"
     },
     "plans": {
       "free": {
@@ -610,48 +591,6 @@
       "mockup": {
         "title": "Today's kitchen display",
         "subtitle": "12 active orders · 4 cooking · 3 on the way"
-      }
-    },
-    "goods": {
-      "short": "Online store",
-      "title": "Your full online store,",
-      "title2": "no Shopify or marketplace.",
-      "subtitle": "Catalog with stock, multi-warehouse, custom domain. Everything you need to sell — without paying for every app or every sale.",
-      "feat1": {
-        "title": "Catalog with stock + variants",
-        "desc": "Sizes, colors, combinations. Stock per location."
-      },
-      "feat2": {
-        "title": "Advanced shipping zones",
-        "desc": "Set rates by zip code or region."
-      },
-      "feat3": {
-        "title": "Multi-warehouse",
-        "desc": "Manage stock across multiple warehouses from one panel."
-      },
-      "feat4": {
-        "title": "Custom domain included",
-        "desc": "Your brand front and center. No 'powered by' or weird redirects."
-      },
-      "compare": {
-        "title": "Compare it",
-        "desc": "Shopify Basic $29 + apps. Tiendanube Advanced $30 + 2-3% per sale. Runbits Starter $19 with no commission."
-      },
-      "step1": {
-        "title": "Upload your catalog",
-        "desc": "Add products with photos, variants, and stock."
-      },
-      "step2": {
-        "title": "Configure shipping",
-        "desc": "Define zones, rates, and delivery methods."
-      },
-      "step3": {
-        "title": "Sell with no commission",
-        "desc": "Your store is live. Keep 100% of every sale."
-      },
-      "mockup": {
-        "title": "Active catalog",
-        "subtitle": "248 products · 16 categories · 3 warehouses"
       }
     },
     "appointment": {

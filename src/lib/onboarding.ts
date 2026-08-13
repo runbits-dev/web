@@ -8,7 +8,7 @@
  * - localStorage `runbits.onboarding.startedAt.{profileId}` — ISO when checklist first appeared (smart suggestions)
  */
 
-export type BusinessType = 'food' | 'goods' | 'appointment' | 'task' | 'realtime' | 'food+appointment' | 'goods+appointment' | 'goods+task' | string
+export type BusinessType = 'food' | 'appointment' | 'task' | 'realtime' | 'food+appointment' | string
 
 export type OnboardingStepId =
   | 'profile' // Profile data (phone/address)
@@ -68,13 +68,6 @@ export function getStepsForBusinessType(type: BusinessType): OnboardingStep[] {
     href: '/dashboard/menu',
     cta: 'Crear plato',
   }
-  const itemGoods: OnboardingStep = {
-    id: 'item',
-    label: 'Cargar tu primer producto',
-    description: 'Cargá tu primer producto con foto y precio. Después podés agregar stock y variantes.',
-    href: '/dashboard/menu',
-    cta: 'Crear producto',
-  }
   const itemAppt: OnboardingStep = {
     id: 'item',
     label: 'Crear tu primer servicio',
@@ -100,8 +93,6 @@ export function getStepsForBusinessType(type: BusinessType): OnboardingStep[] {
   switch (type) {
     case 'food':
       return [profile, itemFood, channel, open, share]
-    case 'goods':
-      return [profile, itemGoods, channel, open, share]
     case 'appointment':
       return [profile, itemAppt, channel, open, share]
     case 'task':
@@ -110,12 +101,8 @@ export function getStepsForBusinessType(type: BusinessType): OnboardingStep[] {
       return [profile, itemRealtime, channel, open, share]
     case 'food+appointment':
       return [profile, itemFood, itemAppt, channel, open, share]
-    case 'goods+appointment':
-      return [profile, itemGoods, itemAppt, channel, open, share]
-    case 'goods+task':
-      return [profile, itemGoods, itemTask, channel, share]
     default:
-      return [profile, itemGoods, channel, open, share]
+      return [profile, itemFood, channel, open, share]
   }
 }
 
