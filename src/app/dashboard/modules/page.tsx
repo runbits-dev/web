@@ -86,13 +86,6 @@ const MODULE_LABELS: Record<string, string> = {
   eta_tracking: 'Tracking ETA',
   multi_kitchen: 'Multi-cocina',
   scheduled_orders: 'Pedidos programados',
-  // Goods
-  shipping_basic: 'Envíos básicos',
-  stock_simple: 'Stock simple',
-  shipping_advanced: 'Envíos avanzados',
-  multi_warehouse: 'Multi-depósito',
-  low_stock_alerts: 'Alertas de stock bajo',
-  variants_advanced: 'Variantes avanzadas',
   // Appointment
   calendar: 'Calendario',
   booking_basic: 'Booking básico',

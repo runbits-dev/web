@@ -5,7 +5,7 @@ export type Module = {
   price: number // USD/month, 0 = included in plan
   minPlan: 'free' | 'pro' | 'business' | 'enterprise'
   category: 'sales' | 'logistics' | 'communication' | 'operations'
-  applicableTo: string[] // functional types: food, goods, appointment, task, realtime, or 'all'
+  applicableTo: string[] // functional types: food, appointment, task, realtime, or 'all'
   comingSoon?: boolean // true = advertised but not yet backed by a real service; do not offer for purchase
 }
 
@@ -17,10 +17,10 @@ export const MODULES: Module[] = [
   { id: 'gift-cards', name: 'Tarjetas de regalo', description: 'Vendé gift cards digitales canjeables en tu tienda.', price: 10, minPlan: 'pro', category: 'sales', applicableTo: ['all'], comingSoon: true },
 
   // Logistics
-  { id: 'own-delivery', name: 'Delivery propio', description: 'Gestioná tus propios repartidores con tracking.', price: 0, minPlan: 'free', category: 'logistics', applicableTo: ['food', 'goods'] },
-  { id: 'gps-tracking', name: 'Tracking GPS en vivo', description: 'Tus clientes ven el repartidor en tiempo real.', price: 20, minPlan: 'pro', category: 'logistics', applicableTo: ['food', 'goods', 'realtime'] },
+  { id: 'own-delivery', name: 'Delivery propio', description: 'Gestioná tus propios repartidores con tracking.', price: 0, minPlan: 'free', category: 'logistics', applicableTo: ['food'] },
+  { id: 'gps-tracking', name: 'Tracking GPS en vivo', description: 'Tus clientes ven el repartidor en tiempo real.', price: 20, minPlan: 'pro', category: 'logistics', applicableTo: ['food', 'realtime'] },
   { id: 'multi-location', name: 'Multi-sucursal', description: 'Gestioná varias sucursales desde un solo dashboard.', price: 25, minPlan: 'business', category: 'logistics', applicableTo: ['all'] },
-  { id: 'route-optimization', name: 'Optimización de rutas', description: 'Rutas automáticas para múltiples entregas.', price: 30, minPlan: 'business', category: 'logistics', applicableTo: ['food', 'goods', 'realtime'], comingSoon: true },
+  { id: 'route-optimization', name: 'Optimización de rutas', description: 'Rutas automáticas para múltiples entregas.', price: 30, minPlan: 'business', category: 'logistics', applicableTo: ['food', 'realtime'], comingSoon: true },
 
   // Communication
   { id: 'push-campaigns', name: 'Campañas push', description: 'Enviá notificaciones push a tus clientes.', price: 0, minPlan: 'pro', category: 'communication', applicableTo: ['all'] },
@@ -29,7 +29,7 @@ export const MODULES: Module[] = [
   { id: 'email-marketing', name: 'Email marketing', description: 'Campañas de email automáticas a tu base de clientes.', price: 15, minPlan: 'business', category: 'communication', applicableTo: ['all'], comingSoon: true },
 
   // Operations
-  { id: 'inventory', name: 'Control de stock', description: 'Seguimiento de inventario con alertas de stock bajo.', price: 15, minPlan: 'free', category: 'operations', applicableTo: ['food', 'goods'] },
+  { id: 'inventory', name: 'Control de stock', description: 'Seguimiento de inventario con alertas de stock bajo.', price: 15, minPlan: 'free', category: 'operations', applicableTo: ['food'] },
   { id: 'staff-management', name: 'Gestión de staff', description: 'Usuarios con roles y permisos por sucursal.', price: 0, minPlan: 'business', category: 'operations', applicableTo: ['all'] },
   { id: 'afip-billing', name: 'Facturación AFIP', description: 'Facturación electrónica automática para Argentina.', price: 15, minPlan: 'business', category: 'operations', applicableTo: ['all'], comingSoon: true },
   { id: 'api-access', name: 'API REST', description: 'Acceso completo a la API para integraciones custom.', price: 0, minPlan: 'enterprise', category: 'operations', applicableTo: ['all'] },

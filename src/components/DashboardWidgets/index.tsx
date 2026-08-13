@@ -1,6 +1,6 @@
 "use client"
 
-import { type LucideIcon, Package, CalendarDays, DollarSign, ChefHat, Truck, Box, Calendar, Clock, FileText, ClipboardList, ShoppingBag, MapPin } from 'lucide-react'
+import { type LucideIcon, Package, CalendarDays, DollarSign, ChefHat, Calendar, Clock, FileText, ClipboardList, MapPin } from 'lucide-react'
 
 export type DashboardData = {
   orders: any[]
@@ -39,14 +39,6 @@ function pendingOrders(orders: any[]): any[] {
 
 function activeOrders(orders: any[]): any[] {
   return orders.filter(o => !['CANCELLED', 'COMPLETED', 'DELIVERED'].includes(o.status))
-}
-
-function lowStockItems(menu: any[]): any[] {
-  return menu.filter(m => typeof m.stock === 'number' && m.stock <= 5 && m.stock > 0)
-}
-
-function stockOutItems(menu: any[]): any[] {
-  return menu.filter(m => typeof m.stock === 'number' && m.stock === 0)
 }
 
 function topItems(orders: any[], limit = 5): Array<{ name: string; count: number }> {
@@ -115,36 +107,6 @@ export function FoodWidgets({ data }: { data: DashboardData }) {
           items={tops.map(t => ({ primary: t.name, trailing: `${t.count} pedidos` }))} />
         <ListCard title="Pedidos en preparación" empty="Sin pedidos en cocina"
           items={inKitchen.slice(0, 5).map(o => ({ primary: `#${o.id.slice(0, 8)}`, secondary: `${(o.items ?? []).length} ítems`, trailing: `$${((o.total ?? 0) / 100).toFixed(2)}` }))} />
-      </div>
-    </>
-  )
-}
-
-export function GoodsWidgets({ data }: { data: DashboardData }) {
-  const today = todayOrders(data.orders)
-  const pending = pendingOrders(data.orders)
-  const lowStock = lowStockItems(data.menu)
-  const outOfStock = stockOutItems(data.menu)
-  const tops = topItems(data.orders, 5)
-  return (
-    <>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard label="Ventas hoy" value={today.length} Icon={ShoppingBag} color="indigo" />
-        <StatCard label="Pendientes envío" value={pending.length} Icon={Truck} color="blue" />
-        <StatCard label="Stock crítico" value={lowStock.length + outOfStock.length} Icon={Box} color="amber" />
-        <StatCard label="Ingresos hoy" value={`$${(todayRevenue(data.orders) / 100).toFixed(2)}`} Icon={DollarSign} color="green" />
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <ListCard title="Top productos" empty="Sin ventas todavía"
-          items={tops.map(t => ({ primary: t.name, trailing: `${t.count} vendidos` }))} />
-        <ListCard
-          title="Productos con stock bajo"
-          empty="Stock OK"
-          items={[...outOfStock, ...lowStock].slice(0, 5).map(i => ({
-            primary: i.name,
-            trailing: typeof i.stock === 'number' ? (i.stock === 0 ? 'Sin stock' : `${i.stock} restantes`) : '—',
-          }))}
-        />
       </div>
     </>
   )
@@ -244,10 +206,6 @@ export function DashboardWidgetsForType({ businessType, data }: { businessType: 
     case 'food':
     case 'food+appointment':
       return <FoodWidgets data={data} />
-    case 'goods':
-    case 'goods+appointment':
-    case 'goods+task':
-      return <GoodsWidgets data={data} />
     case 'appointment':
       return <AppointmentWidgets data={data} />
     case 'task':
@@ -255,6 +213,6 @@ export function DashboardWidgetsForType({ businessType, data }: { businessType: 
     case 'realtime':
       return <RealtimeWidgets data={data} />
     default:
-      return <GoodsWidgets data={data} />
+      return <FoodWidgets data={data} />
   }
 }
