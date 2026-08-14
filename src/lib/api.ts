@@ -115,6 +115,11 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   if (res.status === 401) {
     const refreshToken = typeof window !== 'undefined' ? localStorage.getItem('refreshToken') : null
     if (refreshToken && !path.includes('/auth/refresh')) {
+      // A coded error from a FAILED retry is captured here and rethrown AFTER
+      // the try/catch — the catch {} below only swallows refresh/network faults
+      // (falling through to the login redirect), and must not eat a real
+      // upstream error from the retried call.
+      let retryError: ApiError | null = null
       try {
         const refreshRes = await fetch(`${API_BASE}/api/auth/refresh`, {
           method: 'POST',
@@ -129,9 +134,16 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
           const retryHeaders = { ...headers }
           retryHeaders['Authorization'] = `Bearer ${data.token}`
           const retryRes = await fetch(`${API_BASE}${path}`, { ...options, headers: retryHeaders })
-          return retryRes.json()
+          if (retryRes.ok) return retryRes.json()
+          // The retry can still fail (5xx/403/etc). Mirror the non-refresh path:
+          // surface a coded ApiError instead of returning the error body as if
+          // it were success data (which would silently render, e.g., a fiscal
+          // profile as "not configured"/empty).
+          const retryBody = await retryRes.json().catch(() => ({ error: retryRes.statusText }))
+          retryError = makeApiError(retryBody.error || `HTTP ${retryRes.status}`, retryBody.code, retryRes.status)
         }
       } catch {}
+      if (retryError) throw retryError
     }
     // If refresh failed or no refresh token, redirect to login
     if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
@@ -141,15 +153,30 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
       throw new Error('No autorizado')
     }
     const errBody = await res.json().catch(() => ({ error: 'No autorizado' }))
-    throw new Error(errBody.error || 'No autorizado')
+    throw makeApiError(errBody.error || 'No autorizado', errBody.code, res.status)
   }
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({ error: res.statusText }))
-    throw new Error(body.error || `HTTP ${res.status}`)
+    throw makeApiError(body.error || `HTTP ${res.status}`, body.code, res.status)
   }
 
   return res.json()
+}
+
+/**
+ * Error thrown by request(). Carries the server's documented { error, code }
+ * (lane error-handling rule) plus the HTTP status, so callers can render a
+ * friendly message AND a stable code for a coded, retryable state — without
+ * leaking raw internals (the server already returns a safe message + code).
+ */
+export type ApiError = Error & { code?: string; status?: number }
+
+function makeApiError(message: string, code?: string, status?: number): ApiError {
+  const err = new Error(message) as ApiError
+  if (code) err.code = code
+  if (status !== undefined) err.status = status
+  return err
 }
 
 // Normaliza la respuesta de auth-service { account, roles, activeRole } → User
@@ -169,6 +196,68 @@ function normalizeAuthResponse(raw: any): { token: string; refreshToken?: string
     activeProfile: raw.activeProfile ?? null,
   }
   return { token: raw.token, refreshToken: raw.refreshToken, user }
+}
+
+// ── Fiscal e-invoicing (runbits-fiscal via gateway /api/fiscal/*) ────────────
+// Merchant AFIP electronic invoicing, issued on behalf of the merchant with
+// their OWN cert + CUIT. All endpoints are gateway-authed and store-scoped.
+
+export type FiscalTaxCondition = 'RESPONSABLE_INSCRIPTO' | 'MONOTRIBUTO' | 'EXENTO'
+export type FiscalInvoiceType = 'FACTURA_A' | 'FACTURA_B' | 'FACTURA_C'
+export type FiscalEnvironment = 'testing' | 'production'
+export type FiscalProfileStatus = 'coming_soon' | 'cert_loaded' | 'available' | 'disabled'
+
+export type FiscalProfile = {
+  store_id: string
+  cuit: string
+  tax_condition: FiscalTaxCondition
+  point_of_sale: number
+  default_invoice_type: FiscalInvoiceType
+  razon_social: string | null
+  environment: FiscalEnvironment
+  status: FiscalProfileStatus
+  created_at: number
+  updated_at: number | null
+}
+
+// PUT input — server stamps status/timestamps, so the client never sends them.
+export type FiscalProfileInput = {
+  cuit: string
+  tax_condition: FiscalTaxCondition
+  point_of_sale: number
+  default_invoice_type: FiscalInvoiceType
+  razon_social?: string
+  environment?: FiscalEnvironment
+}
+
+// POST /cert response — metadata only; the cert/key PEMs are NEVER returned.
+export type FiscalCertResult = {
+  ok: boolean
+  status: 'cert_loaded'
+  cert_not_after: number
+  fingerprint_sha256: string
+}
+
+export type FiscalInvoice = {
+  id: string
+  store_id: string
+  order_id: string | null
+  cbte_tipo: number
+  cbte_nro: number
+  cbte_fch: string
+  pto_vta: number
+  cuit: string
+  doc_tipo: number | null
+  doc_nro: string | null
+  imp_total: number
+  imp_neto: number
+  imp_iva: number
+  cae: string | null
+  cae_vto: string | null
+  resultado: string | null
+  status: string
+  created_at: number
+  updated_at: number | null
 }
 
 export const api = {
@@ -656,4 +745,49 @@ export const api = {
       limit: number
       data: Array<{ url: string; samples: number; avg_value: number; min_value: number; max_value: number }>
     }>(`/api/vitals/by-url?metric=${metric}&since=${since}&limit=${limit}`),
+
+  // ── Fiscal e-invoicing (runbits-fiscal via gateway) ──────────────────────
+  // Store-scoped by the gateway from the caller's attested identity — the
+  // client never passes a store id. Errors surface as ApiError { message, code }.
+
+  /** GET /api/fiscal/profile — read the store's fiscal identity (404 → not set). */
+  getFiscalProfile: () =>
+    request<{ profile: FiscalProfile }>('/api/fiscal/profile'),
+
+  /** PUT /api/fiscal/profile — upsert the store's fiscal identity. */
+  putFiscalProfile: (data: FiscalProfileInput) =>
+    request<{ profile: FiscalProfile }>('/api/fiscal/profile', {
+      method: 'PUT', body: JSON.stringify(data),
+    }),
+
+  /** POST /api/fiscal/cert — upload cert + key PEMs (validated + encrypted
+   *  server-side). NEVER returns the PEMs — only non-secret metadata. */
+  uploadFiscalCert: (cert: string, key: string) =>
+    request<FiscalCertResult>('/api/fiscal/cert', {
+      method: 'POST', body: JSON.stringify({ cert, key }),
+    }),
+
+  /** DELETE /api/fiscal/cert — deactivate the active cert (rotation / removal). */
+  deleteFiscalCert: () =>
+    request<{ ok: boolean; deactivated: number }>('/api/fiscal/cert', { method: 'DELETE' }),
+
+  /** GET /api/fiscal/invoices — paginated, store-scoped list. */
+  listFiscalInvoices: (params: { limit?: number; offset?: number } = {}) => {
+    const qs = new URLSearchParams()
+    if (params.limit != null) qs.set('limit', String(params.limit))
+    if (params.offset != null) qs.set('offset', String(params.offset))
+    return request<{ invoices: FiscalInvoice[] }>(
+      `/api/fiscal/invoices${qs.toString() ? '?' + qs.toString() : ''}`,
+    )
+  },
+
+  /** GET /api/fiscal/invoices/:id — single invoice (store-scoped). */
+  getFiscalInvoice: (id: string) =>
+    request<{ invoice: FiscalInvoice }>(`/api/fiscal/invoices/${encodeURIComponent(id)}`),
+
+  /** Build the authed URL for the invoice PDF (HTML render). The endpoint is
+   *  gateway-authed, so callers must fetch it WITH the Bearer token and open the
+   *  result (e.g. as a blob), not navigate to it directly. */
+  getFiscalInvoicePdfUrl: (id: string) =>
+    `${API_BASE}/api/fiscal/invoices/${encodeURIComponent(id)}/pdf`,
 }

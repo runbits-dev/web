@@ -755,6 +755,22 @@ export default function SettingsPage() {
         </div>
       )}
 
+      {/* Facturación electrónica */}
+      {restaurantId && (
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 max-w-lg">
+          <h2 className="font-semibold text-slate-900 mb-2">Facturación electrónica</h2>
+          <p className="text-sm text-slate-500 mb-4">
+            Emití facturas AFIP a tus clientes con tu propio CUIT y certificado.
+          </p>
+          <Link
+            href="/dashboard/settings/fiscal"
+            className="text-sm text-indigo-600 font-medium hover:underline inline-flex items-center gap-1"
+          >
+            Configurar facturación →
+          </Link>
+        </div>
+      )}
+
       {/* Seguridad */}
       <SecuritySection
         user={user as any}
