@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { ClipboardList, CheckCircle, ChefHat, Package, Bike, PartyPopper } from 'lucide-react'
@@ -34,6 +34,13 @@ function TrackContent() {
   const [error, setError] = useState(false)
   const [loading, setLoading] = useState(true)
   const [whiteLabel, setWhiteLabel] = useState(false)
+  // System B (live WS) connection flag. When true, the socket owns riderPos and
+  // the System A poll yields position authority; on any WS error/close the poll
+  // (which never stops) is the seamless fallback. Ref mirror lets the poll read
+  // the current value without re-subscribing.
+  const [liveConnected, setLiveConnected] = useState(false)
+  const liveConnectedRef = useRef(false)
+  useEffect(() => { liveConnectedRef.current = liveConnected }, [liveConnected])
 
   // Order summary + status (auth-free, order-scoped). Polled for status changes.
   useEffect(() => {
@@ -61,8 +68,11 @@ function TrackContent() {
     return () => clearInterval(interval)
   }, [orderId])
 
-  // Live tracking (public endpoint, no auth). The rider pushes ~every 30s, so
-  // we poll at the same cadence. A failed refetch keeps the last known position.
+  // Live tracking — System A (fallback, always on). The public /tracking poll
+  // establishes `trackable` and provides positions at ~30s cadence. It NEVER
+  // stops, so it is the seamless safety net whenever the System B WS is down.
+  // While the WS is connected it owns riderPos, so the poll skips overwriting
+  // the fresher live position (but keeps refreshing trackable + heartbeat).
   useEffect(() => {
     if (!orderId) return
 
@@ -73,7 +83,8 @@ function TrackContent() {
         const data = await res.json()
         setTrackable(Boolean(data?.trackable))
         const pos = data?.position
-        if (pos && typeof pos.lat === 'number' && typeof pos.lng === 'number') {
+        // Yield position authority to the live WS when it is connected.
+        if (!liveConnectedRef.current && pos && typeof pos.lat === 'number' && typeof pos.lng === 'number') {
           setRiderPos({ lat: pos.lat, lng: pos.lng })
         }
         setTrackLoaded(true)
@@ -88,6 +99,83 @@ function TrackContent() {
     const interval = setInterval(loadTracking, 30000)
     return () => clearInterval(interval)
   }, [orderId])
+
+  // Live tracking — System B (upgrade). While the order is trackable
+  // (PICKED_UP/IN_TRANSIT) we fetch a short-lived capability token and open the
+  // gateway WS for real-time positions. On ANY failure — token fetch fails, WS
+  // unsupported, error, or unexpected close — we simply mark the live channel
+  // down; the System A poll above (never stopped) keeps working. On an
+  // unexpected close we retry with backoff, which re-fetches a fresh token,
+  // naturally covering token expiry (~1h) for long deliveries.
+  useEffect(() => {
+    if (!orderId || !trackable) return
+    if (typeof WebSocket === 'undefined') return // WS unsupported → poll-only
+
+    let cancelled = false
+    let ws: WebSocket | null = null
+    let retryTimer: ReturnType<typeof setTimeout> | null = null
+    let attempts = 0
+
+    const connect = async () => {
+      if (cancelled) return
+      let token: string | null = null
+      let wsPath = `/api/tracking/ws/customer/${orderId}`
+      try {
+        const res = await fetch(`${API}/api/orders/${orderId}/tracking-token`)
+        if (!res.ok) return scheduleRetry() // e.g. token not mintable → stay on poll
+        const data = await res.json()
+        token = typeof data?.token === 'string' ? data.token : null
+        if (typeof data?.wsPath === 'string' && data.wsPath) wsPath = data.wsPath
+      } catch {
+        return scheduleRetry()
+      }
+      if (!token || cancelled) return scheduleRetry()
+
+      try {
+        const wsBase = API.replace(/^http/, 'ws')
+        ws = new WebSocket(`${wsBase}${wsPath}?token=${encodeURIComponent(token)}`)
+      } catch {
+        return scheduleRetry()
+      }
+
+      ws.onopen = () => { if (!cancelled) { attempts = 0; setLiveConnected(true) } }
+      ws.onmessage = (ev) => {
+        if (cancelled) return
+        try {
+          const msg = JSON.parse(ev.data)
+          if (msg?.type === 'position' && typeof msg.lat === 'number' && typeof msg.lng === 'number') {
+            setLiveConnected(true)
+            setRiderPos({ lat: msg.lat, lng: msg.lng })
+            setTrackError(false)
+          }
+        } catch {
+          // Ignore malformed frames; the poll fallback still covers us.
+        }
+      }
+      ws.onerror = () => { if (!cancelled) setLiveConnected(false) }
+      ws.onclose = () => {
+        if (cancelled) return
+        setLiveConnected(false)
+        scheduleRetry() // re-fetches a fresh token; poll covers the gap meanwhile
+      }
+    }
+
+    const scheduleRetry = () => {
+      if (cancelled || retryTimer) return
+      attempts += 1
+      const delay = Math.min(30000, 2000 * 2 ** (attempts - 1)) // 2s→4s→…→30s cap
+      retryTimer = setTimeout(() => { retryTimer = null; connect() }, delay)
+    }
+
+    connect()
+
+    return () => {
+      cancelled = true
+      if (retryTimer) clearTimeout(retryTimer)
+      if (ws) { ws.onopen = ws.onmessage = ws.onerror = ws.onclose = null; try { ws.close() } catch {} }
+      setLiveConnected(false)
+    }
+  }, [orderId, trackable])
 
   if (loading) return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
