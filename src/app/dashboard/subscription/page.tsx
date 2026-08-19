@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useProfile } from '@/context/ProfileContext'
 import { Check, Star, ArrowRight, X } from 'lucide-react'
 import { API_BASE } from '@/lib/api'
+import { toBillingBusinessType } from '@/lib/onboarding'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -174,10 +175,14 @@ export default function SubscriptionPage() {
     }
     setSubmitting(tier)
     try {
+      // Source the vertical from the merchant's profile so a servicios pro is
+      // created as 'appointment' (etc.), not billing's 'food' default. Prefer
+      // the billing/me snapshot, fall back to the active profile.
+      const businessType = toBillingBusinessType(me?.business_type ?? activeProfile?.business_type)
       const res = await fetch(`${API_BASE}/api/subscriptions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders() },
-        body: JSON.stringify({ restaurantId, plan: tier, interval, trialDays: 14 }),
+        body: JSON.stringify({ restaurantId, plan: tier, interval, trialDays: 14, businessType }),
       })
       if (!res.ok) {
         const body = await res.json().catch(() => ({}))

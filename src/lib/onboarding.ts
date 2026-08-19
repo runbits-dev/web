@@ -10,6 +10,39 @@
 
 export type BusinessType = 'food' | 'appointment' | 'task' | 'realtime' | 'food+appointment' | string
 
+/**
+ * Billing's BusinessType enum — the vertical the subscription's entitlements are
+ * sourced from. It has NO combo value, so a profile's FunctionalType must be
+ * collapsed to one of these four before it's sent to billing.
+ */
+export type BillingBusinessType = 'food' | 'appointment' | 'task' | 'realtime'
+
+/**
+ * Collapse a profile's `business_type` (FunctionalType, possibly the combo
+ * 'food+appointment') down to billing's BusinessType enum.
+ *
+ * Rules:
+ * - The 4 valid values pass through unchanged.
+ * - 'food+appointment' → 'food': the café-coworking case is food-primary; the
+ *   coworking/booking side is a future `multi_business_type` add-on, not a
+ *   second vertical at subscription-create time.
+ * - Anything unknown/null/undefined → 'food' — the safe default matching
+ *   billing's own fallback, so a malformed profile never blocks subscribing.
+ */
+export function toBillingBusinessType(t: string | null | undefined): BillingBusinessType {
+  switch (t) {
+    case 'food':
+    case 'appointment':
+    case 'task':
+    case 'realtime':
+      return t
+    case 'food+appointment':
+      return 'food'
+    default:
+      return 'food'
+  }
+}
+
 export type OnboardingStepId =
   | 'profile' // Profile data (phone/address)
   | 'item'    // First catalog/menu/service item
