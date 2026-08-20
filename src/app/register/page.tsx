@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { api } from '@/lib/api'
+import { api, createFreeSubscription } from '@/lib/api'
+import { toBillingBusinessType } from '@/lib/onboarding'
 import { useI18n } from '@/i18n'
 import { Package, Wrench, Layers, Search, ArrowLeft, ChevronRight, Check, User, Store } from 'lucide-react'
 
@@ -179,6 +180,18 @@ export default function RegisterPage() {
       const switchResult = await api.switchProfile(profile.id)
       localStorage.setItem('token', switchResult.token)
       localStorage.setItem('show_tutorial', 'true')
+      // Best-effort: attach the FREE subscription carrying the vertical so the
+      // new profile has a subscription row with business_type set (required by
+      // billing's entitlement checks, e.g. booking_basic). A billing failure
+      // must NOT block onboarding — the merchant can subscribe later.
+      const restaurantId = profile.store_id ?? switchResult.activeProfile?.store_id ?? null
+      if (restaurantId) {
+        try {
+          await createFreeSubscription(restaurantId, toBillingBusinessType(chosenCategory.functionalType))
+        } catch (subErr) {
+          console.warn('[register] free subscription create failed (non-blocking):', subErr)
+        }
+      }
       router.push('/dashboard')
     } catch (e: any) {
       setError(e?.message || t('register.errorRegister'))

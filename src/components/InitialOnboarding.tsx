@@ -2,7 +2,8 @@
 
 import { useState, useMemo } from 'react'
 import { Package, Wrench, Layers, Search, ArrowLeft, ChevronRight, User, Store, Check } from 'lucide-react'
-import { api } from '@/lib/api'
+import { api, createFreeSubscription } from '@/lib/api'
+import { toBillingBusinessType } from '@/lib/onboarding'
 
 type BusinessCategory = {
   id: string
@@ -148,6 +149,18 @@ export function InitialOnboarding({ onComplete, isFirstProfile = true }: { onCom
       })
       const result = await api.switchProfile(newProfile.id)
       localStorage.setItem('token', result.token)
+      // Best-effort: attach the FREE subscription carrying the vertical so the
+      // new profile has a subscription row with business_type set (required by
+      // billing's entitlement checks, e.g. booking_basic). A billing failure
+      // must NOT block onboarding — the merchant can subscribe later.
+      const restaurantId = newProfile.store_id ?? result.activeProfile?.store_id ?? null
+      if (restaurantId) {
+        try {
+          await createFreeSubscription(restaurantId, toBillingBusinessType(selectedCategory.functionalType))
+        } catch (subErr) {
+          console.warn('[onboarding] free subscription create failed (non-blocking):', subErr)
+        }
+      }
       onComplete()
     } catch (e: any) {
       const msg = e.message || 'Error al guardar el perfil'

@@ -1,3 +1,5 @@
+import type { BillingBusinessType } from './onboarding'
+
 export const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.runbits.dev'
 
 export type Profile = {
@@ -177,6 +179,54 @@ function makeApiError(message: string, code?: string, status?: number): ApiError
   if (code) err.code = code
   if (status !== undefined) err.status = status
   return err
+}
+
+/**
+ * Best-effort creation of the merchant's FREE-plan subscription, carrying the
+ * profile's vertical (`business_type`) that billing's entitlement checks
+ * (e.g. `booking_basic` for a professional) require. Both onboarding funnels
+ * call this right after the profile is created + switched.
+ *
+ * Billing's free fast-path is idempotent — 201 (new), 200 (already exists) and
+ * 409 (create race) are ALL success — so any non-5xx resolves silently. Only a
+ * 5xx (or a network throw) surfaces as a coded ApiError, which the caller is
+ * expected to swallow (log a warning) so a billing hiccup never blocks
+ * onboarding; the merchant can still subscribe later from the plan page.
+ *
+ * We deliberately bypass `request()` here: it throws on 4xx (breaking the
+ * idempotent 409 case) and its 401 path force-redirects to /login, which would
+ * abort the onboarding navigation. This uses the same Bearer-token mechanism as
+ * the rest of the authenticated calls.
+ */
+export async function createFreeSubscription(
+  restaurantId: string,
+  businessType: BillingBusinessType,
+): Promise<void> {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+  let res: Response
+  try {
+    res = await fetch(`${API_BASE}/api/subscriptions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ restaurantId, plan: 'free', interval: 'month', businessType }),
+    })
+  } catch {
+    // Network-level failure (offline/DNS/CORS) — surface as a coded error so the
+    // contract holds (a network throw is a coded ApiError, per the docstring +
+    // the mandatory error rule). The caller swallows it (best-effort).
+    throw makeApiError('Network error creating free subscription', 'FREE_SUBSCRIPTION_CREATE_FAILED', 0)
+  }
+  if (res.status >= 500) {
+    const body = await res.json().catch(() => ({}))
+    throw makeApiError(
+      body.error || `HTTP ${res.status}`,
+      body.code || 'FREE_SUBSCRIPTION_CREATE_FAILED',
+      res.status,
+    )
+  }
 }
 
 // Normaliza la respuesta de auth-service { account, roles, activeRole } → User

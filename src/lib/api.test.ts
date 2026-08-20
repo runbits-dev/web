@@ -7,7 +7,7 @@
  * as an ApiError carrying both .code and .status (never a raw internal).
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { api, type ApiError } from './api'
+import { api, createFreeSubscription, type ApiError } from './api'
 
 const BASE = 'https://api.runbits.dev'
 
@@ -227,5 +227,59 @@ describe('api fiscal methods — error handling rule', () => {
     const res = await api.listFiscalInvoices({ limit: 20, offset: 0 })
     expect(res.invoices).toEqual([])
     expect(localStorage.getItem('token')).toBe('new-tok')
+  })
+})
+
+describe('createFreeSubscription — onboarding free-plan fast-path', () => {
+  it("POSTs plan:'free' + interval:'month' with restaurantId, businessType and bearer token", async () => {
+    const fetchMock = install({ ok: true, status: 201, body: { id: 'sub-1' } })
+    await createFreeSubscription('store-42', 'appointment')
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    expect(lastUrl).toBe(`${BASE}/api/subscriptions`)
+    expect(lastInit?.method).toBe('POST')
+    expect((lastInit?.headers as Record<string, string>).Authorization).toBe('Bearer tok-test')
+    expect(JSON.parse(String(lastInit?.body))).toEqual({
+      restaurantId: 'store-42',
+      plan: 'free',
+      interval: 'month',
+      businessType: 'appointment',
+    })
+  })
+
+  it('resolves (does not throw) on 200 already-exists', async () => {
+    install({ ok: true, status: 200, body: { id: 'sub-existing' } })
+    await expect(createFreeSubscription('store-1', 'food')).resolves.toBeUndefined()
+  })
+
+  it('resolves (does not throw) on a 409 create race', async () => {
+    install({ ok: false, status: 409, body: { error: 'already exists', code: 'SUBSCRIPTION_EXISTS' } })
+    await expect(createFreeSubscription('store-1', 'task')).resolves.toBeUndefined()
+  })
+
+  it('throws a coded ApiError on 5xx so the caller can log it (best-effort)', async () => {
+    install({ ok: false, status: 500, body: { error: 'billing down', code: 'BILLING_DOWN' } })
+    let caught: ApiError | null = null
+    try {
+      await createFreeSubscription('store-1', 'realtime')
+    } catch (e) {
+      caught = e as ApiError
+    }
+    expect(caught).not.toBeNull()
+    expect(caught?.message).toBe('billing down')
+    expect(caught?.code).toBe('BILLING_DOWN')
+    expect(caught?.status).toBe(500)
+  })
+
+  it('throws a coded ApiError (not a raw Error) on a network failure', async () => {
+    vi.stubGlobal('fetch', vi.fn(() => Promise.reject(new Error('network down'))))
+    let caught: ApiError | null = null
+    try {
+      await createFreeSubscription('store-1', 'appointment')
+    } catch (e) {
+      caught = e as ApiError
+    }
+    expect(caught).not.toBeNull()
+    expect(caught?.code).toBe('FREE_SUBSCRIPTION_CREATE_FAILED')
+    expect(caught?.status).toBe(0)
   })
 })
