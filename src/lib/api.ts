@@ -310,6 +310,81 @@ export type FiscalInvoice = {
   updated_at: number | null
 }
 
+// ── POS + Cash register (caja) — in-store point of sale ──────────────────────
+// Backed by the order-service POS endpoints and the register (caja) endpoints
+// via the gateway. Every call is gateway-authed and store-scoped; all amounts
+// are integer cents. Coded errors (REGISTER_NO_OPEN_SESSION, REGISTER_ALREADY_OPEN,
+// PLAN_LIMIT_EXCEEDED, POS_FORBIDDEN) surface as ApiError { message, code, status }
+// so the UI can render a friendly, coded state without leaking internals.
+
+export type PosOrderLine = { menuItemId: string; quantity: number }
+
+// Server-authoritative order — total_cents is computed server-side (never
+// trust a client-supplied total, per the lane pricing rule).
+export type PosOrder = {
+  id: string
+  store_id?: string
+  status: string
+  items: Array<Record<string, unknown>>
+  total_cents: number
+  [k: string]: unknown
+}
+
+export type PosPaymentMethod = 'cash' | 'card' | 'transfer' | 'qr'
+
+export type PosPayResult = {
+  orderId: string
+  status: string
+  paymentMethod: PosPaymentMethod
+  totalCents: number
+  changeCents: number
+  registerSessionId: string
+}
+
+export type RegisterSession = {
+  id: string
+  store_id: string
+  status: 'open' | 'closed'
+  opening_float_cents: number
+  opened_at: number
+  closed_at?: number | null
+  [k: string]: unknown
+}
+
+export type RegisterMovement = {
+  id: string
+  type: 'in' | 'out'
+  amount_cents: number
+  reason?: string | null
+  created_at: number
+}
+
+// Live totals returned alongside the open session by registerCurrent.
+export type RegisterLiveTotals = {
+  cashSalesCents: number
+  cashInCents: number
+  cashOutCents: number
+  expectedCashCents: number
+  orderCount: number
+}
+
+// registerCurrent → open session + live totals, or { session: null } when the
+// caja is closed.
+export type RegisterCurrent = { session: RegisterSession | null } & Partial<RegisterLiveTotals>
+
+// Z report returned by registerClose — the reconciliation snapshot.
+export type RegisterCloseReport = {
+  sessionId: string
+  openingFloatCents: number
+  cashSalesCents: number
+  cashInCents: number
+  cashOutCents: number
+  expectedCashCents: number
+  countedCashCents: number
+  overShortCents: number
+  orderCount: number
+}
+
 export const api = {
   login: async (email: string, password: string): Promise<{ token: string; refreshToken?: string; user: User }> => {
     const raw = await request<any>('/api/auth/login', {
@@ -840,4 +915,65 @@ export const api = {
    *  result (e.g. as a blob), not navigate to it directly. */
   getFiscalInvoicePdfUrl: (id: string) =>
     `${API_BASE}/api/fiscal/invoices/${encodeURIComponent(id)}/pdf`,
+
+  // ── POS + Cash register (caja) ─────────────────────────────────────────────
+
+  /** POST /api/pos/orders — create an in-store order. Server computes total_cents.
+   *  An optional idempotencyKey is sent as the Idempotency-Key header so the
+   *  server dedups retried creates (a failed pay must not spawn a second order
+   *  for the same ticket). */
+  posCreateOrder: (storeId: string, items: PosOrderLine[], note?: string, idempotencyKey?: string) => {
+    const headers: Record<string, string> = {}
+    if (idempotencyKey) headers['Idempotency-Key'] = idempotencyKey
+    return request<PosOrder>('/api/pos/orders', {
+      method: 'POST',
+      body: JSON.stringify({ storeId, items, ...(note !== undefined ? { note } : {}) }),
+      headers,
+    })
+  },
+
+  /** POST /api/pos/orders/:id/pay — settle a POS order. For cash, amountTenderedCents
+   *  lets the server compute changeCents. A cash sale with no open caja rejects
+   *  with code REGISTER_NO_OPEN_SESSION. */
+  posPayOrder: (orderId: string, method: PosPaymentMethod, amountTenderedCents?: number) =>
+    request<PosPayResult>(`/api/pos/orders/${encodeURIComponent(orderId)}/pay`, {
+      method: 'POST',
+      body: JSON.stringify({
+        method,
+        ...(amountTenderedCents !== undefined ? { amountTenderedCents } : {}),
+      }),
+    }),
+
+  /** POST /api/register/open — open the caja with an opening float. Rejects with
+   *  REGISTER_ALREADY_OPEN when a session is already open for the store. */
+  registerOpen: (storeId: string, openingFloatCents: number) =>
+    request<{ session: RegisterSession }>('/api/register/open', {
+      method: 'POST',
+      body: JSON.stringify({ storeId, openingFloatCents }),
+    }),
+
+  /** POST /api/register/movements — record a manual cash in/out on the open caja. */
+  registerMovement: (storeId: string, type: 'in' | 'out', amountCents: number, reason?: string) =>
+    request<{ movement: RegisterMovement }>('/api/register/movements', {
+      method: 'POST',
+      body: JSON.stringify({ storeId, type, amountCents, ...(reason !== undefined ? { reason } : {}) }),
+    }),
+
+  /** POST /api/register/close — close the caja and get the Z report (over/short). */
+  registerClose: (storeId: string, countedCashCents: number) =>
+    request<RegisterCloseReport>('/api/register/close', {
+      method: 'POST',
+      body: JSON.stringify({ storeId, countedCashCents }),
+    }),
+
+  /** GET /api/register/current — the store's open session + live totals, or
+   *  { session: null } when the caja is closed. */
+  registerCurrent: (storeId: string) =>
+    request<RegisterCurrent>(`/api/register/current?storeId=${encodeURIComponent(storeId)}`),
+
+  /** GET /api/register/sessions — paginated close history for the store. */
+  registerSessions: (storeId: string) =>
+    request<{ data: RegisterSession[]; limit: number; offset: number }>(
+      `/api/register/sessions?storeId=${encodeURIComponent(storeId)}`,
+    ),
 }

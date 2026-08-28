@@ -445,10 +445,11 @@ export function getNavForBusinessType(type: string) {
 
   const menuItem = (label: string) => ({ href: '/dashboard/menu', label, iconName: 'ShoppingBag', tour: 'menu' })
   const ordersItem = (label: string) => ({ href: '/dashboard/orders', label, iconName: 'PackageCheck', tour: 'orders' })
+  const cajaItem = () => ({ href: '/dashboard/caja', label: 'Caja / Vender', iconName: 'Wallet', tour: 'caja' })
 
   switch (type) {
     case 'food':
-      return [common[0], menuItem('Menú'), ordersItem('Pedidos'), ...common.slice(1)]
+      return [common[0], menuItem('Menú'), cajaItem(), ordersItem('Pedidos'), ...common.slice(1)]
     case 'appointment':
       return [common[0], menuItem('Servicios'), ordersItem('Turnos'), ...common.slice(1)]
     case 'task':
@@ -456,8 +457,8 @@ export function getNavForBusinessType(type: string) {
     case 'realtime':
       return [common[0], menuItem('Servicios'), ordersItem('Viajes'), ...common.slice(1)]
     case 'food+appointment':
-      return [common[0], menuItem('Menú'), ordersItem('Pedidos'), { href: '/dashboard/bookings', label: 'Turnos', iconName: 'CalendarCheck', tour: 'bookings' }, ...common.slice(1)]
+      return [common[0], menuItem('Menú'), cajaItem(), ordersItem('Pedidos'), { href: '/dashboard/bookings', label: 'Turnos', iconName: 'CalendarCheck', tour: 'bookings' }, ...common.slice(1)]
     default:
-      return [common[0], menuItem('Catálogo'), ordersItem('Pedidos'), ...common.slice(1)]
+      return [common[0], menuItem('Catálogo'), cajaItem(), ordersItem('Pedidos'), ...common.slice(1)]
   }
 }

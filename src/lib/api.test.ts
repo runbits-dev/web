@@ -283,3 +283,134 @@ describe('createFreeSubscription — onboarding free-plan fast-path', () => {
     expect(caught?.status).toBe(0)
   })
 })
+
+describe('api POS + register (caja) methods — happy paths', () => {
+  it('posCreateOrder POSTs { storeId, items, note } to /api/pos/orders', async () => {
+    install({ ok: true, status: 201, body: { id: 'o1', status: 'pending', items: [], total_cents: 1500 } })
+    const res = await api.posCreateOrder('store-1', [{ menuItemId: 'm1', quantity: 2 }], 'sin sal')
+    expect(lastUrl).toBe(`${BASE}/api/pos/orders`)
+    expect(lastInit?.method).toBe('POST')
+    expect((lastInit?.headers as Record<string, string>).Authorization).toBe('Bearer tok-test')
+    expect(JSON.parse(String(lastInit?.body))).toEqual({
+      storeId: 'store-1',
+      items: [{ menuItemId: 'm1', quantity: 2 }],
+      note: 'sin sal',
+    })
+    expect(res.total_cents).toBe(1500)
+  })
+
+  it('posCreateOrder omits note when not provided', async () => {
+    install({ ok: true, status: 201, body: { id: 'o1', status: 'pending', items: [], total_cents: 0 } })
+    await api.posCreateOrder('store-1', [{ menuItemId: 'm1', quantity: 1 }])
+    expect(JSON.parse(String(lastInit?.body))).toEqual({
+      storeId: 'store-1',
+      items: [{ menuItemId: 'm1', quantity: 1 }],
+    })
+  })
+
+  it('posPayOrder POSTs { method, amountTenderedCents } to /api/pos/orders/:id/pay', async () => {
+    install({
+      ok: true,
+      body: { orderId: 'o1', status: 'paid', paymentMethod: 'cash', totalCents: 1500, changeCents: 500, registerSessionId: 's1' },
+    })
+    const res = await api.posPayOrder('o1', 'cash', 2000)
+    expect(lastUrl).toBe(`${BASE}/api/pos/orders/o1/pay`)
+    expect(lastInit?.method).toBe('POST')
+    expect(JSON.parse(String(lastInit?.body))).toEqual({ method: 'cash', amountTenderedCents: 2000 })
+    expect(res.changeCents).toBe(500)
+  })
+
+  it('posPayOrder omits amountTenderedCents for non-cash methods', async () => {
+    install({ ok: true, body: { orderId: 'o1', status: 'paid', paymentMethod: 'card', totalCents: 1500, changeCents: 0, registerSessionId: 's1' } })
+    await api.posPayOrder('o1', 'card')
+    expect(JSON.parse(String(lastInit?.body))).toEqual({ method: 'card' })
+  })
+
+  it('registerOpen POSTs { storeId, openingFloatCents } to /api/register/open', async () => {
+    install({ ok: true, status: 201, body: { session: { id: 's1', store_id: 'store-1', status: 'open', opening_float_cents: 10000, opened_at: 1 } } })
+    const res = await api.registerOpen('store-1', 10000)
+    expect(lastUrl).toBe(`${BASE}/api/register/open`)
+    expect(lastInit?.method).toBe('POST')
+    expect(JSON.parse(String(lastInit?.body))).toEqual({ storeId: 'store-1', openingFloatCents: 10000 })
+    expect(res.session.status).toBe('open')
+  })
+
+  it('registerMovement POSTs { storeId, type, amountCents, reason }', async () => {
+    install({ ok: true, status: 201, body: { movement: { id: 'mv1', type: 'in', amount_cents: 5000, reason: 'vuelto', created_at: 1 } } })
+    await api.registerMovement('store-1', 'in', 5000, 'vuelto')
+    expect(lastUrl).toBe(`${BASE}/api/register/movements`)
+    expect(lastInit?.method).toBe('POST')
+    expect(JSON.parse(String(lastInit?.body))).toEqual({ storeId: 'store-1', type: 'in', amountCents: 5000, reason: 'vuelto' })
+  })
+
+  it('registerClose POSTs the counted cash and returns the Z report', async () => {
+    install({
+      ok: true,
+      body: {
+        sessionId: 's1', openingFloatCents: 10000, cashSalesCents: 20000, cashInCents: 0,
+        cashOutCents: 0, expectedCashCents: 30000, countedCashCents: 29500, overShortCents: -500, orderCount: 4,
+      },
+    })
+    const res = await api.registerClose('store-1', 29500)
+    expect(lastUrl).toBe(`${BASE}/api/register/close`)
+    expect(lastInit?.method).toBe('POST')
+    expect(JSON.parse(String(lastInit?.body))).toEqual({ storeId: 'store-1', countedCashCents: 29500 })
+    expect(res.overShortCents).toBe(-500)
+    expect(res.expectedCashCents).toBe(30000)
+  })
+
+  it('registerCurrent GETs /api/register/current with the storeId query', async () => {
+    install({ ok: true, body: { session: null } })
+    const res = await api.registerCurrent('store-1')
+    expect(lastUrl).toBe(`${BASE}/api/register/current?storeId=store-1`)
+    expect((lastInit?.method ?? 'GET')).toBe('GET')
+    expect(res.session).toBeNull()
+  })
+
+  it('registerSessions GETs the paginated close history', async () => {
+    install({ ok: true, body: { data: [], limit: 20, offset: 0 } })
+    const res = await api.registerSessions('store-1')
+    expect(lastUrl).toBe(`${BASE}/api/register/sessions?storeId=store-1`)
+    expect(res.limit).toBe(20)
+  })
+})
+
+describe('api POS + register methods — error handling rule', () => {
+  it('surfaces REGISTER_NO_OPEN_SESSION as an ApiError with .code and .status', async () => {
+    install({ ok: false, status: 409, body: { error: 'no hay una caja abierta', code: 'REGISTER_NO_OPEN_SESSION' } })
+    let caught: ApiError | null = null
+    try {
+      await api.posPayOrder('o1', 'cash', 2000)
+    } catch (e) {
+      caught = e as ApiError
+    }
+    expect(caught).not.toBeNull()
+    expect(caught?.message).toBe('no hay una caja abierta')
+    expect(caught?.code).toBe('REGISTER_NO_OPEN_SESSION')
+    expect(caught?.status).toBe(409)
+  })
+
+  it('surfaces REGISTER_ALREADY_OPEN when opening an already-open caja', async () => {
+    install({ ok: false, status: 409, body: { error: 'la caja ya está abierta', code: 'REGISTER_ALREADY_OPEN' } })
+    let caught: ApiError | null = null
+    try {
+      await api.registerOpen('store-1', 10000)
+    } catch (e) {
+      caught = e as ApiError
+    }
+    expect(caught?.code).toBe('REGISTER_ALREADY_OPEN')
+    expect(caught?.status).toBe(409)
+  })
+
+  it('surfaces PLAN_LIMIT_EXCEEDED when the POS module is not enabled', async () => {
+    install({ ok: false, status: 403, body: { error: 'módulo no disponible en tu plan', code: 'PLAN_LIMIT_EXCEEDED' } })
+    let caught: ApiError | null = null
+    try {
+      await api.posCreateOrder('store-1', [{ menuItemId: 'm1', quantity: 1 }])
+    } catch (e) {
+      caught = e as ApiError
+    }
+    expect(caught?.code).toBe('PLAN_LIMIT_EXCEEDED')
+    expect(caught?.status).toBe(403)
+  })
+})
