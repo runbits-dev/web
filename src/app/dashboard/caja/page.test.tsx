@@ -13,13 +13,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { render, screen, waitFor, fireEvent, cleanup } from '@testing-library/react'
 
 vi.mock('@/context/ProfileContext', () => ({
-  useProfile: () => ({
-    activeProfile: { id: 'p1', store_id: 'store-1', business_type: 'restaurant', display_name: 'Café Co' },
-    profiles: [],
-    switchProfile: vi.fn(),
-    refreshProfiles: vi.fn(),
-    loading: false,
-  }),
+  useProfile: vi.fn(),
 }))
 
 vi.mock('@/lib/api', () => ({
@@ -36,9 +30,20 @@ vi.mock('@/lib/api', () => ({
 }))
 
 import { api } from '@/lib/api'
+import { useProfile } from '@/context/ProfileContext'
 import CajaPage from './page'
 
 const m = api as unknown as Record<string, ReturnType<typeof vi.fn>>
+const mockedUseProfile = vi.mocked(useProfile)
+
+/** Default ProfileContext value: a store is selected with a fixed catalog. */
+const PROFILE_CTX = {
+  activeProfile: { id: 'p1', store_id: 'store-1', business_type: 'restaurant', display_name: 'Café Co' },
+  profiles: [],
+  switchProfile: vi.fn(),
+  refreshProfiles: vi.fn(),
+  loading: false,
+} as unknown as ReturnType<typeof useProfile>
 
 const OPEN_SESSION = {
   id: 's1',
@@ -71,6 +76,7 @@ function apiError(message: string, code: string, status: number) {
 
 beforeEach(() => {
   localStorage.setItem('token', 'tok-test')
+  mockedUseProfile.mockReturnValue(PROFILE_CTX)
   m.getMenu.mockResolvedValue(MENU)
   m.registerCurrent.mockResolvedValue({ session: null })
 })
@@ -215,6 +221,41 @@ describe('CajaPage — sale retry-safety', () => {
     expect(m.posPayOrder).toHaveBeenLastCalledWith('o2', 'cash', 3000)
   })
 
+  it('creates a NEW order carrying the edited note after a failed pay', async () => {
+    m.registerCurrent.mockResolvedValue(OPEN_CURRENT)
+    m.posCreateOrder
+      .mockResolvedValueOnce({ id: 'o1', status: 'pending', items: [], total_cents: 1500 })
+      .mockResolvedValue({ id: 'o2', status: 'pending', items: [], total_cents: 1500 })
+    m.posPayOrder
+      .mockRejectedValueOnce(apiError('fallo temporal', 'INTERNAL', 500))
+      .mockResolvedValue({
+        orderId: 'o2', status: 'paid', paymentMethod: 'cash', totalCents: 1500, changeCents: 500, registerSessionId: 's1',
+      })
+
+    render(<CajaPage />)
+
+    fireEvent.click(await screen.findByRole('button', { name: /Café/ }))
+    fireEvent.click(screen.getByRole('button', { name: 'Cobrar' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Efectivo' }))
+    fireEvent.change(screen.getByLabelText('Monto recibido'), { target: { value: '20' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Confirmar pago' }))
+
+    await waitFor(() => expect(m.posCreateOrder).toHaveBeenCalledTimes(1))
+
+    // Edit the NOTE (not the ticket) → the created order no longer matches, so the
+    // next Cobrar must create a FRESH order carrying the edited note — not re-pay
+    // the stale order that was created without it.
+    fireEvent.change(screen.getByLabelText('Nota (opcional)'), { target: { value: 'para llevar' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Confirmar pago' }))
+
+    // A brand-new order is created (create called twice), carrying the edited note.
+    await waitFor(() => expect(m.posCreateOrder).toHaveBeenCalledTimes(2))
+    expect(m.posCreateOrder).toHaveBeenLastCalledWith(
+      'store-1', [{ menuItemId: 'm1', quantity: 1 }], 'para llevar', expect.any(String),
+    )
+    expect(m.posPayOrder).toHaveBeenLastCalledWith('o2', 'cash', 2000)
+  })
+
   it('clears the ticket and pending state after a successful sale', async () => {
     m.registerCurrent.mockResolvedValue(OPEN_CURRENT)
     m.posCreateOrder
@@ -244,6 +285,31 @@ describe('CajaPage — sale retry-safety', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Confirmar pago' }))
 
     await waitFor(() => expect(m.posCreateOrder).toHaveBeenCalledTimes(2))
+  })
+})
+
+describe('CajaPage — empty states', () => {
+  it('renders the pick-a-store guard when no store is selected', async () => {
+    mockedUseProfile.mockReturnValue({
+      ...PROFILE_CTX,
+      activeProfile: { ...PROFILE_CTX.activeProfile, store_id: null },
+    } as unknown as ReturnType<typeof useProfile>)
+
+    render(<CajaPage />)
+
+    // No store → the whole page short-circuits to the guard (no crash, no panels).
+    expect(await screen.findByText(/Seleccioná un comercio/)).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Cobrar' })).not.toBeInTheDocument()
+  })
+
+  it('renders the empty-catalog guard in the Vender panel when the menu is empty', async () => {
+    m.registerCurrent.mockResolvedValue(OPEN_CURRENT)
+    m.getMenu.mockResolvedValue([])
+
+    render(<CajaPage />)
+
+    // Catalog resolved empty → the Vender panel shows its no-products guard.
+    expect(await screen.findByText(/No hay productos disponibles/)).toBeInTheDocument()
   })
 })
 

@@ -745,7 +745,7 @@ function VenderPanel({
               <input
                 id="sale-note"
                 value={note}
-                onChange={(e) => setNote(e.target.value)}
+                onChange={(e) => { clearPending(); setNote(e.target.value) }}
                 placeholder="Ej. para llevar"
                 className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none"
               />

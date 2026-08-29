@@ -299,6 +299,18 @@ describe('api POS + register (caja) methods — happy paths', () => {
     expect(res.total_cents).toBe(1500)
   })
 
+  it('posCreateOrder sends the Idempotency-Key header when a key is provided', async () => {
+    install({ ok: true, status: 201, body: { id: 'o1', status: 'pending', items: [], total_cents: 1500 } })
+    await api.posCreateOrder('store-1', [{ menuItemId: 'm1', quantity: 1 }], 'sin sal', 'some-key')
+    expect((lastInit?.headers as Record<string, string>)['Idempotency-Key']).toBe('some-key')
+  })
+
+  it('posCreateOrder sends NO Idempotency-Key header when the key is omitted', async () => {
+    install({ ok: true, status: 201, body: { id: 'o1', status: 'pending', items: [], total_cents: 1500 } })
+    await api.posCreateOrder('store-1', [{ menuItemId: 'm1', quantity: 1 }])
+    expect((lastInit?.headers as Record<string, string>)['Idempotency-Key']).toBeUndefined()
+  })
+
   it('posCreateOrder omits note when not provided', async () => {
     install({ ok: true, status: 201, body: { id: 'o1', status: 'pending', items: [], total_cents: 0 } })
     await api.posCreateOrder('store-1', [{ menuItemId: 'm1', quantity: 1 }])
